@@ -1,11 +1,11 @@
 
 import Hero from '@/components/Hero';
-import SustainabilityHighlights from '@/components/SustainabilityHighlights';
-import EnvImpactStats from '@/components/EnvImpactStats';
-import CallToAction from '@/components/CallToAction';
-import EcoMap from '@/components/EcoMap';
+import DestaquesSustentabilidade from '@/components/SustainabilityHighlights';
+import EstatisticasImpactoAmbiental from '@/components/EnvImpactStats';
+import ChamadaParaAcao from '@/components/CallToAction';
+import MapaEco from '@/components/EcoMap';
 
-const Index = () => {
+const Inicio = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Hero />
@@ -19,14 +19,14 @@ const Index = () => {
               Explore iniciativas ambientais em sua comunidade. Clique nos pontos para saber mais sobre centros de reciclagem, projetos de plantio de árvores e eventos de limpeza.
             </p>
           </div>
-          <EcoMap />
+          <MapaEco />
         </div>
       </div>
-      <SustainabilityHighlights />
-      <EnvImpactStats />
-      <CallToAction />
+      <DestaquesSustentabilidade />
+      <EstatisticasImpactoAmbiental />
+      <ChamadaParaAcao />
     </div>
   );
 };
 
-export default Index;
+export default Inicio;

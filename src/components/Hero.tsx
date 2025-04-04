@@ -14,21 +14,21 @@ const Hero = () => {
           <div className="space-y-6 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-green-light/20 text-eco-green-dark text-sm font-medium">
               <Leaf className="h-4 w-4" />
-              <span>Join the Eco Revolution</span>
+              <span>Junte-se à Revolução Ecológica</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-eco-green-dark">
-              Mapping Our Path to a <span className="text-eco-green">Sustainable Future</span>
+              Mapeando Nosso Caminho para um <span className="text-eco-green">Futuro Sustentável</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Discover ecological initiatives in your community through our interactive map. Together, we can promote sustainability and environmental awareness.
+              Descubra iniciativas ecológicas em sua comunidade através do nosso mapa interativo. Juntos, podemos promover a sustentabilidade e a consciência ambiental.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/map" className="inline-flex items-center gap-2 bg-eco-green text-white font-medium rounded-md px-6 py-3 shadow-sm hover:bg-eco-green-dark transition-colors">
-                <span>Explore the Map</span>
+                <span>Explorar o Mapa</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link to="/about" className="inline-flex items-center gap-2 bg-transparent border border-eco-green text-eco-green-dark font-medium rounded-md px-6 py-3 hover:bg-eco-green/5 transition-colors">
-                Learn More
+                Saiba Mais
               </Link>
             </div>
           </div>
@@ -38,7 +38,7 @@ const Hero = () => {
             <div className="aspect-[4/3] bg-eco-blue-light relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-tr from-eco-green/20 to-eco-blue/20"></div>
               <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm z-10 text-sm font-medium">
-                Interactive Ecological Map
+                Mapa Ecológico Interativo
               </div>
               
               {/* Stylized Map Placeholder */}
@@ -53,7 +53,7 @@ const Hero = () => {
             {/* Call to Action Overlay */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-eco-green-dark/70 transition-opacity duration-300">
               <Link to="/map" className="px-6 py-3 bg-white rounded-md font-medium text-eco-green-dark shadow-md hover:bg-eco-sand transition-colors">
-                View Full Map
+                Ver Mapa Completo
               </Link>
             </div>
           </div>

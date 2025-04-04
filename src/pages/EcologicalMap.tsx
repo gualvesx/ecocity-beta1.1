@@ -1,9 +1,9 @@
 
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Info } from 'lucide-react';
-import EcoMap from '@/components/EcoMap';
+import MapaEco from '@/components/EcoMap';
 
-const EcologicalMap = () => {
+const MapaEcologico = () => {
   return (
     <div className="min-h-screen flex flex-col pt-20">
       <div className="container px-4 py-8">
@@ -11,7 +11,7 @@ const EcologicalMap = () => {
           <div>
             <Link to="/" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground mb-4">
               <ArrowLeft className="h-4 w-4" />
-              <span>Voltar para Home</span>
+              <span>Voltar para Início</span>
             </Link>
             <h1 className="text-3xl md:text-4xl font-bold text-eco-green-dark">Mapa Ecológico de Presidente Prudente</h1>
             <p className="text-lg text-muted-foreground mt-2">
@@ -30,7 +30,7 @@ const EcologicalMap = () => {
         </div>
         
         <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-          <EcoMap />
+          <MapaEco />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -94,4 +94,4 @@ const EcologicalMap = () => {
   );
 };
 
-export default EcologicalMap;
+export default MapaEcologico;

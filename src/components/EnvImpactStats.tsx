@@ -2,41 +2,41 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface StatItemProps {
-  value: number;
-  label: string;
-  suffix?: string;
-  delay?: number;
+  valor: number;
+  rotulo: string;
+  sufixo?: string;
+  atraso?: number;
 }
 
-const StatItem = ({ value, label, suffix = "", delay = 0 }: StatItemProps) => {
-  const [displayValue, setDisplayValue] = useState(0);
+const StatItem = ({ valor, rotulo, sufixo = "", atraso = 0 }: StatItemProps) => {
+  const [valorExibido, setValorExibido] = useState(0);
   const elementRef = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
+  const animacaoRealizada = useRef(false);
   
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
+        if (entry.isIntersecting && !animacaoRealizada.current) {
+          animacaoRealizada.current = true;
           
           // Delay the start of the animation based on the prop
           const timeoutId = setTimeout(() => {
             // Animate the number counting up
-            let startValue = 0;
-            const animationDuration = 2000; // 2 seconds
-            const increment = value / (animationDuration / 16); // 60fps
+            let valorInicial = 0;
+            const duracaoAnimacao = 2000; // 2 seconds
+            const incremento = valor / (duracaoAnimacao / 16); // 60fps
             
             const interval = setInterval(() => {
-              startValue += increment;
-              if (startValue >= value) {
-                setDisplayValue(value);
+              valorInicial += incremento;
+              if (valorInicial >= valor) {
+                setValorExibido(valor);
                 clearInterval(interval);
               } else {
-                setDisplayValue(Math.floor(startValue));
+                setValorExibido(Math.floor(valorInicial));
               }
             }, 16);
-          }, delay);
+          }, atraso);
           
           return () => clearTimeout(timeoutId);
         }
@@ -53,40 +53,40 @@ const StatItem = ({ value, label, suffix = "", delay = 0 }: StatItemProps) => {
         observer.unobserve(elementRef.current);
       }
     };
-  }, [value, delay]);
+  }, [valor, atraso]);
   
   return (
     <div ref={elementRef} className="flex flex-col items-center p-6">
       <div className="text-4xl md:text-5xl font-bold text-eco-green-dark flex items-end leading-none">
-        {displayValue.toLocaleString()}{suffix}
+        {valorExibido.toLocaleString()}{sufixo}
       </div>
-      <p className="mt-2 text-lg text-muted-foreground text-center">{label}</p>
+      <p className="mt-2 text-lg text-muted-foreground text-center">{rotulo}</p>
     </div>
   );
 };
 
-const EnvImpactStats = () => {
+const EstatisticasImpactoAmbiental = () => {
   return (
     <section className="py-16 bg-eco-green/5">
       <div className="container px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark">
-            Our Collective Impact
+            Nosso Impacto Coletivo
           </h2>
           <p className="text-lg text-muted-foreground">
-            Together, our community is making a measurable difference in environmental conservation.
+            Juntos, nossa comunidade está fazendo uma diferença mensurável na conservação ambiental.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white rounded-xl shadow-md overflow-hidden">
-          <StatItem value={5280} label="Trees Planted" delay={0} />
-          <StatItem value={42} label="Tons of Waste Recycled" suffix="+" delay={200} />
-          <StatItem value={120} label="Community Clean-ups" delay={400} />
-          <StatItem value={3500} label="Volunteers Engaged" delay={600} />
+          <StatItem valor={5280} rotulo="Árvores Plantadas" atraso={0} />
+          <StatItem valor={42} rotulo="Toneladas de Resíduos Reciclados" sufixo="+" atraso={200} />
+          <StatItem valor={120} rotulo="Limpezas Comunitárias" atraso={400} />
+          <StatItem valor={3500} rotulo="Voluntários Engajados" atraso={600} />
         </div>
       </div>
     </section>
   );
 };
 
-export default EnvImpactStats;
+export default EstatisticasImpactoAmbiental;

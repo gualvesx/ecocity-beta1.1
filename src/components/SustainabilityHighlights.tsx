@@ -4,13 +4,13 @@ import { cn } from '@/lib/utils';
 
 interface HighlightCardProps {
   icon: React.ReactNode;
-  title: string;
-  description: string;
+  titulo: string;
+  descricao: string;
   className?: string;
   style?: React.CSSProperties;
 }
 
-const HighlightCard = ({ icon, title, description, className, style }: HighlightCardProps) => (
+const HighlightCard = ({ icon, titulo, descricao, className, style }: HighlightCardProps) => (
   <div 
     className={cn(
       "bg-white rounded-xl shadow-md p-6 border border-eco-green-light/20 hover:shadow-lg transition-shadow",
@@ -21,45 +21,45 @@ const HighlightCard = ({ icon, title, description, className, style }: Highlight
     <div className="w-12 h-12 rounded-full bg-eco-green-light/20 flex items-center justify-center text-eco-green mb-4">
       {icon}
     </div>
-    <h3 className="text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-muted-foreground">{description}</p>
+    <h3 className="text-xl font-semibold mb-2">{titulo}</h3>
+    <p className="text-muted-foreground">{descricao}</p>
   </div>
 );
 
-const SustainabilityHighlights = () => {
+const DestaquesSustentabilidade = () => {
   return (
     <section className="py-16 md:py-24 bg-eco-sand/30">
       <div className="container px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark">
-            Sustainability Highlights
+            Destaques de Sustentabilidade
           </h2>
           <p className="text-lg text-muted-foreground">
-            Learn about the importance of environmental protection and how local initiatives can make a global impact.
+            Saiba mais sobre a importância da proteção ambiental e como iniciativas locais podem ter um impacto global.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <HighlightCard
             icon={<Recycle size={24} />}
-            title="Recycling Matters"
-            description="On average, recycling one ton of paper saves 17 trees, 7,000 gallons of water, and 463 gallons of oil."
+            titulo="Reciclagem Importa"
+            descricao="Em média, reciclar uma tonelada de papel salva 17 árvores, 7.000 galões de água e 463 galões de óleo."
             className="animate-fade-in-up" 
             style={{ animationDelay: "0.1s" }}
           />
           
           <HighlightCard
             icon={<Trees size={24} />}
-            title="Tree Planting Impact"
-            description="A single mature tree can absorb 48 pounds of carbon dioxide per year and produce enough oxygen for two people."
+            titulo="Impacto do Plantio de Árvores"
+            descricao="Uma única árvore madura pode absorver 48 libras de dióxido de carbono por ano e produzir oxigênio suficiente para duas pessoas."
             className="animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           />
           
           <HighlightCard
             icon={<Globe size={24} />}
-            title="Community Clean-ups"
-            description="Community clean-ups not only remove litter but also prevent pollution of waterways and protect wildlife habitats."
+            titulo="Limpezas Comunitárias"
+            descricao="Limpezas comunitárias não só removem lixo, mas também previnem a poluição de cursos d'água e protegem habitats da vida selvagem."
             className="animate-fade-in-up"
             style={{ animationDelay: "0.3s" }}
           />
@@ -68,9 +68,9 @@ const SustainabilityHighlights = () => {
         <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8 md:p-12">
-              <h3 className="text-2xl font-bold mb-4 text-eco-green-dark">Featured Project: Urban Reforestation</h3>
+              <h3 className="text-2xl font-bold mb-4 text-eco-green-dark">Projeto em Destaque: Reflorestamento Urbano</h3>
               <p className="text-muted-foreground mb-4">
-                Our urban reforestation initiative aims to increase tree canopy coverage in metropolitan areas by 30% over the next decade, improving air quality and reducing urban heat islands.
+                Nossa iniciativa de reflorestamento urbano visa aumentar a cobertura de árvores em áreas metropolitanas em 30% na próxima década, melhorando a qualidade do ar e reduzindo ilhas de calor urbanas.
               </p>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -78,7 +78,7 @@ const SustainabilityHighlights = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">3,500+ trees planted</span> in urban environments last year
+                    <span className="font-medium">3.500+ árvores plantadas</span> em ambientes urbanos no último ano
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -86,7 +86,7 @@ const SustainabilityHighlights = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">15% temperature reduction</span> in areas with increased tree canopy
+                    <span className="font-medium">15% de redução de temperatura</span> em áreas com aumento de cobertura arbórea
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -94,7 +94,7 @@ const SustainabilityHighlights = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">500+ volunteers</span> engaged in planting and maintenance activities
+                    <span className="font-medium">500+ voluntários</span> engajados em atividades de plantio e manutenção
                   </p>
                 </div>
               </div>
@@ -109,4 +109,4 @@ const SustainabilityHighlights = () => {
   );
 };
 
-export default SustainabilityHighlights;
+export default DestaquesSustentabilidade;
