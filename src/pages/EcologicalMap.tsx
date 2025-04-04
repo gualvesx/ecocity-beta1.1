@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Info } from 'lucide-react';
+import { ArrowLeft, Info, MapPin, Plus } from 'lucide-react';
 import MapaEco from '@/components/EcoMap';
 
 const MapaEcologico = () => {
@@ -23,7 +23,7 @@ const MapaEcologico = () => {
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-eco-green shrink-0 mt-0.5" />
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">Como usar:</span> Clique nos marcadores para ver detalhes sobre iniciativas ambientais. Use o filtro para encontrar tipos específicos de pontos ecológicos.
+                <span className="font-medium text-foreground">Como usar:</span> Clique nos marcadores para ver detalhes sobre iniciativas ambientais. Use o filtro para encontrar tipos específicos de pontos ecológicos. Para adicionar um novo ponto, clique no botão "Adicionar Ponto".
               </p>
             </div>
           </div>
@@ -72,14 +72,15 @@ const MapaEcologico = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5">
             <div className="p-8 lg:col-span-3">
               <h2 className="text-2xl font-bold mb-4 text-eco-green-dark">
-                Quer Adicionar um Novo Ponto Ecológico?
+                Contribua com o Mapa Ecológico
               </h2>
               <p className="text-muted-foreground mb-6">
-                Recebemos contribuições de membros da comunidade que conhecem iniciativas ambientais locais. Se você gostaria de sugerir um novo ponto ecológico para nosso mapa, forneça detalhes sobre a localização e o tipo de iniciativa.
+                Compartilhe suas descobertas ecológicas! Adicione novos pontos diretamente no mapa clicando no botão <span className="inline-flex items-center gap-1 bg-eco-green text-white rounded px-2 py-0.5 text-xs"><Plus size={12} /> Adicionar Ponto</span> no topo do mapa e preencha as informações solicitadas.
               </p>
-              <Link to="/about" className="inline-flex items-center gap-2 bg-eco-green text-white font-medium rounded-md px-6 py-3 shadow-sm hover:bg-eco-green-dark transition-colors">
-                Entre em Contato para Enviar
-              </Link>
+              <div className="flex items-center gap-2 text-eco-green font-medium">
+                <MapPin className="h-5 w-5" />
+                <span>Juntos construímos um mapa mais completo da nossa ecologia local!</span>
+              </div>
             </div>
             <div className="lg:col-span-2 bg-eco-sand p-8 flex items-center justify-center">
               <div className="max-w-xs">
