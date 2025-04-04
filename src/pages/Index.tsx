@@ -13,10 +13,10 @@ const Index = () => {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-eco-green-dark mb-4">
-              Interactive Ecological Map Preview
+              Prévia do Mapa Ecológico de Presidente Prudente
             </h2>
             <p className="text-muted-foreground mb-6">
-              Explore environmental initiatives in your community. Click on points to learn more about recycling centers, tree planting projects, and clean-up events.
+              Explore iniciativas ambientais em sua comunidade. Clique nos pontos para saber mais sobre centros de reciclagem, projetos de plantio de árvores e eventos de limpeza.
             </p>
           </div>
           <EcoMap />

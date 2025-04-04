@@ -22,52 +22,52 @@ const EcoMap = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Sample data for map points
+  // Sample data for map points in Presidente Prudente, Brazil
   const mapPoints: MapPoint[] = [
     {
       id: 1,
-      name: "City Park Recycling Center",
+      name: "Ecoponto Vila Furquim",
       type: "recycling",
-      lat: 51.505,
-      lng: -0.09,
-      description: "Main recycling center accepting paper, plastic, glass, and electronics.",
-      impact: "Processes 5 tons of recyclable materials weekly."
+      lat: -22.119511,
+      lng: -51.392290,
+      description: "Ponto de coleta de resíduos recicláveis e materiais volumosos.",
+      impact: "Coleta aproximadamente 3 toneladas de materiais recicláveis por semana."
     },
     {
       id: 2,
-      name: "Riverside Tree Planting Project",
+      name: "Parque do Povo",
       type: "tree-planting",
-      lat: 51.51,
-      lng: -0.1,
-      description: "Community tree planting initiative along the river bank.",
-      impact: "250 native trees planted in the last year."
+      lat: -22.128580,
+      lng: -51.388310,
+      description: "Área verde com projetos de plantio de árvores nativas.",
+      impact: "Mais de 150 árvores plantadas no último ano, contribuindo para a qualidade do ar."
     },
     {
       id: 3,
-      name: "Beach Clean-up Zone",
-      type: "clean-up",
-      lat: 51.5,
-      lng: -0.08,
-      description: "Monthly volunteer beach clean-up activity.",
-      impact: "Removed over 500 lbs of plastic waste from shorelines."
+      name: "Ecoponto Cambuci",
+      type: "recycling",
+      lat: -22.134160,
+      lng: -51.401930,
+      description: "Centro de coleta de materiais recicláveis, entulhos e volumosos.",
+      impact: "Processamento de 2 toneladas de materiais por semana."
     },
     {
       id: 4,
-      name: "Community Garden Composting",
-      type: "recycling",
-      lat: 51.515,
-      lng: -0.12,
-      description: "Organic waste composting facility for local residents.",
-      impact: "Diverts 2 tons of food waste from landfills monthly."
+      name: "Mutirão Córrego do Veado",
+      type: "clean-up",
+      lat: -22.121650,
+      lng: -51.378750,
+      description: "Área de limpeza regular do córrego e suas margens.",
+      impact: "Remoção de mais de 300kg de resíduos mensais, protegendo o ecossistema aquático."
     },
     {
       id: 5,
-      name: "Urban Forest Initiative",
-      type: "tree-planting",
-      lat: 51.498,
-      lng: -0.13,
-      description: "Creating urban micro-forests in vacant lots.",
-      impact: "Established 3 micro-forests with 100+ trees each."
+      name: "Ecoponto COHAB",
+      type: "recycling",
+      lat: -22.111234,
+      lng: -51.413456,
+      description: "Centro de coleta seletiva e descarte correto de resíduos.",
+      impact: "Redução de 15% no lixo enviado ao aterro sanitário da região."
     },
   ];
   
@@ -97,7 +97,8 @@ const EcoMap = () => {
       }
       
       const L = window.L;
-      const newMap = L.map(mapRef.current).setView([51.505, -0.09], 13);
+      // Set the map view to Presidente Prudente, Brazil
+      const newMap = L.map(mapRef.current).setView([-22.125092, -51.389639], 13);
       
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -188,9 +189,9 @@ const EcoMap = () => {
   
   // Type icon and color mapping
   const typeInfo = {
-    'recycling': { label: 'Recycling', color: 'bg-eco-green' },
-    'tree-planting': { label: 'Tree Planting', color: 'bg-eco-brown' },
-    'clean-up': { label: 'Clean-up', color: 'bg-eco-blue' }
+    'recycling': { label: 'Reciclagem', color: 'bg-eco-green' },
+    'tree-planting': { label: 'Plantio de Árvores', color: 'bg-eco-brown' },
+    'clean-up': { label: 'Área de Limpeza', color: 'bg-eco-blue' }
   };
 
   return (
@@ -206,7 +207,7 @@ const EcoMap = () => {
           </div>
           <input
             type="text"
-            placeholder="Search ecological points..."
+            placeholder="Buscar pontos ecológicos..."
             className="w-full pl-10 py-2 pr-4 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-eco-green/50"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -219,7 +220,7 @@ const EcoMap = () => {
             className="flex items-center gap-2 py-2 px-4 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-gray-200 hover:bg-eco-green-light/10"
           >
             <Filter className="h-4 w-4" />
-            <span>Filter</span>
+            <span>Filtrar</span>
           </button>
           
           {isFilterOpen && (
@@ -232,7 +233,7 @@ const EcoMap = () => {
                     filter === 'all' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
                   )}
                 >
-                  All Points
+                  Todos os Pontos
                 </button>
                 
                 <button
@@ -243,7 +244,7 @@ const EcoMap = () => {
                   )}
                 >
                   <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-                  Recycling
+                  Reciclagem
                 </button>
                 
                 <button
@@ -254,7 +255,7 @@ const EcoMap = () => {
                   )}
                 >
                   <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-                  Tree Planting
+                  Plantio de Árvores
                 </button>
                 
                 <button
@@ -265,7 +266,7 @@ const EcoMap = () => {
                   )}
                 >
                   <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-                  Clean-up
+                  Áreas de Limpeza
                 </button>
               </div>
             </div>
@@ -275,19 +276,19 @@ const EcoMap = () => {
       
       {/* Legend */}
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-md shadow-sm border border-gray-200 z-20">
-        <h4 className="text-sm font-medium mb-2">Map Legend</h4>
+        <h4 className="text-sm font-medium mb-2">Legenda</h4>
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-            <span>Recycling Points</span>
+            <span>Pontos de Reciclagem</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-            <span>Tree Planting</span>
+            <span>Plantio de Árvores</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-            <span>Clean-up Zones</span>
+            <span>Áreas de Limpeza</span>
           </div>
         </div>
       </div>
@@ -312,11 +313,11 @@ const EcoMap = () => {
           
           <div className="mt-3 space-y-2">
             <div className="flex items-center text-sm text-muted-foreground">
-              <span>Type: {typeInfo[selectedPoint.type].label}</span>
+              <span>Tipo: {typeInfo[selectedPoint.type].label}</span>
             </div>
             <p className="text-sm">{selectedPoint.description}</p>
             <div className="bg-eco-green-light/10 p-2 rounded text-sm">
-              <span className="font-medium">Environmental Impact:</span> {selectedPoint.impact}
+              <span className="font-medium">Impacto Ambiental:</span> {selectedPoint.impact}
             </div>
           </div>
         </div>
