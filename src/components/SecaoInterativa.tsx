@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ArrowRight, Leaf, Recycle, Drop, Wind } from 'lucide-react';
+import { ArrowRight, Leaf, Recycle, Droplets, Wind } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const temas = [
@@ -21,7 +21,7 @@ const temas = [
   {
     id: 'agua',
     titulo: 'Conservação da Água',
-    icon: Drop,
+    icon: Droplets,
     cor: 'bg-eco-blue',
     descricao: 'A economia de água é essencial para garantir este recurso vital para as gerações atuais e futuras, preservando ecossistemas aquáticos.'
   },
