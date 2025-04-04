@@ -1,5 +1,5 @@
 
-import { Leaf, Recycle, Tree, Globe } from 'lucide-react';
+import { Leaf, Recycle, Trees, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface HighlightCardProps {
@@ -7,13 +7,17 @@ interface HighlightCardProps {
   title: string;
   description: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const HighlightCard = ({ icon, title, description, className }: HighlightCardProps) => (
-  <div className={cn(
-    "bg-white rounded-xl shadow-md p-6 border border-eco-green-light/20 hover:shadow-lg transition-shadow",
-    className
-  )}>
+const HighlightCard = ({ icon, title, description, className, style }: HighlightCardProps) => (
+  <div 
+    className={cn(
+      "bg-white rounded-xl shadow-md p-6 border border-eco-green-light/20 hover:shadow-lg transition-shadow",
+      className
+    )}
+    style={style}
+  >
     <div className="w-12 h-12 rounded-full bg-eco-green-light/20 flex items-center justify-center text-eco-green mb-4">
       {icon}
     </div>
@@ -45,7 +49,7 @@ const SustainabilityHighlights = () => {
           />
           
           <HighlightCard
-            icon={<Tree size={24} />}
+            icon={<Trees size={24} />}
             title="Tree Planting Impact"
             description="A single mature tree can absorb 48 pounds of carbon dioxide per year and produce enough oxygen for two people."
             className="animate-fade-in-up"

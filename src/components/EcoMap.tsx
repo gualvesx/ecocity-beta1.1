@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Trash2, Tree, Search, Filter, X } from 'lucide-react';
+import { MapPin, Trash2, Trees, Search, Filter, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Type definitions for the map points
@@ -77,7 +77,7 @@ const EcoMap = () => {
       case 'recycling':
         return <Trash2 size={16} />;
       case 'tree-planting':
-        return <Tree size={16} />;
+        return <Trees size={16} />;
       case 'clean-up':
         return <MapPin size={16} />;
       default:
