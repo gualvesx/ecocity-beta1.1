@@ -1,13 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { MapPoint } from '@/components/EcoMap';
 import { createClient } from '@supabase/supabase-js';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Configuração do cliente Supabase - vamos usar variáveis de ambiente
+// Supabase client configuration - using environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lygvpskjhiwgzsmqiojc.supabase.co';
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+// Only create the client if we have both URL and key
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Sample data for when Supabase is not configured
 const samplePoints: MapPoint[] = [
@@ -63,27 +65,24 @@ const samplePoints: MapPoint[] = [
   },
 ];
 
-// Criação do cliente Supabase (conditional)
-const supabase = supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
-
-// Hook personalizado para gerenciar pontos do mapa
+// Custom hook to manage map points
 export const useMapPoints = () => {
   const [mapPoints, setMapPoints] = useState<MapPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { user } = useAuth();
 
-  // Função para carregar os pontos do mapa do Supabase ou localStorage
+  // Function to load map points from Supabase or localStorage
   const fetchMapPoints = async () => {
     try {
       setIsLoading(true);
       
-      // Verificar se existem pontos salvos localmente
+      // Check if there are locally saved points
       const localPoints = localStorage.getItem('mapPoints');
       
-      // Se não temos a conexão do Supabase, usamos dados locais ou de exemplo
+      // If we don't have Supabase connection, use local or example data
       if (!supabase) {
-        console.warn('Supabase não configurado, usando dados locais ou de exemplo');
+        console.warn('Supabase not configured, using local or example data');
         
         if (localPoints) {
           setMapPoints(JSON.parse(localPoints));
@@ -96,14 +95,14 @@ export const useMapPoints = () => {
         return;
       }
       
-      // Consulta ao Supabase
+      // Supabase query
       const { data, error } = await supabase
         .from('eco_points')
         .select('*');
       
       if (error) throw error;
       
-      // Transformar os dados para corresponder ao nosso formato MapPoint
+      // Transform data to match our MapPoint format
       const formattedPoints: MapPoint[] = data.map((point: any) => ({
         id: point.id,
         name: point.name,
@@ -117,61 +116,61 @@ export const useMapPoints = () => {
       
       setMapPoints(formattedPoints);
       
-      // Salvar no localStorage como backup
+      // Save to localStorage as backup
       localStorage.setItem('mapPoints', JSON.stringify(formattedPoints));
     } catch (err) {
-      console.error('Erro ao buscar pontos:', err);
-      setError(err instanceof Error ? err : new Error('Erro desconhecido ao buscar pontos'));
+      console.error('Error fetching points:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error fetching points'));
       
-      // Verificar se existem pontos salvos localmente
+      // Check if there are locally saved points
       const localPoints = localStorage.getItem('mapPoints');
       if (localPoints) {
         setMapPoints(JSON.parse(localPoints));
-        toast.warning("Usando dados salvos localmente devido a um erro de conexão.");
+        toast.warning("Using locally saved data due to a connection error.");
       } else {
-        // Se ocorrer um erro, usamos dados de exemplo
+        // If an error occurs, use example data
         setMapPoints(samplePoints);
         localStorage.setItem('mapPoints', JSON.stringify(samplePoints));
-        toast.error("Erro ao carregar pontos do banco de dados. Usando dados de exemplo.");
+        toast.error("Error loading points from database. Using example data.");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Função para geocodificar um endereço (simulada)
+  // Function to geocode an address (simulated)
   const geocodeAddress = async (address: string): Promise<{lat: number, lng: number} | null> => {
-    // Em uma implementação real, isso usaria uma API como Google Maps ou Mapbox
-    // Por enquanto, retornamos uma localização aleatória próxima ao centro de Presidente Prudente
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simular latência
+    // In a real implementation, this would use an API like Google Maps or Mapbox
+    // For now, return a random location near Presidente Prudente
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate latency
     
     const baseLocation = {
       lat: -22.12,
       lng: -51.39
     };
     
-    // Adicionar uma variação aleatória
+    // Add a random variation
     return {
       lat: baseLocation.lat + (Math.random() - 0.5) * 0.02,
       lng: baseLocation.lng + (Math.random() - 0.5) * 0.02
     };
   };
 
-  // Função para adicionar um novo ponto ao mapa
+  // Function to add a new map point
   const addMapPoint = async (newPoint: Omit<MapPoint, 'id' | 'lat' | 'lng'> & { address: string }): Promise<MapPoint | null> => {
     if (!user) {
-      toast.error("Você precisa estar logado para adicionar pontos.");
+      toast.error("You need to be logged in to add points.");
       return null;
     }
     
     try {
       setIsLoading(true);
       
-      // Geocodificar o endereço para obter lat/lng
+      // Geocode address to get lat/lng
       const geoLocation = await geocodeAddress(newPoint.address);
       
       if (!geoLocation) {
-        toast.error("Não foi possível obter as coordenadas para este endereço.");
+        toast.error("Could not get coordinates for this address.");
         return null;
       }
       
@@ -181,25 +180,25 @@ export const useMapPoints = () => {
         lng: geoLocation.lng
       };
       
-      // Se não temos a conexão do Supabase, simulamos uma adição local
+      // If we don't have Supabase connection, simulate local addition
       if (!supabase) {
-        console.warn('Supabase não configurado, simulando adição de ponto');
-        // Gerar um ID aleatório
+        console.warn('Supabase not configured, simulating point addition');
+        // Generate a random ID
         const newId = Math.max(0, ...mapPoints.map(p => p.id)) + 1;
         const pointWithId: MapPoint = { ...completePoint, id: newId };
         
-        // Adicionar à lista local
+        // Add to local list
         const updatedPoints = [...mapPoints, pointWithId];
         setMapPoints(updatedPoints);
         
-        // Salvar no localStorage
+        // Save to localStorage
         localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
         
-        toast.success("Ponto adicionado localmente!");
+        toast.success("Point added locally!");
         return pointWithId;
       }
       
-      // Inserção no Supabase
+      // Insertion in Supabase
       const { data, error } = await supabase
         .from('eco_points')
         .insert([
@@ -217,7 +216,7 @@ export const useMapPoints = () => {
       
       if (error) throw error;
       
-      // Transformar o ponto retornado para corresponder ao nosso formato MapPoint
+      // Transform the returned point to match our MapPoint format
       const createdPoint: MapPoint = {
         id: data[0].id,
         name: data[0].name,
@@ -229,26 +228,26 @@ export const useMapPoints = () => {
         address: data[0].address
       };
       
-      // Adicionar o novo ponto à lista local
+      // Add the new point to the local list
       const updatedPoints = [...mapPoints, createdPoint];
       setMapPoints(updatedPoints);
       
-      // Salvar no localStorage como backup
+      // Save to localStorage as backup
       localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
       
-      toast.success("Ponto ecológico salvo com sucesso!");
+      toast.success("Ecological point saved successfully!");
       
       return createdPoint;
     } catch (err) {
-      console.error('Erro ao adicionar ponto:', err);
-      toast.error("Erro ao salvar o ponto no banco de dados.");
+      console.error('Error adding point:', err);
+      toast.error("Error saving the point to the database.");
       return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Carregar pontos ao inicializar o hook
+  // Load points when initializing the hook
   useEffect(() => {
     fetchMapPoints();
   }, []);
