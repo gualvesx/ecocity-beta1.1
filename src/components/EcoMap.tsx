@@ -1,6 +1,5 @@
-
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Trash2, Trees, Search, Filter, X, Plus, Save, MapPinned, Navigation } from 'lucide-react';
+import { MapPin, Trash2, Trees, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 import { useMapPoints } from '@/hooks/useMapPoints';
@@ -339,7 +338,7 @@ const EcoMap = () => {
             onClick={() => navigate('/admin')}
             className="gap-1 py-2 bg-eco-brown hover:bg-eco-brown/80"
           >
-            <Users size={16} />
+            <Shield size={16} />
             <span>Painel Admin</span>
           </Button>
         )}
