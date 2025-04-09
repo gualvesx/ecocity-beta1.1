@@ -1,6 +1,8 @@
+
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { toast } from 'sonner';
 import { createClient } from '@supabase/supabase-js';
+import { neonSimulation } from '@/services/neonService';
 
 // Initialize Supabase client with fallback values
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lygvpskjhiwgzsmqiojc.supabase.co';
@@ -57,26 +59,55 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   // Initialize with existing or dummy users
   useEffect(() => {
-    const storedUsers = localStorage.getItem('users');
-    if (storedUsers) {
-      setUsers(JSON.parse(storedUsers));
-    } else {
-      setUsers(dummyUsers);
-      localStorage.setItem('users', JSON.stringify(dummyUsers));
-    }
+    const fetchInitialData = async () => {
+      try {
+        // Attempt to connect to Neon (simulation)
+        await neonSimulation.connect();
+        console.log("Neon database connection established");
+        
+        // Try to get users from Neon
+        const neonUsers = await neonSimulation.getUsers();
+        if (neonUsers && neonUsers.length > 0) {
+          setUsers(neonUsers);
+          console.log("Users fetched from Neon database");
+        } else {
+          // Fallback to local storage or defaults
+          const storedUsers = localStorage.getItem('users');
+          if (storedUsers) {
+            setUsers(JSON.parse(storedUsers));
+          } else {
+            setUsers(dummyUsers);
+            localStorage.setItem('users', JSON.stringify(dummyUsers));
+          }
+          console.log("Using local storage fallback for users");
+        }
+      } catch (error) {
+        console.error("Error connecting to Neon database:", error);
+        // Fallback to local storage
+        const storedUsers = localStorage.getItem('users');
+        if (storedUsers) {
+          setUsers(JSON.parse(storedUsers));
+        } else {
+          setUsers(dummyUsers);
+          localStorage.setItem('users', JSON.stringify(dummyUsers));
+        }
+      }
 
-    // Check if a user is logged in
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    
-    setIsLoading(false);
-    
-    // Check Supabase session if Supabase is initialized
-    if (supabase) {
-      checkSupabaseSession();
-    }
+      // Check if a user is logged in
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+      
+      setIsLoading(false);
+      
+      // Check Supabase session if Supabase is initialized
+      if (supabase) {
+        checkSupabaseSession();
+      }
+    };
+
+    fetchInitialData();
   }, []);
   
   // Check Supabase session at startup
@@ -125,6 +156,21 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setIsLoading(true);
     
     try {
+      // Try Neon login first (simulation)
+      try {
+        console.log("Attempting login with Neon...");
+        const neonResult = await neonSimulation.login(email, password);
+        if (neonResult.success) {
+          const currentUser = neonResult.user;
+          setUser(currentUser);
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          toast.success(`Welcome, ${currentUser.name}!`);
+          return true;
+        }
+      } catch (neonError) {
+        console.log("Neon login failed, falling back to other methods", neonError);
+      }
+      
       // Try Supabase login if available
       if (supabase) {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -204,6 +250,21 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setIsLoading(true);
     
     try {
+      // Try Neon registration first (simulation)
+      try {
+        console.log("Attempting registration with Neon...");
+        const neonResult = await neonSimulation.register(name, email, password);
+        if (neonResult.success) {
+          const newUser = neonResult.user;
+          setUser(newUser);
+          localStorage.setItem('currentUser', JSON.stringify(newUser));
+          toast.success('Registration successful via Neon!');
+          return true;
+        }
+      } catch (neonError) {
+        console.log("Neon registration failed, falling back to other methods", neonError);
+      }
+      
       // Try Supabase registration if available
       if (supabase) {
         const { data, error } = await supabase.auth.signUp({
@@ -305,12 +366,20 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Logout function
   const logout = async () => {
     try {
+      // Try Neon logout first
+      try {
+        await neonSimulation.logout();
+        console.log("Logged out from Neon");
+      } catch (neonError) {
+        console.log("Neon logout failed, proceeding with other methods", neonError);
+      }
+      
       // Supabase logout if available
       if (supabase) {
         await supabase.auth.signOut();
       }
     } catch (error) {
-      console.error('Error logging out of Supabase:', error);
+      console.error('Error logging out:', error);
     }
     
     // Clear local data
@@ -322,6 +391,20 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Function to get all users (admin only) - Use useCallback to memoize
   const getAllUsers = useCallback((): User[] => {
     if (!user?.isAdmin) return [];
+    
+    // Try to fetch users from Neon
+    const fetchNeonUsers = async () => {
+      try {
+        console.log("Fetching users from Neon...");
+        const neonUsers = await neonSimulation.getUsers();
+        if (neonUsers) {
+          return neonUsers.map(({ password, ...userWithoutPassword }) => userWithoutPassword);
+        }
+      } catch (error) {
+        console.error('Error fetching Neon users:', error);
+      }
+      return null;
+    };
     
     // Try to fetch users from Supabase
     const fetchSupabaseUsers = async () => {
@@ -368,7 +451,20 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
     
     try {
-      // Try to update in Supabase first
+      // Try to update in Neon first
+      try {
+        console.log(`Updating user ${userId} admin status to ${isAdmin} in Neon...`);
+        const result = await neonSimulation.updateUserAdmin(userId, isAdmin);
+        if (result.success) {
+          // Update local data for consistency
+          updateLocalUserAdminStatus(userId, isAdmin);
+          return true;
+        }
+      } catch (neonError) {
+        console.log("Neon update failed, falling back to other methods", neonError);
+      }
+      
+      // Try to update in Supabase next
       if (supabase) {
         const { error } = await supabase
           .from('users')
@@ -433,6 +529,18 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setIsLoading(true);
     
     try {
+      // Try to create user in Neon first
+      try {
+        console.log("Creating user in Neon database...");
+        const result = await neonSimulation.createUser(name, email, password, isAdmin);
+        if (result.success) {
+          toast.success('User created successfully in Neon!');
+          return true;
+        }
+      } catch (neonError) {
+        console.log("Neon user creation failed, falling back", neonError);
+      }
+      
       // Try to create user in Supabase
       if (supabase) {
         // Note: In a real app, this would require server-side code with admin privileges

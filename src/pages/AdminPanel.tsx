@@ -66,7 +66,9 @@ const AdminPanel = () => {
   const handleToggleAdmin = async (userId: string, makeAdmin: boolean) => {
     setIsLoading(true);
     try {
+      console.log(`Attempting to update user ${userId} to admin status: ${makeAdmin}`);
       const success = await updateUserAdminStatus(userId, makeAdmin);
+      
       if (success) {
         toast.success(`Usuário ${makeAdmin ? 'promovido a administrador' : 'removido de administrador'} com sucesso!`);
         // Trigger a refresh by incrementing the refresh counter
@@ -259,7 +261,7 @@ const AdminPanel = () => {
                             <Button 
                               size="sm" 
                               variant="destructive"
-                              disabled={isLoading || user.id === user.id}
+                              disabled={isLoading || user.id === user?.id}
                               onClick={() => handleToggleAdmin(user.id, false)}
                               className="text-xs"
                             >
