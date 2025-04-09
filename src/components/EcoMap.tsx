@@ -1,10 +1,12 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Trash2, Trees, Search, Filter, X, Leaf, Plus, Save } from 'lucide-react';
+import { MapPin, Trash2, Trees, Search, Filter, X, Plus, Save, MapPinned, Navigation } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 import { useMapPoints } from '@/hooks/useMapPoints';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Type definitions for the map points
 export interface MapPoint {
@@ -15,6 +17,7 @@ export interface MapPoint {
   lng: number;
   description: string;
   impact: string;
+  address?: string;
 }
 
 const EcoMap = () => {
@@ -30,10 +33,13 @@ const EcoMap = () => {
     name: '',
     type: 'recycling' as const,
     description: '',
-    impact: ''
+    impact: '',
+    address: ''
   });
   
   const { mapPoints, addMapPoint, isLoading, error } = useMapPoints();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
   // Initialize the map
   useEffect(() => {
@@ -88,8 +94,10 @@ const EcoMap = () => {
   const getFilteredPoints = () => {
     return mapPoints.filter(point => {
       const matchesFilter = filter === 'all' || point.type === filter;
-      const matchesSearch = point.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           point.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = 
+        point.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        point.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (point.address && point.address.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesFilter && matchesSearch;
     });
   };
@@ -108,7 +116,7 @@ const EcoMap = () => {
     // Add temporary marker for new point
     if (isAddingPoint && newPointPosition) {
       const ecoIcon = window.L.divIcon({
-        html: `<div class="flex items-center justify-center w-8 h-8 bg-eco-green-dark text-white rounded-full shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2 1 3 2 4l3 3a7 7 0 0 0 7-7 7 7 0 0 0-7-7Z"/><path d="M13 7a2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2 2 2 0 0 1 2 2Z"/></svg></div>`,
+        html: `<div class="flex items-center justify-center w-8 h-8 bg-eco-green-dark text-white rounded-full shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
         className: '',
         iconSize: [32, 32],
         iconAnchor: [16, 16]
@@ -160,10 +168,27 @@ const EcoMap = () => {
     'clean-up': { label: 'Área de Limpeza', color: 'bg-eco-blue' }
   };
   
+  // Toggle point adding mode
+  const toggleAddingPoint = () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para adicionar pontos.");
+      navigate("/login");
+      return;
+    }
+    
+    setIsAddingPoint(!isAddingPoint);
+    if (!isAddingPoint) {
+      toast.info("Clique no mapa para selecionar a localização do novo ponto ecológico ou preencha o endereço");
+    } else {
+      setNewPointPosition(null);
+    }
+  };
+  
   // Handle form submission for new point
   const handleAddNewPoint = async () => {
-    if (!newPointPosition) {
-      toast.error("Selecione um local no mapa primeiro!");
+    if (!user) {
+      toast.error("Você precisa estar logado para adicionar pontos.");
+      navigate("/login");
       return;
     }
     
@@ -172,39 +197,41 @@ const EcoMap = () => {
       return;
     }
     
-    const newPoint: Omit<MapPoint, 'id'> = {
-      name: newPointForm.name,
-      type: newPointForm.type,
-      lat: newPointPosition.lat,
-      lng: newPointPosition.lng,
-      description: newPointForm.description,
-      impact: newPointForm.impact || "Impacto ambiental não especificado."
-    };
+    if (!newPointPosition && !newPointForm.address) {
+      toast.error("Selecione um local no mapa ou preencha o endereço!");
+      return;
+    }
     
     try {
+      // Se temos uma posição selecionada mas não temos endereço, fazemos uma geocodificação reversa
+      // (simulada por enquanto)
+      let address = newPointForm.address;
+      if (newPointPosition && !address) {
+        address = `Localização em Presidente Prudente - Lat: ${newPointPosition.lat.toFixed(6)}, Lng: ${newPointPosition.lng.toFixed(6)}`;
+      }
+      
+      const newPoint = {
+        name: newPointForm.name,
+        type: newPointForm.type,
+        description: newPointForm.description,
+        impact: newPointForm.impact || "Impacto ambiental não especificado.",
+        address: address
+      };
+      
       await addMapPoint(newPoint);
-      toast.success("Ponto ecológico adicionado com sucesso!");
+      
       // Reset form
       setNewPointForm({
         name: '',
         type: 'recycling',
         description: '',
-        impact: ''
+        impact: '',
+        address: ''
       });
       setNewPointPosition(null);
       setIsAddingPoint(false);
     } catch (err) {
       toast.error("Erro ao adicionar ponto: " + (err instanceof Error ? err.message : String(err)));
-    }
-  };
-  
-  // Toggle point adding mode
-  const toggleAddingPoint = () => {
-    setIsAddingPoint(!isAddingPoint);
-    if (!isAddingPoint) {
-      toast.info("Clique no mapa para selecionar a localização do novo ponto ecológico");
-    } else {
-      setNewPointPosition(null);
     }
   };
 
@@ -306,6 +333,16 @@ const EcoMap = () => {
             </>
           )}
         </Button>
+        
+        {user?.isAdmin && (
+          <Button 
+            onClick={() => navigate('/admin')}
+            className="gap-1 py-2 bg-eco-brown hover:bg-eco-brown/80"
+          >
+            <Users size={16} />
+            <span>Painel Admin</span>
+          </Button>
+        )}
       </div>
       
       {/* Legend */}
@@ -328,7 +365,7 @@ const EcoMap = () => {
       </div>
       
       {/* Add New Point Form */}
-      {isAddingPoint && newPointPosition && (
+      {isAddingPoint && (
         <div className="absolute bottom-4 right-4 w-full max-w-md bg-white/95 backdrop-blur-md p-4 rounded-lg shadow-lg border border-eco-green-light/30 z-20">
           <div className="flex justify-between items-start mb-3">
             <h3 className="font-medium">Adicionar Novo Ponto Ecológico</h3>
@@ -369,6 +406,26 @@ const EcoMap = () => {
             </div>
             
             <div>
+              <label className="block text-sm font-medium mb-1">Endereço</label>
+              <div className="relative">
+                <MapPinned className="absolute left-2 top-2 h-5 w-5 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={newPointForm.address}
+                  onChange={(e) => setNewPointForm({...newPointForm, address: e.target.value})}
+                  className="w-full p-2 pl-8 border border-gray-300 rounded"
+                  placeholder="Ex: Rua das Flores, 123 - Vila Nova"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {newPointPosition ? 
+                  "Você selecionou um ponto no mapa. O endereço é opcional." : 
+                  "Digite o endereço ou clique no mapa para selecionar um ponto."
+                }
+              </p>
+            </div>
+            
+            <div>
               <label className="block text-sm font-medium mb-1">Descrição</label>
               <textarea
                 value={newPointForm.description}
@@ -390,9 +447,11 @@ const EcoMap = () => {
               ></textarea>
             </div>
             
-            <div className="text-xs text-muted-foreground mb-3">
-              Coordenadas: Lat {newPointPosition.lat.toFixed(6)}, Lng {newPointPosition.lng.toFixed(6)}
-            </div>
+            {newPointPosition && (
+              <div className="text-xs text-muted-foreground mb-3">
+                Coordenadas: Lat {newPointPosition.lat.toFixed(6)}, Lng {newPointPosition.lng.toFixed(6)}
+              </div>
+            )}
             
             <Button 
               onClick={handleAddNewPoint}
@@ -427,9 +486,34 @@ const EcoMap = () => {
             <div className="flex items-center text-sm text-muted-foreground">
               <span>Tipo: {typeInfo[selectedPoint.type].label}</span>
             </div>
+            
+            {selectedPoint.address && (
+              <div className="flex items-start gap-2 text-sm">
+                <MapPin className="h-4 w-4 text-eco-green-dark mt-0.5 shrink-0" />
+                <span>{selectedPoint.address}</span>
+              </div>
+            )}
+            
             <p className="text-sm">{selectedPoint.description}</p>
+            
             <div className="bg-eco-green-light/10 p-2 rounded text-sm">
               <span className="font-medium">Impacto Ambiental:</span> {selectedPoint.impact}
+            </div>
+            
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs"
+                onClick={() => {
+                  if (map && selectedPoint) {
+                    map.setView([selectedPoint.lat, selectedPoint.lng], 15);
+                  }
+                }}
+              >
+                <Navigation className="h-3 w-3 mr-1" />
+                Centralizar no mapa
+              </Button>
             </div>
           </div>
         </div>

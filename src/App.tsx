@@ -3,15 +3,49 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Inicio from "./pages/Index";
 import MapaEcologico from "./pages/EcologicalMap";
 import Sobre from "./pages/About";
 import Blog from "./pages/Blog";
 import NaoEncontrado from "./pages/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import AdminPanel from "./pages/AdminPanel";
 import Layout from "./components/Layout";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
+
+// Componente para proteger rotas administrativas
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  }
+  
+  if (!user || !user.isAdmin) {
+    return <Navigate to="/" />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Componente para verificar autenticação
+const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -19,13 +53,22 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout><Inicio /></Layout>} />
-          <Route path="/map" element={<Layout><MapaEcologico /></Layout>} />
-          <Route path="/about" element={<Layout><Sobre /></Layout>} />
-          <Route path="/blog" element={<Layout><Blog /></Layout>} />
-          <Route path="*" element={<NaoEncontrado />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Layout><Inicio /></Layout>} />
+            <Route path="/map" element={<Layout><MapaEcologico /></Layout>} />
+            <Route path="/about" element={<Layout><Sobre /></Layout>} />
+            <Route path="/blog" element={<Layout><Blog /></Layout>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/admin" element={
+              <AdminRoute>
+                <AdminPanel />
+              </AdminRoute>
+            } />
+            <Route path="*" element={<NaoEncontrado />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
