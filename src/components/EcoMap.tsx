@@ -35,59 +35,71 @@ const EcoMap = () => {
     impact: '',
     address: ''
   });
+  const [isMapInitialized, setIsMapInitialized] = useState(false);
   
   const { mapPoints, addMapPoint, isLoading, error } = useMapPoints();
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Initialize the map
+  // Initialize the map - fixed to prevent reinitialization issues
   useEffect(() => {
-    if (!mapRef.current || map) return;
+    // Only initialize the map if it hasn't been initialized and the ref exists
+    if (!mapRef.current || isMapInitialized) return;
     
-    // Check if Leaflet is available
-    if (typeof window !== 'undefined' && window.L) {
-      // Make sure the container has a size
-      if (mapRef.current.clientHeight === 0) {
-        mapRef.current.style.height = '500px';
-      }
-      
-      const L = window.L;
-      // Set the map view to Presidente Prudente, Brazil
-      const newMap = L.map(mapRef.current).setView([-22.125092, -51.389639], 13);
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(newMap);
-      
-      // Add event listener for adding new points
-      newMap.on('click', function(e: any) {
-        if (isAddingPoint) {
-          setNewPointPosition({
-            lat: e.latlng.lat,
-            lng: e.latlng.lng
-          });
+    // Function to initialize the map
+    const initializeMap = () => {
+      // Check if Leaflet is available
+      if (typeof window !== 'undefined' && window.L) {
+        // Make sure the container has a size
+        if (mapRef.current && mapRef.current.clientHeight === 0) {
+          mapRef.current.style.height = '500px';
         }
-      });
-      
-      setMap(newMap);
-    } else {
-      // Fallback to load Leaflet if not available
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
-      script.crossOrigin = '';
-      document.head.appendChild(script);
-      
-      script.onload = () => {
-        // Reinitialize the component to try again
-        setMap(null);
-      };
-    }
-    
-    return () => {
-      if (map) map.remove();
+        
+        try {
+          const L = window.L;
+          // Set the map view to Presidente Prudente, Brazil
+          const newMap = L.map(mapRef.current).setView([-22.125092, -51.389639], 13);
+          
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(newMap);
+          
+          // Add event listener for adding new points
+          newMap.on('click', function(e: any) {
+            if (isAddingPoint) {
+              setNewPointPosition({
+                lat: e.latlng.lat,
+                lng: e.latlng.lng
+              });
+            }
+          });
+          
+          setMap(newMap);
+          setIsMapInitialized(true);
+        } catch (err) {
+          console.error("Error initializing map:", err);
+        }
+      } else {
+        // Fallback to load Leaflet if not available
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+        script.crossOrigin = '';
+        script.onload = initializeMap;
+        document.head.appendChild(script);
+      }
     };
-  }, [mapRef, map, isAddingPoint]);
+    
+    // Call the initialization function
+    initializeMap();
+    
+    // Cleanup
+    return () => {
+      if (map) {
+        map.remove();
+      }
+    };
+  }, [mapRef, isAddingPoint, isMapInitialized]);
 
   // Function to filter map points based on type and search query
   const getFilteredPoints = () => {

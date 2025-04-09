@@ -18,6 +18,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   getAllUsers: () => User[];
+  updateUserAdminStatus: (userId: string, isAdmin: boolean) => Promise<boolean>;
 }
 
 // Criando o contexto
@@ -154,6 +155,44 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     return users.map(({ password, ...userWithoutPassword }) => userWithoutPassword);
   };
 
+  // Nova função para atualizar o status de admin de um usuário
+  const updateUserAdminStatus = async (userId: string, isAdmin: boolean): Promise<boolean> => {
+    // Verificar se o usuário atual é admin
+    if (!user?.isAdmin) {
+      toast.error('Você não tem permissão para realizar esta ação');
+      return false;
+    }
+    
+    try {
+      // Simulando uma chamada de API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Encontrar o usuário a ser atualizado
+      const updatedUsers = users.map(u => {
+        if (u.id === userId) {
+          return { ...u, isAdmin };
+        }
+        return u;
+      });
+      
+      // Atualizar o estado e o localStorage
+      setUsers(updatedUsers);
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      
+      // Se o usuário alterado for o usuário atual, atualizar também seu estado
+      if (user.id === userId) {
+        const updatedUser = { ...user, isAdmin };
+        setUser(updatedUser);
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar status do usuário:', error);
+      return false;
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -161,7 +200,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
       login, 
       register, 
       logout,
-      getAllUsers
+      getAllUsers,
+      updateUserAdminStatus
     }}>
       {children}
     </AuthContext.Provider>

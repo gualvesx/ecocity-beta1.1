@@ -1,25 +1,50 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Users, Shield } from 'lucide-react';
+import { ArrowLeft, Users, Shield, UserCheck, UserX } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const AdminPanel = () => {
-  const { user, getAllUsers } = useAuth();
+  const { user, getAllUsers, updateUserAdminStatus } = useAuth();
   const navigate = useNavigate();
-  const users = getAllUsers();
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Redirecionar se não for admin ou não estiver logado
     if (!user || !user.isAdmin) {
       navigate('/');
+    } else {
+      // Carregar a lista de usuários
+      setUsers(getAllUsers());
     }
-  }, [user, navigate]);
+  }, [user, navigate, getAllUsers]);
 
   if (!user || !user.isAdmin) {
     return null;
   }
+
+  const handleToggleAdmin = async (userId: string, makeAdmin: boolean) => {
+    setIsLoading(true);
+    try {
+      const success = await updateUserAdminStatus(userId, makeAdmin);
+      if (success) {
+        toast.success(`Usuário ${makeAdmin ? 'promovido a administrador' : 'removido de administrador'} com sucesso!`);
+        // Atualizar lista de usuários
+        setUsers(getAllUsers());
+      } else {
+        toast.error('Falha ao atualizar status do usuário');
+      }
+    } catch (error) {
+      toast.error('Erro ao atualizar status do usuário');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col pt-20">
@@ -56,6 +81,7 @@ const AdminPanel = () => {
                       <th className="px-4 py-3 text-left">Nome</th>
                       <th className="px-4 py-3 text-left">Email</th>
                       <th className="px-4 py-3 text-left">Tipo</th>
+                      <th className="px-4 py-3 text-left">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -73,6 +99,31 @@ const AdminPanel = () => {
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                               Usuário
                             </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.isAdmin ? (
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              disabled={isLoading || user.id === user.id}
+                              onClick={() => handleToggleAdmin(user.id, false)}
+                              className="text-xs"
+                            >
+                              <UserX className="h-3 w-3 mr-1" />
+                              Remover Admin
+                            </Button>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              disabled={isLoading}
+                              onClick={() => handleToggleAdmin(user.id, true)}
+                              className="text-xs"
+                            >
+                              <UserCheck className="h-3 w-3 mr-1" />
+                              Tornar Admin
+                            </Button>
                           )}
                         </td>
                       </tr>
