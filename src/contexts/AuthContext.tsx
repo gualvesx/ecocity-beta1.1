@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { toast } from 'sonner';
 import { createClient } from '@supabase/supabase-js';
 
@@ -319,8 +319,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     toast.info('You have logged out');
   };
 
-  // Function to get all users (admin only)
-  const getAllUsers = (): User[] => {
+  // Function to get all users (admin only) - Use useCallback to memoize
+  const getAllUsers = useCallback((): User[] => {
     if (!user?.isAdmin) return [];
     
     // Try to fetch users from Supabase
@@ -357,7 +357,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     
     // Use local users as fallback
     return users.map(({ password, ...userWithoutPassword }) => userWithoutPassword);
-  };
+  }, [users, user?.isAdmin]); // Add dependencies
 
   // Function to update a user's admin status
   const updateUserAdminStatus = async (userId: string, isAdmin: boolean): Promise<boolean> => {

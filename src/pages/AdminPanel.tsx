@@ -36,6 +36,8 @@ const AdminPanel = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
+  // Add a state variable to trigger user list refresh
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const form = useForm<CreateUserFormValues>({
     resolver: zodResolver(createUserSchema),
@@ -55,7 +57,7 @@ const AdminPanel = () => {
       // Carregar a lista de usuários
       setUsers(getAllUsers());
     }
-  }, [user, navigate, getAllUsers]);
+  }, [user, navigate, getAllUsers, refreshTrigger]); // Add refreshTrigger to the dependency array
 
   if (!user || !user.isAdmin) {
     return null;
@@ -67,8 +69,8 @@ const AdminPanel = () => {
       const success = await updateUserAdminStatus(userId, makeAdmin);
       if (success) {
         toast.success(`Usuário ${makeAdmin ? 'promovido a administrador' : 'removido de administrador'} com sucesso!`);
-        // Atualizar lista de usuários
-        setUsers(getAllUsers());
+        // Trigger a refresh by incrementing the refresh counter
+        setRefreshTrigger(prev => prev + 1);
       } else {
         toast.error('Falha ao atualizar status do usuário');
       }
@@ -88,8 +90,8 @@ const AdminPanel = () => {
         toast.success('Usuário criado com sucesso!');
         form.reset();
         setShowUserForm(false);
-        // Atualizar lista de usuários
-        setUsers(getAllUsers());
+        // Trigger a refresh by incrementing the refresh counter
+        setRefreshTrigger(prev => prev + 1);
       } else {
         toast.error('Falha ao criar usuário');
       }
