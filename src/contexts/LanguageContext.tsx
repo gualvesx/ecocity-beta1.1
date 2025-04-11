@@ -33,7 +33,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Environment monitoring
     'monitoring-title': 'Iniciativas Ecológicas',
-    'monitoring-subtitle': 'Acompanhe os dados atualizados sobre desmatamento, reflorestamento e qualidade do ar em Presidente Prudente.',
+    'monitoring-subtitle-info': 'Acompanhe os dados atualizados sobre desmatamento, reflorestamento e qualidade do ar em Presidente Prudente.',
     
     // Stats
     'stats-title': 'Impacto Ambiental',
@@ -119,7 +119,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Environment monitoring
     'monitoring-title': 'Ecological Initiatives',
-    'monitoring-subtitle': 'Track updated data on deforestation, reforestation, and air quality in Presidente Prudente.',
+    'monitoring-subtitle-info': 'Track updated data on deforestation, reforestation, and air quality in Presidente Prudente.',
     
     // Stats
     'stats-title': 'Environmental Impact',
@@ -205,7 +205,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Environment monitoring
     'monitoring-title': '生态倡议',
-    'monitoring-subtitle': '跟踪普雷西登特普鲁登特市的森林砍伐、再造林和空气质量的最新数据。',
+    'monitoring-subtitle-info': '跟踪普雷西登特普鲁登特市的森林砍伐、再造林和空气质量的最新数据。',
     
     // Stats
     'stats-title': '环境影响',
