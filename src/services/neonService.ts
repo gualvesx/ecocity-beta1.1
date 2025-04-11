@@ -1,5 +1,12 @@
 
 import { User } from '@/contexts/AuthContext';
+import { 
+  EnvironmentalData, 
+  EnvironmentalRisk, 
+  getCurrentEnvironmentalData, 
+  getAllEnvironmentalRisks,
+  getMonitoringStats
+} from './envData';
 
 // Interface for Neon API responses
 interface NeonApiResponse<T> {
@@ -217,5 +224,45 @@ export const neonSimulation = {
     
     console.log(`User ${email} created successfully in Neon`);
     return { success: true, user: newUser };
+  },
+  
+  // Environmental data for Presidente Prudente
+  getEnvironmentalData: async (): Promise<EnvironmentalData> => {
+    console.log("Fetching current environmental data for Presidente Prudente from Neon...");
+    
+    if (!neonSimulation.isConnected) {
+      await neonSimulation.connect();
+    }
+    
+    // Add artificial delay
+    await new Promise(resolve => setTimeout(resolve, neonSimulation.connectionDelay));
+    
+    return getCurrentEnvironmentalData();
+  },
+  
+  getEnvironmentalRisks: async (): Promise<EnvironmentalRisk[]> => {
+    console.log("Fetching environmental risks for Presidente Prudente from Neon...");
+    
+    if (!neonSimulation.isConnected) {
+      await neonSimulation.connect();
+    }
+    
+    // Add artificial delay
+    await new Promise(resolve => setTimeout(resolve, neonSimulation.connectionDelay));
+    
+    return getAllEnvironmentalRisks();
+  },
+  
+  getMonitoringStatistics: async () => {
+    console.log("Fetching monitoring statistics from Neon...");
+    
+    if (!neonSimulation.isConnected) {
+      await neonSimulation.connect();
+    }
+    
+    // Add artificial delay
+    await new Promise(resolve => setTimeout(resolve, neonSimulation.connectionDelay));
+    
+    return getMonitoringStats();
   }
 };

@@ -1,6 +1,7 @@
 
 import { neonSimulation } from './neonService';
 import { User } from '@/contexts/AuthContext';
+import { EnvironmentalData, EnvironmentalRisk } from './envData';
 
 // API response interfaces
 interface ApiResponse<T> {
@@ -189,6 +190,69 @@ export const authApi = {
       return {
         success: false,
         message: "Logout failed"
+      };
+    }
+  }
+};
+
+// Environment API endpoints for Presidente Prudente
+export const environmentApi = {
+  // Get current environmental data
+  getCurrentData: async (): Promise<ApiResponse<EnvironmentalData>> => {
+    try {
+      console.log("API: Fetching current environmental data for Presidente Prudente");
+      
+      const data = await neonSimulation.getEnvironmentalData();
+      
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      console.error("API error fetching environmental data:", error);
+      return {
+        success: false,
+        message: "Failed to fetch environmental data"
+      };
+    }
+  },
+  
+  // Get all environmental risks
+  getEnvironmentalRisks: async (): Promise<ApiResponse<EnvironmentalRisk[]>> => {
+    try {
+      console.log("API: Fetching environmental risks for Presidente Prudente");
+      
+      const risks = await neonSimulation.getEnvironmentalRisks();
+      
+      return {
+        success: true,
+        data: risks
+      };
+    } catch (error) {
+      console.error("API error fetching environmental risks:", error);
+      return {
+        success: false,
+        message: "Failed to fetch environmental risks"
+      };
+    }
+  },
+  
+  // Get monitoring statistics
+  getMonitoringStats: async () => {
+    try {
+      console.log("API: Fetching monitoring statistics");
+      
+      const stats = await neonSimulation.getMonitoringStatistics();
+      
+      return {
+        success: true,
+        data: stats
+      };
+    } catch (error) {
+      console.error("API error fetching monitoring statistics:", error);
+      return {
+        success: false,
+        message: "Failed to fetch monitoring statistics"
       };
     }
   }

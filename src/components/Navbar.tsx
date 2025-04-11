@@ -4,7 +4,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Leaf, LogIn, LogOut, User, UserPlus, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,12 +16,14 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
+  const { t } = useLanguage();
   
   const navItems = [
-    { name: 'Início', path: '/' },
-    { name: 'Mapa Ecológico', path: '/map' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Sobre Nós', path: '/about' },
+    { name: t('inicio'), path: '/' },
+    { name: t('mapa'), path: '/map' },
+    { name: t('blog'), path: '/blog' },
+    { name: t('sobre'), path: '/about' },
   ];
 
   useEffect(() => {
@@ -47,13 +53,17 @@ const Navbar = () => {
     <header 
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300",
-        scrolled ? "bg-white/90 backdrop-blur-md shadow-sm" : "bg-transparent"
+        scrolled 
+          ? theme === 'dark' 
+            ? "bg-background/90 backdrop-blur-md shadow-sm" 
+            : "bg-white/90 backdrop-blur-md shadow-sm" 
+          : "bg-transparent"
       )}
     >
       <div className="container flex justify-between items-center py-4">
         <Link to="/" className="flex items-center space-x-2">
           <Leaf className="h-8 w-8 text-eco-green" />
-          <span className="font-semibold text-xl text-eco-green-dark">EcoCity</span>
+          <span className="font-semibold text-xl text-eco-green-dark dark:text-eco-green-light">EcoCity</span>
         </Link>
         
         {/* Desktop navigation */}
@@ -66,14 +76,14 @@ const Navbar = () => {
                   className={cn(
                     "px-1 py-2 font-medium transition-colors relative group",
                     location.pathname === item.path 
-                      ? "text-eco-green-dark" 
-                      : "text-foreground/80 hover:text-eco-green-dark"
+                      ? "text-eco-green-dark dark:text-eco-green-light" 
+                      : "text-foreground/80 hover:text-eco-green-dark dark:hover:text-eco-green-light"
                   )}
                 >
                   {item.name}
                   <span 
                     className={cn(
-                      "absolute bottom-0 left-0 w-full h-0.5 bg-eco-green-dark transform scale-x-0 transition-transform origin-left group-hover:scale-x-100",
+                      "absolute bottom-0 left-0 w-full h-0.5 bg-eco-green-dark dark:bg-eco-green-light transform scale-x-0 transition-transform origin-left group-hover:scale-x-100",
                       location.pathname === item.path && "scale-x-100"
                     )}
                   />
@@ -83,14 +93,17 @@ const Navbar = () => {
           </ul>
           
           <div className="ml-8 flex items-center gap-3">
+            <ThemeToggle />
+            <LanguageSelector />
+            
             {user ? (
               <>
                 <div className="text-sm mr-2">
-                  <span className="text-muted-foreground">Olá, </span>
+                  <span className="text-muted-foreground">{t('ola')}, </span>
                   <span className="font-medium text-foreground">{user.name}</span>
                   {user.isAdmin && (
                     <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-eco-green text-white">
-                      Admin
+                      {t('admin')}
                     </span>
                   )}
                 </div>
@@ -103,7 +116,7 @@ const Navbar = () => {
                     className="text-eco-brown border-eco-brown hover:bg-eco-brown/10"
                   >
                     <Shield className="h-4 w-4 mr-1" />
-                    Admin
+                    {t('admin')}
                   </Button>
                 )}
                 
@@ -111,10 +124,10 @@ const Navbar = () => {
                   variant="outline" 
                   size="sm"
                   onClick={handleLogout}
-                  className="text-red-500 border-red-200 hover:bg-red-50"
+                  className="text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20"
                 >
                   <LogOut className="h-4 w-4 mr-1" />
-                  Sair
+                  {t('sair')}
                 </Button>
               </>
             ) : (
@@ -126,7 +139,7 @@ const Navbar = () => {
                   className="text-foreground"
                 >
                   <UserPlus className="h-4 w-4 mr-1" />
-                  Cadastrar
+                  {t('cadastrar')}
                 </Button>
                 
                 <Button
@@ -135,7 +148,7 @@ const Navbar = () => {
                   className="bg-eco-green hover:bg-eco-green-dark"
                 >
                   <LogIn className="h-4 w-4 mr-1" />
-                  Entrar
+                  {t('entrar')}
                 </Button>
               </>
             )}
@@ -143,22 +156,27 @@ const Navbar = () => {
         </nav>
         
         {/* Mobile menu button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-foreground focus:outline-none"
-        >
-          {isOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
+          <LanguageSelector />
+          
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-foreground focus:outline-none ml-2"
+          >
+            {isOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </div>
       
       {/* Mobile menu */}
       <div 
         className={cn(
-          "fixed top-[72px] right-0 left-0 bg-white/95 backdrop-blur-md md:hidden transition-transform transform duration-300 shadow-md z-50",
+          "fixed top-[72px] right-0 left-0 bg-background/95 backdrop-blur-md md:hidden transition-transform transform duration-300 shadow-md z-50",
           isOpen ? "translate-y-0" : "-translate-y-full"
         )}
       >
@@ -170,8 +188,8 @@ const Navbar = () => {
                 className={cn(
                   "block px-4 py-2 rounded-md transition-colors",
                   location.pathname === item.path
-                    ? "bg-eco-green-light/20 text-eco-green-dark font-medium"
-                    : "hover:bg-eco-green-light/10"
+                    ? "bg-eco-green-light/20 text-eco-green-dark dark:bg-eco-green-dark/20 dark:text-eco-green-light font-medium"
+                    : "hover:bg-eco-green-light/10 dark:hover:bg-eco-green-dark/10"
                 )}
               >
                 {item.name}
@@ -183,15 +201,15 @@ const Navbar = () => {
             <li>
               <Link
                 to="/admin"
-                className="block px-4 py-2 rounded-md transition-colors hover:bg-eco-green-light/10 flex items-center"
+                className="block px-4 py-2 rounded-md transition-colors hover:bg-eco-green-light/10 dark:hover:bg-eco-green-dark/10 flex items-center"
               >
                 <Shield className="h-4 w-4 mr-2" />
-                Painel Admin
+                {t('painel-admin')}
               </Link>
             </li>
           )}
           
-          <div className="border-t border-gray-100 my-2"></div>
+          <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
           
           {user ? (
             <>
@@ -199,11 +217,11 @@ const Navbar = () => {
                 <div className="flex items-center mb-2">
                   <User className="h-4 w-4 mr-2 text-muted-foreground" />
                   <div className="text-sm">
-                    <span className="text-muted-foreground">Logado como </span>
+                    <span className="text-muted-foreground">{t('ola')} </span>
                     <span className="font-medium text-foreground">{user.name}</span>
                     {user.isAdmin && (
                       <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-eco-green text-white">
-                        Admin
+                        {t('admin')}
                       </span>
                     )}
                   </div>
@@ -212,10 +230,10 @@ const Navbar = () => {
                   variant="outline" 
                   size="sm"
                   onClick={handleLogout}
-                  className="w-full text-red-500 border-red-200 hover:bg-red-50"
+                  className="w-full text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20"
                 >
                   <LogOut className="h-4 w-4 mr-1" />
-                  Sair da conta
+                  {t('sair')}
                 </Button>
               </div>
             </>
@@ -229,7 +247,7 @@ const Navbar = () => {
                 className="w-full bg-eco-green hover:bg-eco-green-dark"
               >
                 <LogIn className="h-4 w-4 mr-1" />
-                Entrar
+                {t('entrar')}
               </Button>
               <Button
                 variant="outline"
@@ -240,7 +258,7 @@ const Navbar = () => {
                 className="w-full"
               >
                 <UserPlus className="h-4 w-4 mr-1" />
-                Criar conta
+                {t('cadastrar')}
               </Button>
             </div>
           )}

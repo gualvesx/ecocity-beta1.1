@@ -37,22 +37,22 @@
   }
 
   .dark {
-    --background: 142 36% 15%;
+    --background: 142 36% 8%;
     --foreground: 0 0% 98%;
 
-    --card: 142 36% 15%;
+    --card: 142 36% 10%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 142 36% 15%;
+    --popover: 142 36% 10%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 142 30% 40%;
+    --primary: 142 60% 50%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 195 40% 30%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 142 20% 20%;
+    --muted: 142 20% 15%;
     --muted-foreground: 142 10% 70%;
 
     --accent: 50 40% 40%;
@@ -61,9 +61,9 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 142 20% 30%;
-    --input: 142 20% 30%;
-    --ring: 142 30% 40%;
+    --border: 142 20% 20%;
+    --input: 142 20% 20%;
+    --ring: 142 60% 50%;
   }
 }
 
@@ -89,7 +89,7 @@
   }
   
   .eco-card {
-    @apply bg-white/90 backdrop-blur-sm rounded-lg shadow-md p-6 border border-eco-green-light/20;
+    @apply bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-md p-6 border border-eco-green-light/20 dark:border-eco-green-dark/20;
   }
   
   .eco-button {
