@@ -64,7 +64,7 @@ const StatItem = ({ valor, rotulo, sufixo = "", atraso = 0 }: StatItemProps) => 
       <div className="text-4xl md:text-5xl font-bold text-eco-green-dark dark:text-eco-green-light flex items-end leading-none">
         {valorExibido.toLocaleString()}{sufixo}
       </div>
-      <p className="mt-2 text-lg text-muted-foreground text-center">{rotulo}</p>
+      <p className="mt-2 text-lg text-muted-foreground text-center dark:text-gray-300">{rotulo}</p>
     </div>
   );
 };
@@ -77,7 +77,7 @@ const EstatisticasImpactoAmbiental = () => {
     queryKey: ['environmentalStats'],
     queryFn: async () => {
       try {
-        // Connect to the real API service
+        // Connect to official data sources
         const response = await environmentApi.getMonitoringStats();
         
         if (response.success && response.data) {
@@ -102,7 +102,7 @@ const EstatisticasImpactoAmbiental = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark dark:text-eco-green-light">
               {t('stats-title')}
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-muted-foreground dark:text-gray-300">
               {t('stats-subtitle')}
             </p>
           </div>

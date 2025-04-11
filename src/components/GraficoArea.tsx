@@ -11,7 +11,6 @@ import {
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQuery } from '@tanstack/react-query';
-import { environmentApi } from '@/services/api';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -28,7 +27,7 @@ export function GraficoArea() {
         
         // If we can't get real data, fall back to our API
         if (!response.ok) {
-          // This is our fallback from the simulated API
+          // This is our fallback data
           return [
             { mes: t('jan'), desmatamento: 32, reflorestamento: 18, qualidadeAr: 65 },
             { mes: t('feb'), desmatamento: 28, reflorestamento: 22, qualidadeAr: 68 },
