@@ -10,42 +10,42 @@ import {
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
-// Dados para o gráfico das métricas ambientais
+// Dados em tempo real simulados para métricas ambientais
 const data = [
-  { mes: 'Jan', reciclagem: 65, plantio: 40, economiaAgua: 24 },
-  { mes: 'Fev', reciclagem: 59, plantio: 45, economiaAgua: 28 },
-  { mes: 'Mar', reciclagem: 80, plantio: 50, economiaAgua: 26 },
-  { mes: 'Abr', reciclagem: 81, plantio: 55, economiaAgua: 35 },
-  { mes: 'Mai', reciclagem: 90, plantio: 60, economiaAgua: 40 },
-  { mes: 'Jun', reciclagem: 95, plantio: 70, economiaAgua: 45 },
-  { mes: 'Jul', reciclagem: 100, plantio: 80, economiaAgua: 50 },
-  { mes: 'Ago', reciclagem: 120, plantio: 90, economiaAgua: 55 },
-  { mes: 'Set', reciclagem: 110, plantio: 85, economiaAgua: 48 },
-  { mes: 'Out', reciclagem: 105, plantio: 82, economiaAgua: 46 },
-  { mes: 'Nov', reciclagem: 100, plantio: 85, economiaAgua: 50 },
-  { mes: 'Dez', reciclagem: 115, plantio: 88, economiaAgua: 52 },
+  { mes: 'Jan', desmatamento: 150, reflorestamento: 40, qualidadeAr: 65 },
+  { mes: 'Fev', desmatamento: 180, reflorestamento: 45, qualidadeAr: 62 },
+  { mes: 'Mar', desmatamento: 210, reflorestamento: 50, qualidadeAr: 58 },
+  { mes: 'Abr', desmatamento: 250, reflorestamento: 55, qualidadeAr: 54 },
+  { mes: 'Mai', desmatamento: 320, reflorestamento: 80, qualidadeAr: 50 },
+  { mes: 'Jun', desmatamento: 380, reflorestamento: 110, qualidadeAr: 45 },
+  { mes: 'Jul', desmatamento: 310, reflorestamento: 150, qualidadeAr: 48 },
+  { mes: 'Ago', desmatamento: 280, reflorestamento: 190, qualidadeAr: 52 },
+  { mes: 'Set', desmatamento: 250, reflorestamento: 220, qualidadeAr: 56 },
+  { mes: 'Out', desmatamento: 210, reflorestamento: 240, qualidadeAr: 60 },
+  { mes: 'Nov', desmatamento: 180, reflorestamento: 260, qualidadeAr: 63 },
+  { mes: 'Dez', desmatamento: 160, reflorestamento: 280, qualidadeAr: 68 },
 ];
 
 const config = {
-  reciclagem: {
-    label: 'Reciclagem (kg)',
+  desmatamento: {
+    label: 'Área Desmatada (hectares)',
     theme: {
-      light: '#4C7C54',
-      dark: '#4C7C54',
+      light: '#E53935',
+      dark: '#E53935',
     },
   },
-  plantio: {
-    label: 'Árvores Plantadas',
+  reflorestamento: {
+    label: 'Área Reflorestada (hectares)',
     theme: {
-      light: '#8B5A2B',
-      dark: '#8B5A2B',
+      light: '#4CAF50',
+      dark: '#4CAF50',
     },
   },
-  economiaAgua: {
-    label: 'Economia de Água (L)',
+  qualidadeAr: {
+    label: 'Qualidade do Ar (índice)',
     theme: {
-      light: '#6EB5C0',
-      dark: '#6EB5C0',
+      light: '#3498DB',
+      dark: '#3498DB',
     },
   },
 };
@@ -92,27 +92,27 @@ export function GraficoArea() {
           />
           <Area
             type="monotone"
-            dataKey="reciclagem"
-            stroke="var(--color-reciclagem)"
-            fill="var(--color-reciclagem)"
+            dataKey="desmatamento"
+            stroke="var(--color-desmatamento)"
+            fill="var(--color-desmatamento)"
             strokeWidth={2}
             activeDot={{ r: 6 }}
             fillOpacity={0.2}
           />
           <Area
             type="monotone"
-            dataKey="plantio"
-            stroke="var(--color-plantio)"
-            fill="var(--color-plantio)"
+            dataKey="reflorestamento"
+            stroke="var(--color-reflorestamento)"
+            fill="var(--color-reflorestamento)"
             strokeWidth={2}
             activeDot={{ r: 6 }}
             fillOpacity={0.2}
           />
           <Area
             type="monotone"
-            dataKey="economiaAgua"
-            stroke="var(--color-economiaAgua)"
-            fill="var(--color-economiaAgua)"
+            dataKey="qualidadeAr"
+            stroke="var(--color-qualidadeAr)"
+            fill="var(--color-qualidadeAr)"
             strokeWidth={2}
             activeDot={{ r: 6 }}
             fillOpacity={0.2}

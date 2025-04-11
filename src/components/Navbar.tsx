@@ -53,7 +53,7 @@ const Navbar = () => {
       <div className="container flex justify-between items-center py-4">
         <Link to="/" className="flex items-center space-x-2">
           <Leaf className="h-8 w-8 text-eco-green" />
-          <span className="font-semibold text-xl text-eco-green-dark">Terra Verde Conectada</span>
+          <span className="font-semibold text-xl text-eco-green-dark">EcoCity</span>
         </Link>
         
         {/* Desktop navigation */}

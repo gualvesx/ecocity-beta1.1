@@ -1,36 +1,36 @@
 
 import { useState } from 'react';
-import { ArrowRight, Leaf, Recycle, Droplets, Wind } from 'lucide-react';
+import { ArrowRight, Trees, BadgeAlert, Droplets, Wind } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const temas = [
   {
-    id: 'reciclagem',
-    titulo: 'Reciclagem',
-    icon: Recycle,
-    cor: 'bg-eco-green',
-    descricao: 'A reciclagem reduz a poluição, economiza energia, conserva recursos naturais e diminui a quantidade de resíduos em aterros sanitários.'
+    id: 'desmatamento',
+    titulo: 'Desmatamento',
+    icon: Trees,
+    cor: 'bg-red-500',
+    descricao: 'O desmatamento é uma das principais ameaças à biodiversidade e contribui significativamente para as mudanças climáticas globais.'
   },
   {
-    id: 'reflorestamento',
-    titulo: 'Reflorestamento',
-    icon: Leaf,
-    cor: 'bg-eco-brown',
-    descricao: 'O reflorestamento recupera áreas degradadas, combate a erosão, protege mananciais e contribui para a mitigação das mudanças climáticas.'
+    id: 'poluicao',
+    titulo: 'Poluição Urbana',
+    icon: BadgeAlert,
+    cor: 'bg-amber-500',
+    descricao: 'A poluição do ar e da água nas cidades afeta diretamente a saúde da população e a qualidade de vida urbana.'
   },
   {
     id: 'agua',
-    titulo: 'Conservação da Água',
+    titulo: 'Recursos Hídricos',
     icon: Droplets,
-    cor: 'bg-eco-blue',
-    descricao: 'A economia de água é essencial para garantir este recurso vital para as gerações atuais e futuras, preservando ecossistemas aquáticos.'
+    cor: 'bg-blue-500',
+    descricao: 'O monitoramento dos recursos hídricos é essencial para garantir o abastecimento sustentável e prevenir crises hídricas.'
   },
   {
     id: 'energia',
     titulo: 'Energia Renovável',
     icon: Wind,
-    cor: 'bg-eco-blue-light',
-    descricao: 'Energias renováveis como solar e eólica reduzem as emissões de gases de efeito estufa e diminuem nossa dependência de combustíveis fósseis.'
+    cor: 'bg-eco-green',
+    descricao: 'A transição para fontes de energia renovável é fundamental para reduzir as emissões de gases de efeito estufa.'
   }
 ];
 
@@ -44,10 +44,10 @@ const SecaoInterativa = () => {
       <div className="container px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-eco-green-dark mb-4">
-            Explore Temas Ecológicos
+            Monitoramento Ambiental
           </h2>
           <p className="text-lg text-muted-foreground">
-            Selecione um tema para aprender mais sobre diferentes aspectos da sustentabilidade e como você pode contribuir.
+            Selecione um tema para conhecer nossos sistemas de monitoramento e alertas para diferentes desafios ambientais.
           </p>
         </div>
 
@@ -85,16 +85,16 @@ const SecaoInterativa = () => {
               
               <div className="flex flex-col md:flex-row md:items-center gap-4 bg-eco-green-light/10 p-5 rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-semibold mb-2">Dica sustentável</h4>
+                  <h4 className="font-semibold mb-2">Sistema de Monitoramento</h4>
                   <p className="text-sm text-muted-foreground">
-                    {temaAtivo === 'reciclagem' && "Separe seu lixo em categorias: plástico, papel, vidro e metal. Use sacolas reutilizáveis para suas compras."}
-                    {temaAtivo === 'reflorestamento' && "Plante árvores nativas em seu bairro e participe de mutirões de reflorestamento em sua comunidade."}
-                    {temaAtivo === 'agua' && "Tome banhos mais curtos, conserte vazamentos e reutilize a água da máquina de lavar para limpar calçadas."}
-                    {temaAtivo === 'energia' && "Utilize lâmpadas LED, aproveite a luz natural e desligue aparelhos eletrônicos quando não estiverem em uso."}
+                    {temaAtivo === 'desmatamento' && "Utilizamos imagens de satélite e IA para detectar alterações na cobertura florestal, com alertas em tempo real para as autoridades."}
+                    {temaAtivo === 'poluicao' && "Rede de sensores IoT instalados pela cidade monitoram qualidade do ar, ruído e poluentes específicos 24 horas por dia."}
+                    {temaAtivo === 'agua' && "Sensores instalados em reservatórios, rios e estações de tratamento monitoram quantidade e qualidade da água disponível."}
+                    {temaAtivo === 'energia' && "Painéis de controle monitoram a produção de energia renovável e a redução de emissões de carbono em tempo real."}
                   </p>
                 </div>
                 <button className="inline-flex items-center gap-1 text-eco-green-dark font-medium whitespace-nowrap">
-                  Saiba mais <ArrowRight className="h-4 w-4" />
+                  Ver dados em tempo real <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
             </div>

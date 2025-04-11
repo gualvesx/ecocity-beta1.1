@@ -32,34 +32,34 @@ const DestaquesSustentabilidade = () => {
       <div className="container px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark">
-            Destaques de Sustentabilidade
+            Monitoramento Ambiental
           </h2>
           <p className="text-lg text-muted-foreground">
-            Saiba mais sobre a importância da proteção ambiental e como iniciativas locais podem ter um impacto global.
+            Acompanhe em tempo real os indicadores ambientais críticos e como estamos trabalhando para combater problemas ecológicos.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <HighlightCard
-            icon={<Recycle size={24} />}
-            titulo="Reciclagem Importa"
-            descricao="Em média, reciclar uma tonelada de papel salva 17 árvores, 7.000 galões de água e 463 galões de óleo."
+            icon={<Trees size={24} />}
+            titulo="Combate ao Desmatamento"
+            descricao="Nossos sensores monitoram em tempo real áreas de risco de desmatamento, alertando autoridades sobre atividades ilegais."
             className="animate-fade-in-up" 
             style={{ animationDelay: "0.1s" }}
           />
           
           <HighlightCard
-            icon={<Trees size={24} />}
-            titulo="Impacto do Plantio de Árvores"
-            descricao="Uma única árvore madura pode absorver 48 libras de dióxido de carbono por ano e produzir oxigênio suficiente para duas pessoas."
+            icon={<Globe size={24} />}
+            titulo="Qualidade do Ar Urbano"
+            descricao="Estações de monitoramento em toda a cidade fornecem dados em tempo real sobre poluentes e qualidade do ar."
             className="animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           />
           
           <HighlightCard
-            icon={<Globe size={24} />}
-            titulo="Limpezas Comunitárias"
-            descricao="Limpezas comunitárias não só removem lixo, mas também previnem a poluição de cursos d'água e protegem habitats da vida selvagem."
+            icon={<Recycle size={24} />}
+            titulo="Gestão de Resíduos Urbanos"
+            descricao="Sensores instalados em contêineres de lixo otimizam rotas de coleta e incentivam a reciclagem apropriada."
             className="animate-fade-in-up"
             style={{ animationDelay: "0.3s" }}
           />
@@ -68,9 +68,9 @@ const DestaquesSustentabilidade = () => {
         <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8 md:p-12">
-              <h3 className="text-2xl font-bold mb-4 text-eco-green-dark">Projeto em Destaque: Reflorestamento Urbano</h3>
+              <h3 className="text-2xl font-bold mb-4 text-eco-green-dark">Projeto de Alerta de Desmatamento</h3>
               <p className="text-muted-foreground mb-4">
-                Nossa iniciativa de reflorestamento urbano visa aumentar a cobertura de árvores em áreas metropolitanas em 30% na próxima década, melhorando a qualidade do ar e reduzindo ilhas de calor urbanas.
+                Nossa rede de monitoramento de desmatamento utiliza imagens de satélite e sensores IoT para detectar atividades de desmatamento ilegal em tempo real, permitindo uma resposta rápida.
               </p>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -78,7 +78,7 @@ const DestaquesSustentabilidade = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">3.500+ árvores plantadas</span> em ambientes urbanos no último ano
+                    <span className="font-medium">25% de redução</span> em atividades de desmatamento ilegal nas áreas monitoradas
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -86,7 +86,7 @@ const DestaquesSustentabilidade = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">15% de redução de temperatura</span> em áreas com aumento de cobertura arbórea
+                    <span className="font-medium">150+ alertas</span> enviados às autoridades nos últimos 30 dias
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -94,7 +94,7 @@ const DestaquesSustentabilidade = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">500+ voluntários</span> engajados em atividades de plantio e manutenção
+                    <span className="font-medium">12.000 hectares</span> de floresta sob monitoramento constante
                   </p>
                 </div>
               </div>

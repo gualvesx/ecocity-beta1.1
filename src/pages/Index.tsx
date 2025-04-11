@@ -18,10 +18,10 @@ const Inicio = () => {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6">
             <h2 className="text-2xl font-bold text-eco-green-dark mb-4">
-              Impacto Ambiental Medido
+              Monitoramento em Tempo Real
             </h2>
             <p className="text-muted-foreground mb-6">
-              Acompanhe nosso progresso em direção a um futuro mais sustentável com estas métricas importantes.
+              Acompanhe os dados atualizados sobre desmatamento, reflorestamento e qualidade do ar em nossa região.
             </p>
           </div>
           <GraficoArea />

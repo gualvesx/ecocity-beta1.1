@@ -1,39 +1,39 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Leaf, Globe, Recycle, Droplets } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trees, Globe, BadgeAlert, Droplets } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 const cards = [
   {
     id: 1,
-    titulo: 'Redução de Carbono',
-    descricao: 'Nossas iniciativas já reduziram mais de 500 toneladas de emissões de CO₂ no último ano.',
-    icone: Globe,
-    cor: 'bg-eco-green',
+    titulo: 'Desmatamento',
+    descricao: 'Alerta de desmatamento em aumento na região amazônica, com 430 hectares afetados no último mês.',
+    icone: Trees,
+    cor: 'bg-red-500',
     porcentagem: 72
   },
   {
     id: 2,
-    titulo: 'Reciclagem',
-    descricao: 'Mais de 30 toneladas de materiais reciclados, reduzindo significativamente o impacto em aterros sanitários.',
-    icone: Recycle,
-    cor: 'bg-eco-brown',
-    porcentagem: 85
-  },
-  {
-    id: 3,
-    titulo: 'Economia de Água',
-    descricao: 'Iniciativas de conservação economizaram mais de 1 milhão de litros de água potável na região.',
-    icone: Droplets,
-    cor: 'bg-eco-blue',
+    titulo: 'Qualidade do Ar',
+    descricao: 'Índice de qualidade do ar em níveis preocupantes nas áreas industriais da cidade.',
+    icone: Globe,
+    cor: 'bg-amber-500',
     porcentagem: 65
   },
   {
+    id: 3,
+    titulo: 'Recursos Hídricos',
+    descricao: 'Níveis dos reservatórios urbanos em queda, atualmente em 45% da capacidade total.',
+    icone: Droplets,
+    cor: 'bg-blue-500',
+    porcentagem: 45
+  },
+  {
     id: 4,
-    titulo: 'Biodiversidade',
-    descricao: 'Recuperação de habitats que agora abrigam mais de 200 espécies nativas de plantas e animais.',
-    icone: Leaf,
+    titulo: 'Alertas Ambientais',
+    descricao: 'Emitidos 28 alertas ambientais na última semana para eventos de poluição e descarte irregular.',
+    icone: BadgeAlert,
     cor: 'bg-eco-green-dark',
     porcentagem: 58
   }
@@ -87,10 +87,10 @@ export function InfoCardsCarrossel() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-eco-green-dark">
-              Nosso Impacto Ambiental
+              Alertas Ambientais em Tempo Real
             </h2>
             <p className="text-muted-foreground mt-2">
-              Veja os resultados que estamos alcançando juntos
+              Monitoramento contínuo de indicadores ecológicos críticos
             </p>
           </div>
           

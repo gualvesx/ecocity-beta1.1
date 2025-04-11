@@ -71,18 +71,18 @@ const EstatisticasImpactoAmbiental = () => {
       <div className="container px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark">
-            Nosso Impacto Coletivo
+            Estado Atual do Ambiente
           </h2>
           <p className="text-lg text-muted-foreground">
-            Juntos, nossa comunidade está fazendo uma diferença mensurável na conservação ambiental.
+            Dados coletados em tempo real de nossas estações de monitoramento ambiental.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white rounded-xl shadow-md overflow-hidden">
-          <StatItem valor={5280} rotulo="Árvores Plantadas" atraso={0} />
-          <StatItem valor={42} rotulo="Toneladas de Resíduos Reciclados" sufixo="+" atraso={200} />
-          <StatItem valor={120} rotulo="Limpezas Comunitárias" atraso={400} />
-          <StatItem valor={3500} rotulo="Voluntários Engajados" atraso={600} />
+          <StatItem valor={15840} rotulo="Hectares Monitorados" atraso={0} />
+          <StatItem valor={73} rotulo="Áreas de Risco Identificadas" atraso={200} />
+          <StatItem valor={428} rotulo="Alertas de Desmatamento este Mês" atraso={400} />
+          <StatItem valor={45} rotulo="Índice de Qualidade do Ar" sufixo="%" atraso={600} />
         </div>
       </div>
     </section>
