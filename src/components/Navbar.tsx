@@ -8,7 +8,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +93,6 @@ const Navbar = () => {
           
           <div className="ml-8 flex items-center gap-3">
             <ThemeToggle />
-            <LanguageSelector />
             
             {user ? (
               <>
@@ -158,7 +156,6 @@ const Navbar = () => {
         {/* Mobile menu button */}
         <div className="md:hidden flex items-center gap-2">
           <ThemeToggle />
-          <LanguageSelector />
           
           <button
             onClick={() => setIsOpen(!isOpen)}

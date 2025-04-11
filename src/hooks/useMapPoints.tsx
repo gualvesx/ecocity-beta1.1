@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { MapPoint } from '@/components/EcoMap';
@@ -16,7 +17,7 @@ const samplePoints: MapPoint[] = [
   {
     id: 1,
     name: "Ecoponto Vila Furquim",
-    type: "recycling",
+    type: "recycling-point",
     lat: -22.119511,
     lng: -51.392290,
     description: "Ponto de coleta de resíduos recicláveis e materiais volumosos.",
@@ -25,43 +26,53 @@ const samplePoints: MapPoint[] = [
   },
   {
     id: 2,
-    name: "Parque do Povo",
-    type: "tree-planting",
+    name: "Viveiro Municipal",
+    type: "seedling-distribution",
     lat: -22.128580,
     lng: -51.388310,
-    description: "Área verde com projetos de plantio de árvores nativas.",
-    impact: "Mais de 150 árvores plantadas no último ano, contribuindo para a qualidade do ar.",
+    description: "Centro de distribuição de mudas nativas para plantio urbano e rural.",
+    impact: "Distribui mais de 5.000 mudas por ano para projetos de reflorestamento e arborização urbana.",
     address: "Av. 14 de Setembro - Vila Marcondes, Presidente Prudente - SP"
   },
   {
     id: 3,
-    name: "Ecoponto Cambuci",
-    type: "recycling",
+    name: "Centro de Reciclagem Cambuci",
+    type: "recycling-center",
     lat: -22.134160,
     lng: -51.401930,
-    description: "Centro de coleta de materiais recicláveis, entulhos e volumosos.",
+    description: "Centro de processamento e reciclagem de materiais diversos.",
     impact: "Processamento de 2 toneladas de materiais por semana.",
     address: "Rua Cambuci, 456 - Jardim Paulista, Presidente Prudente - SP"
   },
   {
     id: 4,
-    name: "Mutirão Córrego do Veado",
-    type: "clean-up",
+    name: "Ponto de Coleta Córrego do Veado",
+    type: "recycling-point",
     lat: -22.121650,
     lng: -51.378750,
-    description: "Área de limpeza regular do córrego e suas margens.",
-    impact: "Remoção de mais de 300kg de resíduos mensais, protegendo o ecossistema aquático.",
+    description: "Ponto de coleta para resíduos recicláveis.",
+    impact: "Contribui para a preservação do córrego, evitando o descarte incorreto de mais de 300kg de resíduos mensais.",
     address: "Av. Washington Luiz - Parque Residencial Jequitibás, Presidente Prudente - SP"
   },
   {
     id: 5,
-    name: "Ecoponto COHAB",
-    type: "recycling",
+    name: "Centro de Reciclagem COHAB",
+    type: "recycling-center",
     lat: -22.111234,
     lng: -51.413456,
-    description: "Centro de coleta seletiva e descarte correto de resíduos.",
+    description: "Centro de processamento e reciclagem com foco em plásticos e metais.",
     impact: "Redução de 15% no lixo enviado ao aterro sanitário da região.",
     address: "Rua Paraná, 789 - COHAB, Presidente Prudente - SP"
+  },
+  {
+    id: 6,
+    name: "Viveiro São Lucas",
+    type: "seedling-distribution",
+    lat: -22.138765,
+    lng: -51.389012,
+    description: "Viveiro privado que distribui mudas de espécies nativas.",
+    impact: "Contribui para o aumento da cobertura vegetal e da biodiversidade local.",
+    address: "Estrada Municipal, km 5 - Zona Rural, Presidente Prudente - SP"
   },
 ];
 
@@ -126,12 +137,12 @@ export const useMapPoints = () => {
       const localPoints = localStorage.getItem('mapPoints');
       if (localPoints) {
         setMapPoints(JSON.parse(localPoints));
-        toast.warning("Using locally saved data due to a connection error.");
+        toast.warning("Usando dados salvos localmente devido a um erro de conexão.");
       } else {
         // If an error occurs, use example data
         setMapPoints(samplePoints);
         localStorage.setItem('mapPoints', JSON.stringify(samplePoints));
-        toast.error("Error loading points from database. Using example data.");
+        toast.error("Erro ao carregar pontos do banco de dados. Usando dados de exemplo.");
       }
     } finally {
       setIsLoading(false);
@@ -159,7 +170,7 @@ export const useMapPoints = () => {
   // Function to add a new map point
   const addMapPoint = async (newPoint: Omit<MapPoint, 'id' | 'lat' | 'lng'> & { address: string }): Promise<MapPoint | null> => {
     if (!user) {
-      toast.error("You need to be logged in to add points.");
+      toast.error("Você precisa estar logado para adicionar pontos.");
       return null;
     }
     
@@ -170,7 +181,7 @@ export const useMapPoints = () => {
       const geoLocation = await geocodeAddress(newPoint.address);
       
       if (!geoLocation) {
-        toast.error("Could not get coordinates for this address.");
+        toast.error("Não foi possível obter as coordenadas para este endereço.");
         return null;
       }
       
@@ -194,7 +205,7 @@ export const useMapPoints = () => {
         // Save to localStorage
         localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
         
-        toast.success("Point added locally!");
+        toast.success("Ponto adicionado localmente!");
         return pointWithId;
       }
       
@@ -235,12 +246,12 @@ export const useMapPoints = () => {
       // Save to localStorage as backup
       localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
       
-      toast.success("Ecological point saved successfully!");
+      toast.success("Ponto ecológico salvo com sucesso!");
       
       return createdPoint;
     } catch (err) {
       console.error('Error adding point:', err);
-      toast.error("Error saving the point to the database.");
+      toast.error("Erro ao salvar o ponto no banco de dados.");
       return null;
     } finally {
       setIsLoading(false);

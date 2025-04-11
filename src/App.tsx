@@ -1,94 +1,57 @@
 
-import React from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Inicio from "./pages/Index";
-import MapaEcologico from "./pages/EcologicalMap";
-import Sobre from "./pages/About";
-import Blog from "./pages/Blog";
-import NaoEncontrado from "./pages/NotFound";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import AdminPanel from "./pages/AdminPanel";
-import Layout from "./components/Layout";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { LanguageProvider } from "./contexts/LanguageContext";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { Toaster } from 'sonner';
+import Layout from '@/components/Layout';
+import { LanguageProvider } from '@/contexts/LanguageContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
-// Create a client with default options
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+// Lazy load pages for better performance
+const Index = lazy(() => import('@/pages/Index'));
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const About = lazy(() => import('@/pages/About'));
+const Blog = lazy(() => import('@/pages/Blog'));
+const BlogPost = lazy(() => import('@/pages/BlogPost'));
+const MapaEcologico = lazy(() => import('@/pages/EcologicalMap'));
+const AdminPanel = lazy(() => import('@/pages/AdminPanel'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
-// Componente para proteger rotas administrativas
-const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
-  }
-  
-  if (!user || !user.isAdmin) {
-    return <Navigate to="/" />;
-  }
-  
-  return <>{children}</>;
-};
+// Loading component
+const PageLoader = () => (
+  <div className="h-screen w-screen flex items-center justify-center">
+    <div className="w-12 h-12 border-4 border-eco-green border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
-// Componente para verificar autenticação
-const AuthenticatedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
-  }
-  
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-  
-  return <>{children}</>;
-};
-
-const App = () => (
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+function App() {
+  return (
+    <Router>
+      <LanguageProvider>
         <ThemeProvider>
-          <LanguageProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AuthProvider>
+          <AuthProvider>
+            <Layout>
+              <Suspense fallback={<PageLoader />}>
                 <Routes>
-                  <Route path="/" element={<Layout><Inicio /></Layout>} />
-                  <Route path="/map" element={<Layout><MapaEcologico /></Layout>} />
-                  <Route path="/about" element={<Layout><Sobre /></Layout>} />
-                  <Route path="/blog" element={<Layout><Blog /></Layout>} />
+                  <Route path="/" element={<Index />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  <Route path="/admin" element={
-                    <AdminRoute>
-                      <AdminPanel />
-                    </AdminRoute>
-                  } />
-                  <Route path="*" element={<NaoEncontrado />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:id" element={<BlogPost />} />
+                  <Route path="/map" element={<MapaEcologico />} />
+                  <Route path="/admin" element={<AdminPanel />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
-              </AuthProvider>
-            </BrowserRouter>
-          </LanguageProvider>
+              </Suspense>
+            </Layout>
+            <Toaster position="top-right" richColors closeButton />
+          </AuthProvider>
         </ThemeProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
-);
+      </LanguageProvider>
+    </Router>
+  );
+}
 
 export default App;

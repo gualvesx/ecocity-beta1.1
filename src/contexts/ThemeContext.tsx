@@ -31,8 +31,16 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      // Define CSS variables for dark mode with improved green contrast
+      document.documentElement.style.setProperty('--eco-green-dark', '#4ade80');
+      document.documentElement.style.setProperty('--eco-green', '#22c55e');
+      document.documentElement.style.setProperty('--eco-green-light', '#bbf7d0');
     } else {
       document.documentElement.classList.remove('dark');
+      // Reset CSS variables for light mode
+      document.documentElement.style.setProperty('--eco-green-dark', '');
+      document.documentElement.style.setProperty('--eco-green', '');
+      document.documentElement.style.setProperty('--eco-green-light', '');
     }
     
     // Update theme color meta tag for mobile

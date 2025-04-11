@@ -1,6 +1,7 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Tag, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ArtigoProps {
   id: string;
@@ -67,6 +68,9 @@ const artigos: ArtigoProps[] = [
 ];
 
 const ArtigoBlog = ({ artigo }: { artigo: ArtigoProps }) => {
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all hover:shadow-lg">
       <div className="relative h-48 overflow-hidden">
@@ -91,7 +95,7 @@ const ArtigoBlog = ({ artigo }: { artigo: ArtigoProps }) => {
             <span>{artigo.autor}</span>
           </div>
           <div className="ml-auto text-xs bg-eco-sand/50 px-2 py-0.5 rounded">
-            {artigo.tempoDeLeitura} de leitura
+            {artigo.tempoDeLeitura} {t('min-read')}
           </div>
         </div>
         
@@ -103,51 +107,56 @@ const ArtigoBlog = ({ artigo }: { artigo: ArtigoProps }) => {
           {artigo.resumo}
         </p>
         
-        <Link to={`/blog/${artigo.id}`} className="inline-flex items-center gap-1 text-eco-green font-medium hover:text-eco-green-dark transition-colors">
-          <span>Ler mais</span>
+        <button
+          onClick={() => navigate(`/blog/${artigo.id}`)}
+          className="inline-flex items-center gap-1 text-eco-green font-medium hover:text-eco-green-dark transition-colors"
+        >
+          <span>{t('read-more')}</span>
           <ArrowRight className="h-4 w-4" />
-        </Link>
+        </button>
       </div>
     </div>
   );
 };
 
 const Blog = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col pt-20">
       <div className="container px-4 py-8">
         <div className="mb-8">
           <Link to="/" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="h-4 w-4" />
-            <span>Voltar para Home</span>
+            <span>{t('back-home')}</span>
           </Link>
-          <h1 className="text-3xl md:text-4xl font-bold text-eco-green-dark">Blog Ecológico</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-eco-green-dark">{t('blog-title')}</h1>
           <p className="text-lg text-muted-foreground mt-2">
-            Artigos e notícias sobre sustentabilidade, conservação e iniciativas locais
+            {t('blog-subtitle')}
           </p>
         </div>
         
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-eco-green-dark">Artigos em Destaque</h2>
+            <h2 className="text-2xl font-bold text-eco-green-dark">{t('featured-articles')}</h2>
             <div className="flex gap-2">
               <Link 
                 to="/blog" 
                 className="px-4 py-2 rounded-md bg-eco-green-light/20 text-eco-green-dark font-medium text-sm hover:bg-eco-green-light/30 transition-colors"
               >
-                Todos
+                {t('all')}
               </Link>
               <Link 
                 to="/blog?categoria=reciclagem" 
                 className="px-4 py-2 rounded-md text-muted-foreground text-sm hover:bg-eco-sand/30 transition-colors"
               >
-                Reciclagem
+                {t('recycling')}
               </Link>
               <Link 
                 to="/blog?categoria=reflorestamento" 
                 className="px-4 py-2 rounded-md text-muted-foreground text-sm hover:bg-eco-sand/30 transition-colors"
               >
-                Reflorestamento
+                {t('reforestation')}
               </Link>
             </div>
           </div>
@@ -160,7 +169,7 @@ const Blog = () => {
         </div>
         
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-eco-green-dark mb-6">Artigos Recentes</h2>
+          <h2 className="text-2xl font-bold text-eco-green-dark mb-6">{t('recent-articles')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {artigos.slice(3).map((artigo) => (
               <ArtigoBlog key={artigo.id} artigo={artigo} />
@@ -172,19 +181,19 @@ const Blog = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8 text-white">
               <h2 className="text-2xl font-bold mb-4">
-                Inscreva-se em nossa Newsletter
+                {t('newsletter')}
               </h2>
               <p className="text-white/80 mb-6">
-                Receba artigos novos, dicas de sustentabilidade e atualizações sobre iniciativas ecológicas em Presidente Prudente diretamente em seu email.
+                {t('newsletter-description')}
               </p>
               <form className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
-                  placeholder="Seu email"
+                  placeholder={t('your-email')}
                   className="px-4 py-3 rounded-md w-full sm:flex-1 text-foreground focus:outline-none"
                 />
                 <button type="submit" className="bg-eco-leaf text-eco-green-dark px-6 py-3 rounded-md font-medium hover:bg-eco-leaf/90 transition-colors">
-                  Inscrever-se
+                  {t('subscribe')}
                 </button>
               </form>
             </div>

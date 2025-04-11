@@ -1,17 +1,19 @@
+
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Trash2, Trees, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield } from 'lucide-react';
+import { MapPin, Recycle, TreeDeciduous, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 import { useMapPoints } from '@/hooks/useMapPoints';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Type definitions for the map points
 export interface MapPoint {
   id: number;
   name: string;
-  type: 'recycling' | 'tree-planting' | 'clean-up';
+  type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
   lat: number;
   lng: number;
   description: string;
@@ -20,6 +22,7 @@ export interface MapPoint {
 }
 
 const EcoMap = () => {
+  const { t } = useLanguage();
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
@@ -30,7 +33,7 @@ const EcoMap = () => {
   const [newPointPosition, setNewPointPosition] = useState<{lat: number, lng: number} | null>(null);
   const [newPointForm, setNewPointForm] = useState({
     name: '',
-    type: 'recycling' as const,
+    type: 'recycling-point' as const,
     description: '',
     impact: '',
     address: ''
@@ -139,12 +142,10 @@ const EcoMap = () => {
     // Add filtered markers
     const filteredPoints = getFilteredPoints();
     filteredPoints.forEach(point => {
-      const markerElement = document.createElement('div');
-      markerElement.className = `map-marker-${point.type}`;
-      markerElement.innerHTML = getMarkerIcon(point.type).props.children;
+      const iconHtml = getMarkerIconHtml(point.type);
       
       const icon = window.L.divIcon({
-        html: markerElement,
+        html: iconHtml,
         className: '',
         iconSize: [32, 32],
         iconAnchor: [16, 16]
@@ -161,22 +162,47 @@ const EcoMap = () => {
   // Icon mapping for the different types of ecological points
   const getMarkerIcon = (type: string) => {
     switch (type) {
-      case 'recycling':
-        return <Trash2 size={16} />;
-      case 'tree-planting':
-        return <Trees size={16} />;
-      case 'clean-up':
-        return <MapPin size={16} />;
+      case 'recycling-point':
+        return <MapPin className="h-4 w-4" />;
+      case 'recycling-center':
+        return <Recycle className="h-4 w-4" />;
+      case 'seedling-distribution':
+        return <TreeDeciduous className="h-4 w-4" />;
       default:
-        return <MapPin size={16} />;
+        return <MapPin className="h-4 w-4" />;
     }
+  };
+
+  // Generate HTML for marker icon
+  const getMarkerIconHtml = (type: string) => {
+    let bgColor, iconSvg;
+    
+    switch (type) {
+      case 'recycling-point':
+        bgColor = 'bg-eco-green';
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
+        break;
+      case 'recycling-center':
+        bgColor = 'bg-eco-blue';
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 22 1-5"></path><path d="m12 22 2-9"></path><path d="m16 22 3-13"></path><path d="M3.52 9.5a2 2 0 0 1 .28-2.29L7.5 3.5"></path><path d="M14 2.5a8.1 8.1 0 0 1 4.5 1.5"></path><path d="M19 5.48a2 2 0 0 1 .28 2.28L16.5 11"></path><path d="M8.52 2.2A2 2 0 0 1 10.8 3l2.76 4.83"></path><path d="M12.82 13.5a2 2 0 0 1-2.28.28L7.5 11"></path><path d="M14.5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0"></path><path d="M5 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0"></path><path d="M10 15a1 1 0 1 1-2 0 1 1 0 0 1 2 0"></path></svg>`;
+        break;
+      case 'seedling-distribution':
+        bgColor = 'bg-eco-brown';
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9c1.2-1.7 3-3 5-3 3.3 0 6 2.7 6 6s-2.7 6-6 6h-5"/><path d="M13 22v-2.5"/><path d="M10 22v-4c0-1.7 1.3-3 3-3v0"/><path d="M9 6h.01"/><path d="M6 6h.01"/><path d="M12 3h.01"/><path d="M7 3h.01"/><path d="M4 10h.01"/><path d="M4 15h.01"/><path d="M7 16h.01"/></svg>`;
+        break;
+      default:
+        bgColor = 'bg-eco-green';
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
+    }
+    
+    return `<div class="flex items-center justify-center w-8 h-8 ${bgColor} text-white rounded-full shadow-lg border-2 border-white">${iconSvg}</div>`;
   };
   
   // Type icon and color mapping
   const typeInfo = {
-    'recycling': { label: 'Reciclagem', color: 'bg-eco-green' },
-    'tree-planting': { label: 'Plantio de Árvores', color: 'bg-eco-brown' },
-    'clean-up': { label: 'Área de Limpeza', color: 'bg-eco-blue' }
+    'recycling-point': { label: t('recycling-point'), color: 'bg-eco-green', description: t('recycling-description') },
+    'recycling-center': { label: t('recycling-center'), color: 'bg-eco-blue', description: t('recycling-center-description') },
+    'seedling-distribution': { label: t('seedling-distribution'), color: 'bg-eco-brown', description: t('seedling-description') }
   };
   
   // Toggle point adding mode
@@ -234,7 +260,7 @@ const EcoMap = () => {
       // Reset form
       setNewPointForm({
         name: '',
-        type: 'recycling',
+        type: 'recycling-point',
         description: '',
         impact: '',
         address: ''
@@ -289,36 +315,36 @@ const EcoMap = () => {
                 </button>
                 
                 <button
-                  onClick={() => { setFilter('recycling'); setIsFilterOpen(false); }}
+                  onClick={() => { setFilter('recycling-point'); setIsFilterOpen(false); }}
                   className={cn(
                     "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
-                    filter === 'recycling' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                    filter === 'recycling-point' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
                   )}
                 >
                   <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-                  Reciclagem
+                  {t('recycling-point')}
                 </button>
                 
                 <button
-                  onClick={() => { setFilter('tree-planting'); setIsFilterOpen(false); }}
+                  onClick={() => { setFilter('recycling-center'); setIsFilterOpen(false); }}
                   className={cn(
                     "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
-                    filter === 'tree-planting' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
-                  )}
-                >
-                  <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-                  Plantio de Árvores
-                </button>
-                
-                <button
-                  onClick={() => { setFilter('clean-up'); setIsFilterOpen(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
-                    filter === 'clean-up' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                    filter === 'recycling-center' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
                   )}
                 >
                   <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-                  Áreas de Limpeza
+                  {t('recycling-center')}
+                </button>
+                
+                <button
+                  onClick={() => { setFilter('seedling-distribution'); setIsFilterOpen(false); }}
+                  className={cn(
+                    "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
+                    filter === 'seedling-distribution' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                  )}
+                >
+                  <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
+                  {t('seedling-distribution')}
                 </button>
               </div>
             </div>
@@ -362,15 +388,15 @@ const EcoMap = () => {
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-            <span>Pontos de Reciclagem</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-            <span>Plantio de Árvores</span>
+            <span>{t('recycling-point')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-            <span>Áreas de Limpeza</span>
+            <span>{t('recycling-center')}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
+            <span>{t('seedling-distribution')}</span>
           </div>
         </div>
       </div>
@@ -410,9 +436,9 @@ const EcoMap = () => {
                 onChange={(e) => setNewPointForm({...newPointForm, type: e.target.value as any})}
                 className="w-full p-2 border border-gray-300 rounded"
               >
-                <option value="recycling">Reciclagem</option>
-                <option value="tree-planting">Plantio de Árvores</option>
-                <option value="clean-up">Área de Limpeza</option>
+                <option value="recycling-point">{t('recycling-point')}</option>
+                <option value="recycling-center">{t('recycling-center')}</option>
+                <option value="seedling-distribution">{t('seedling-distribution')}</option>
               </select>
             </div>
             

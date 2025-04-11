@@ -2,8 +2,11 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Info, MapPin, Plus } from 'lucide-react';
 import MapaEco from '@/components/EcoMap';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const MapaEcologico = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen flex flex-col pt-20">
       <div className="container px-4 py-8">
@@ -11,7 +14,7 @@ const MapaEcologico = () => {
           <div>
             <Link to="/" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground mb-4">
               <ArrowLeft className="h-4 w-4" />
-              <span>Voltar para Início</span>
+              <span>{t('back-home')}</span>
             </Link>
             <h1 className="text-3xl md:text-4xl font-bold text-eco-green-dark">Mapa Ecológico de Presidente Prudente</h1>
             <p className="text-lg text-muted-foreground mt-2">
@@ -35,9 +38,9 @@ const MapaEcologico = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-green">
-            <h3 className="font-semibold text-lg mb-2">Centros de Reciclagem</h3>
+            <h3 className="font-semibold text-lg mb-2">{t('recycling-point')}</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Instalações que processam materiais recicláveis, incluindo papel, plástico, vidro e eletrônicos.
+              {t('recycling-description')}
             </p>
             <div className="flex items-center gap-2 text-sm text-eco-green">
               <div className="w-3 h-3 rounded-full bg-eco-green"></div>
@@ -45,25 +48,25 @@ const MapaEcologico = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-brown">
-            <h3 className="font-semibold text-lg mb-2">Locais de Plantio de Árvores</h3>
-            <p className="text-muted-foreground text-sm mb-4">
-              Locais onde iniciativas comunitárias de plantio de árvores acontecem para aumentar a cobertura verde urbana.
-            </p>
-            <div className="flex items-center gap-2 text-sm text-eco-brown">
-              <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-              <span>Marcadores marrons no mapa</span>
-            </div>
-          </div>
-          
           <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-blue">
-            <h3 className="font-semibold text-lg mb-2">Zonas de Limpeza</h3>
+            <h3 className="font-semibold text-lg mb-2">{t('recycling-center')}</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Áreas onde eventos regulares de limpeza comunitária são organizados para remover lixo e resíduos.
+              {t('recycling-center-description')}
             </p>
             <div className="flex items-center gap-2 text-sm text-eco-blue">
               <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
               <span>Marcadores azuis no mapa</span>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-brown">
+            <h3 className="font-semibold text-lg mb-2">{t('seedling-distribution')}</h3>
+            <p className="text-muted-foreground text-sm mb-4">
+              {t('seedling-description')}
+            </p>
+            <div className="flex items-center gap-2 text-sm text-eco-brown">
+              <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
+              <span>Marcadores marrons no mapa</span>
             </div>
           </div>
         </div>
