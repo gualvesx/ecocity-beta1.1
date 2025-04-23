@@ -77,7 +77,7 @@ const DestaquesSustentabilidade = () => {
               </div>
             </div>
             <div className="bg-eco-green h-full flex items-center justify-center p-8 lg:p-0">
-              <div className="bg-[url('https://images.unsplash.com/photo-1494972308805-463bc619d34e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center w-full h-64 lg:h-full rounded-lg lg:rounded-none shadow-md lg:shadow-none"></div>
+              <div className="bg-[url('https://b105adb4b5.clvaw-cdnwnd.com/b6fdcda8679ba81cd86c929d8204cf9b/200004824-5b5fa5c58e/Presidente%20Prudente.JPG"></div>
             </div>
           </div>
         </div>
