@@ -1,191 +1,177 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
-export type Language = 'pt';
+// Define the types for our translations
+type TranslationKey = string;
+type Translation = string;
+type TranslationDictionary = Record<TranslationKey, Translation>;
 
+// Define the structure of our language context
 interface LanguageContextType {
-  language: Language;
-  t: (key: string) => string;
+  t: (key: TranslationKey) => string;
 }
 
+// Create the context
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// Translations for the app
-const translations: Record<Language, Record<string, string>> = {
-  pt: {
-    // Navbar
-    'inicio': 'Início',
-    'mapa': 'Mapa Ecológico',
-    'blog': 'Blog',
-    'sobre': 'Sobre Nós',
-    'entrar': 'Entrar',
-    'cadastrar': 'Cadastrar',
-    'sair': 'Sair',
-    'ola': 'Olá',
-    'admin': 'Admin',
-    'painel-admin': 'Painel Admin',
-    
-    // Hero section
-    'hero-title': 'Ecologia em Presidente Prudente',
-    'hero-subtitle': 'Acompanhe dados ecológicos e iniciativas ambientais da nossa cidade',
-    'hero-cta': 'Explore os Dados',
-    
-    // Environment monitoring
-    'monitoring-title': 'Iniciativas Ecológicas',
-    'monitoring-subtitle-info': 'Acompanhe os dados ecológicos de Presidente Prudente.',
-    
-    // Stats
-    'stats-title': 'Impacto Ambiental',
-    'stats-subtitle': 'Dados coletados de fontes oficiais sobre a situação ambiental da região.',
-    'hectares-monitored': 'Hectares de Vegetação',
-    'risk-areas': 'Áreas de Risco Identificadas',
-    'seedling-distribution': 'Mudas Distribuídas',
-    'air-quality': 'Índice de Qualidade do Ar',
-    
-    // Chart labels
-    'deforested-area': 'Área Verde (hectares)',
-    'reforested-area': 'Área Reflorestada (hectares)',
-    'air-quality-index': 'Qualidade do Ar (índice)',
-    
-    // Months
-    'jan': 'Jan',
-    'feb': 'Fev',
-    'mar': 'Mar',
-    'apr': 'Abr',
-    'may': 'Mai',
-    'jun': 'Jun',
-    'jul': 'Jul',
-    'aug': 'Ago',
-    'sep': 'Set',
-    'oct': 'Out',
-    'nov': 'Nov',
-    'dec': 'Dez',
-    
-    // Theme
-    'dark-mode': 'Modo Escuro',
-    'light-mode': 'Modo Claro',
-    
-    // Interactive Section
-    'monitoring-systems': 'Informações Ecológicas',
-    'monitoring-subtitle': 'Conheça os dados e informações sobre a ecologia em Presidente Prudente',
-    'monitoring-system': 'Sistema de Informação',
-    'view-realtime-data': 'Visualizar dados',
-    
-    // Environmental themes
-    'deforestation': 'Áreas Verdes',
-    'urban-pollution': 'Poluição Urbana',
-    'water-resources': 'Recursos Hídricos',
-    'renewable-energy': 'Energia Renovável',
-    'deforestation-description': 'As áreas verdes são essenciais para o equilíbrio ambiental da nossa região. Através do nosso mapa ecológico, identificamos áreas importantes e promovemos iniciativas de reflorestamento.',
-    'pollution-description': 'A poluição urbana afeta a qualidade de vida na cidade. Nosso blog traz informações sobre como reduzir a emissão de poluentes e melhorar o ambiente urbano.',
-    'water-description': 'A preservação dos recursos hídricos é fundamental para o equilíbrio ecológico. Mapeamos os principais corpos d\'água da região e seu estado de conservação.',
-    'energy-description': 'Promovemos o uso de energias renováveis como alternativa sustentável para o desenvolvimento urbano e rural da região.',
-    'green-areas-monitoring': 'Acompanhamento de áreas verdes por imagens de satélite e verificações locais.',
-    'pollution-monitoring': 'Análise de dados de qualidade do ar e identificação de fontes de poluição urbana.',
-    'water-monitoring': 'Avaliação da qualidade e quantidade de recursos hídricos na região.',
-    'energy-monitoring': 'Monitoramento da adoção de fontes renováveis de energia e seu impacto ambiental positivo.',
-    
-    // Last updated
-    'last-updated': 'Última atualização',
-    'data-source': 'Fonte de dados',
-    
-    // Error messages 
-    'error-loading-data': 'Erro ao carregar dados',
-
-    // Map points
-    'recycling-point': 'Ponto de Coleta Reciclável',
-    'recycling-center': 'Local de Reciclagem',
-    'seedling-distribution': 'Distribuição de Mudas',
-    'recycling-description': 'Locais onde você pode descartar materiais recicláveis',
-    'recycling-center-description': 'Centros de processamento e reciclagem de materiais',
-    'seedling-description': 'Locais que distribuem mudas para plantio',
-    
-    // About page
-    'about-title': 'Sobre a Green Earth Connect',
-    'about-subtitle': 'Uma plataforma comunitária dedicada a promover a conscientização ambiental e práticas sustentáveis através de mapeamento interativo e recursos educacionais.',
-    'our-mission': 'Nossa Missão',
-    'mission-description': 'A Green Earth Connect foi fundada com um propósito claro: preencher a lacuna entre a conscientização ambiental e a ação comunitária. Acreditamos que ao tornar as informações ecológicas acessíveis e interativas, podemos inspirar mais pessoas a participar de esforços de sustentabilidade.',
-    'map-purpose': 'Nosso mapa ecológico interativo serve como a pedra angular desta missão, fornecendo uma representação visual de iniciativas ambientais em comunidades ao redor do mundo. Ao destacar centros de reciclagem, projetos de plantio de árvores, zonas de limpeza e outros pontos ecológicos, nosso objetivo é:',
-    'map-goal-1': 'Aumentar a conscientização sobre iniciativas ambientais locais',
-    'map-goal-2': 'Facilitar a participação da comunidade em esforços de sustentabilidade',
-    'map-goal-3': 'Acompanhar e celebrar o impacto ambiental coletivo',
-    'map-goal-4': 'Conectar pessoas com oportunidades para fazer a diferença',
-    'vision-statement': 'Declaração de Visão',
-    'vision-description': 'Vislumbramos um mundo onde cada comunidade esteja capacitada com o conhecimento, ferramentas e conexões necessárias para criar ambientes locais sustentáveis que contribuam para a saúde ecológica global.',
-    'core-values': 'Valores Fundamentais',
-    'environmental-stewardship': 'Gestão Ambiental',
-    'community-collaboration': 'Colaboração Comunitária',
-    'education-awareness': 'Educação e Conscientização',
-    'data-transparency': 'Transparência de Dados',
-    'how-data-collected': 'Como Nossos Dados do Mapa São Coletados',
-    'research-partnerships': 'Pesquisa e Parcerias',
-    'partnerships-description': 'Colaboramos com organizações ambientais, governos locais e instituições de pesquisa para coletar dados verificados sobre iniciativas ecológicas em todo o mundo.',
-    'community-contributions': 'Contribuições da Comunidade',
-    'contributions-description': 'Nossos membros da comunidade enviam informações sobre pontos ecológicos locais, que nossa equipe verifica antes de adicionar ao mapa.',
-    'regular-updates': 'Atualizações Regulares',
-    'updates-description': 'Atualizamos continuamente nossos dados ecológicos para garantir precisão e relevância, incluindo estatísticas de impacto e novas iniciativas.',
-    'explore-map': 'Explorar o Mapa',
-    'our-journey': 'Nossa Jornada',
-    'project-launch': '2022 - Lançamento do Projeto',
-    'launch-description': 'A Green Earth Connect foi estabelecida com a visão de criar um mapa ecológico interativo para promover a conscientização ambiental.',
-    'launch-milestone': 'Marco: Desenvolvimento inicial do mapa com 50 pontos ecológicos',
-    'community-expansion': '2023 - Expansão da Comunidade',
-    'expansion-description': 'Expandimos nossa plataforma para incluir contribuições da comunidade e lançamos parcerias com organizações ambientais locais.',
-    'expansion-milestone': 'Marco: Alcançamos mais de 150 pontos ecológicos e mais de 1.000 membros da comunidade',
-    'data-driven': '2024 - Impacto Baseado em Dados',
-    'data-description': 'Implementamos rastreamento de impacto para medir a contribuição ambiental coletiva das iniciativas mapeadas.',
-    'data-milestone': 'Marco: Recursos avançados de filtragem e pesquisa adicionados ao mapa ecológico',
-    'get-involved': 'Participe',
-    'involvement-description': 'Recebemos contribuições de indivíduos e organizações apaixonadas pela sustentabilidade ambiental. Entre em contato para:',
-    'submit-points': 'Enviar novos pontos ecológicos para o mapa',
-    'partner-initiatives': 'Fazer parceria conosco em iniciativas ambientais',
-    'provide-feedback': 'Fornecer feedback sobre a plataforma',
-    'volunteer-events': 'Voluntariar-se para eventos comunitários',
-    'contact-us': 'Entre em Contato',
-    'faq': 'Perguntas Frequentes',
-    'faq-add-point': 'Como posso adicionar um ponto ao mapa?',
-    'faq-add-answer': 'Entre em contato conosco com detalhes sobre a iniciativa ecológica, incluindo localização, tipo e dados de impacto, se disponíveis.',
-    'faq-verified': 'Os dados no mapa são verificados?',
-    'faq-verified-answer': 'Sim, nossa equipe verifica todos os pontos ecológicos antes de adicioná-los para garantir precisão e confiabilidade.',
-    'faq-updates': 'Com que frequência o mapa é atualizado?',
-    'faq-updates-answer': 'Atualizamos o mapa regularmente com novos pontos e atualizamos os dados existentes trimestralmente para manter a precisão.',
-    
-    // Blog
-    'back-home': 'Voltar para Início',
-    'blog-title': 'Blog Ecológico',
-    'blog-subtitle': 'Artigos e notícias sobre sustentabilidade, conservação e iniciativas locais',
-    'featured-articles': 'Artigos em Destaque',
-    'all': 'Todos',
-    'recycling': 'Reciclagem',
-    'reforestation': 'Reflorestamento',
-    'recent-articles': 'Artigos Recentes',
-    'newsletter': 'Inscreva-se em nossa Newsletter',
-    'newsletter-description': 'Receba artigos novos, dicas de sustentabilidade e atualizações sobre iniciativas ecológicas em Presidente Prudente diretamente em seu email.',
-    'your-email': 'Seu email',
-    'subscribe': 'Inscrever-se',
-    'min-read': 'min de leitura',
-    'read-more': 'Ler mais',
-  }
+// Define and provide the translations for Portuguese (default language)
+const translations: TranslationDictionary = {
+  // Navbar
+  'home': 'Início',
+  'about': 'Sobre Nós',
+  'blog': 'Blog',
+  'ecological-map': 'Mapa Ecológico',
+  'login': 'Entrar',
+  'register': 'Cadastre-se',
+  'admin-panel': 'Painel Admin',
+  'logout': 'Sair',
+  'mobile-menu': 'Menu',
+  
+  // Hero
+  'hero-title': 'Promovendo a Sustentabilidade em Presidente Prudente',
+  'hero-subtitle': 'Conheça iniciativas ecológicas e contribua para um futuro mais verde',
+  'learn-more': 'Saiba Mais',
+  'get-involved': 'Participe',
+  
+  // Stats section
+  'stats-title': 'Impacto Ambiental em Números',
+  'stats-subtitle': 'Acompanhe métricas importantes sobre nosso ecossistema local',
+  'hectares-monitored': 'Hectares Monitorados',
+  'risk-areas': 'Áreas de Risco Identificadas',
+  'deforestation-alerts': 'Alertas de Desmatamento',
+  'air-quality': 'Índice de Qualidade do Ar',
+  'last-updated': 'Última atualização',
+  'data-source': 'Fonte dos dados',
+  
+  // Chart legends
+  'deforested-area': 'Área Desmatada',
+  'reforested-area': 'Área Reflorestada',
+  'air-quality-index': 'Índice de Qualidade do Ar',
+  'error-loading-data': 'Erro ao carregar dados',
+  
+  // Month names
+  'jan': 'Jan',
+  'feb': 'Fev',
+  'mar': 'Mar',
+  'apr': 'Abr',
+  'may': 'Mai',
+  'jun': 'Jun',
+  'jul': 'Jul',
+  'aug': 'Ago',
+  'sep': 'Set',
+  'oct': 'Out',
+  'nov': 'Nov',
+  'dec': 'Dez',
+  
+  // Map
+  'map-title': 'Mapa Ecológico',
+  'map-subtitle': 'Explore iniciativas sustentáveis em Presidente Prudente',
+  'map-filter-all': 'Todos',
+  'map-filter-collection': 'Pontos de Coleta',
+  'map-filter-recycling': 'Locais de Reciclagem',
+  'map-filter-seedlings': 'Distribuição de Mudas',
+  'search-places': 'Buscar locais...',
+  'loading-map': 'Carregando mapa...',
+  'points-found': 'pontos encontrados',
+  
+  // About page
+  'about-title': 'Sobre a EcoCity',
+  'about-subtitle': 'Construindo um futuro sustentável para Presidente Prudente',
+  'about-mission-title': 'Nossa Missão',
+  'about-mission-text': 'A EcoCity tem como missão promover práticas sustentáveis e conscientizar a população sobre a importância da preservação ambiental em Presidente Prudente. Trabalhamos para desenvolver uma comunidade ecologicamente responsável através de iniciativas educacionais, projetos de conservação e tecnologias verdes.',
+  'about-vision-title': 'Nossa Visão',
+  'about-vision-text': 'Vislumbramos uma Presidente Prudente onde o desenvolvimento urbano e a proteção ambiental caminhem juntos, criando um modelo de cidade sustentável que inspire outras comunidades. Buscamos um futuro onde cada cidadão seja um agente ativo na construção de uma cidade mais verde e saudável.',
+  'about-history-title': 'Nossa História',
+  'about-history-text': 'Fundada em 2019 por um grupo de ambientalistas e pesquisadores locais preocupados com o impacto das mudanças climáticas em nossa região, a EcoCity começou como um pequeno projeto voluntário. Hoje, nos tornamos uma organização respeitada, colaborando com governo, empresas e sociedade civil para implementar soluções sustentáveis.',
+  'about-team-title': 'Nossa Equipe',
+  
+  // Team
+  'team-director': 'Diretor Executivo',
+  'team-coord': 'Coordenadora de Projetos',
+  'team-tech': 'Especialista Técnico',
+  'team-comm': 'Comunicação',
+  'team-edu': 'Educação Ambiental',
+  
+  // Call to action
+  'cta-title': 'Junte-se ao Movimento',
+  'cta-text': 'Seja parte da transformação e ajude a construir uma cidade mais sustentável',
+  'cta-button': 'Participe Agora',
+  
+  // Blog
+  'blog-title': 'Blog Ecológico',
+  'blog-subtitle': 'Artigos, dicas e notícias sobre sustentabilidade e meio ambiente',
+  'read-more': 'Ler mais',
+  'min-read': 'min de leitura',
+  'blog-featured': 'Destaque',
+  'blog-recent': 'Publicações Recentes',
+  'blog-categories': 'Categorias',
+  'blog-search': 'Buscar no blog...',
+  
+  // Footer
+  'footer-about': 'Sobre a EcoCity',
+  'footer-about-text': 'EcoCity é uma iniciativa dedicada a promover práticas sustentáveis e conscientizar a comunidade sobre questões ambientais em Presidente Prudente.',
+  'footer-links': 'Links Rápidos',
+  'footer-legal': 'Legal',
+  'footer-privacy': 'Política de Privacidade',
+  'footer-terms': 'Termos de Uso',
+  'footer-contact': 'Contato',
+  'footer-address': 'Rua das Palmeiras, 123 - Centro, Presidente Prudente - SP',
+  'footer-email': 'Email',
+  'footer-phone': 'Telefone',
+  'footer-social': 'Redes Sociais',
+  'footer-rights': 'Todos os direitos reservados',
+  'footer-statement': 'Trabalhando por uma Presidente Prudente mais verde e sustentável',
+  
+  // Auth pages
+  'email': 'Email',
+  'password': 'Senha',
+  'remember': 'Lembrar-me',
+  'forgot': 'Esqueceu a senha?',
+  'sign-in': 'Entrar',
+  'sign-up': 'Cadastrar',
+  'no-account': 'Não tem uma conta?',
+  'already-account': 'Já tem uma conta?',
+  'create-account': 'Criar conta',
+  'name': 'Nome',
+  'confirm-password': 'Confirmar senha',
+  'agree-terms': 'Concordo com os Termos e Condições',
+  
+  // Map points
+  'collection-point': 'Ponto de Coleta Reciclável',
+  'recycling-location': 'Local de Reciclagem',
+  'seedling-distribution': 'Distribuição de Mudas',
+  
+  // Admin panel
+  'admin-title': 'Painel Administrativo',
+  'admin-welcome': 'Bem-vindo ao Painel Administrativo',
+  'admin-manage': 'Gerencie conteúdo, usuários e dados do sistema',
+  'admin-stats': 'Estatísticas',
+  'admin-content': 'Conteúdo',
+  'admin-users': 'Usuários',
+  'admin-settings': 'Configurações',
 };
 
+// Create a provider component
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-  const [language] = useState<Language>('pt');
-
-  const translate = (key: string): string => {
-    return translations[language][key] || key;
+  // We now only have one language, so this is simple
+  const t = (key: TranslationKey): string => {
+    return translations[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, t: translate }}>
+    <LanguageContext.Provider value={{ t }}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
+// Create a hook to use the language context
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
+  
   if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
+  
   return context;
 };

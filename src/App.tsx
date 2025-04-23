@@ -6,6 +6,10 @@ import Layout from '@/components/Layout';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Create a client
+const queryClient = new QueryClient();
 
 // Lazy load pages for better performance
 const Index = lazy(() => import('@/pages/Index'));
@@ -27,30 +31,32 @@ const PageLoader = () => (
 
 function App() {
   return (
-    <Router>
-      <LanguageProvider>
-        <ThemeProvider>
-          <AuthProvider>
-            <Layout>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:id" element={<BlogPost />} />
-                  <Route path="/map" element={<MapaEcologico />} />
-                  <Route path="/admin" element={<AdminPanel />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </Layout>
-            <Toaster position="top-right" richColors closeButton />
-          </AuthProvider>
-        </ThemeProvider>
-      </LanguageProvider>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <LanguageProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogPost />} />
+                    <Route path="/map" element={<MapaEcologico />} />
+                    <Route path="/admin" element={<AdminPanel />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </Layout>
+              <Toaster position="top-right" richColors closeButton />
+            </AuthProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
