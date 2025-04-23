@@ -25,9 +25,6 @@ const Inicio = () => {
             <h2 className="text-2xl font-bold text-eco-green-dark mb-4">
               {t('monitoring-title')}
             </h2>
-            <p className="text-muted-foreground mb-6">
-              {t('monitoring-subtitle')}
-            </p>
           </div>
         </div>
       </div>
