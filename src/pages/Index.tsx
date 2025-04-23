@@ -29,7 +29,6 @@ const Inicio = () => {
               {t('monitoring-subtitle')}
             </p>
           </div>
-          <GraficoArea />
         </div>
       </div>
       <InfoCardsCarrossel />
