@@ -19,7 +19,7 @@ const Hero = () => {
             <p className="text-lg text-muted-foreground">Poluir hoje é roubar o amanhã.</p>
             <div className="flex flex-wrap gap-4">
               <Link to="/map" className="inline-flex items-center gap-2 bg-eco-green text-white font-medium rounded-md px-6 py-3 shadow-sm hover:bg-eco-green-dark transition-colors">
-                <span>Ver Monitoramento</span>
+                <span>Ver Mapa</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link to="/about" className="inline-flex items-center gap-2 bg-transparent border border-eco-green text-eco-green-dark font-medium rounded-md px-6 py-3 hover:bg-eco-green/5 transition-colors">
