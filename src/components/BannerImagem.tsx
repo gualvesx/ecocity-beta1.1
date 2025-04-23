@@ -7,7 +7,7 @@ const BannerImagem = () => {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-eco-green/80 to-eco-blue/80 mix-blend-multiply z-10"></div>
       <div 
-        className="relative min-h-[400px] bg-cover bg-center"
+        className="relative min-h-[600px] bg-cover bg-center"
         style={{ 
           backgroundImage: "url('https://turismodagente.com.br/wp-content/uploads/2021/12/PARQUE-DO-POVO-presidente-prudente-800x450.png')",
           backgroundPosition: "center 40%"
