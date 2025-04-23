@@ -86,18 +86,6 @@ return (
             <p className="text-muted-foreground mb-6 text-lg">
               {temaSelecionado.descricao}
             </p>
-
-            <div className="bg-eco-green-light/10 p-5 rounded-lg">
-              <div className="flex-1">
-                <h4 className="font-semibold mb-2 text-foreground">{t('monitoring-system')}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {temaAtivo === 'desmatamento' && t('deforestation-monitoring')}
-                  {temaAtivo === 'poluicao' && t('pollution-monitoring')}
-                  {temaAtivo === 'agua' && t('water-monitoring')}
-                  {temaAtivo === 'energia' && t('energy-monitoring')}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       )}
