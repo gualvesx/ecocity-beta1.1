@@ -53,11 +53,22 @@ const SecaoInterativa = () => {
          </div>
  
          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-           {temas.map((tema) => (
-               <tema.icon size={24} />
-               <span className="font-medium text-center">{tema.titulo}</span>
-           )}
-         </div>
+            {temas.map((tema) => (
+              <button
+                key={tema.id}
+                onClick={() => setTemaAtivo(tema.id)}
+                className={cn(
+                  "flex flex-col items-center gap-3 p-4 rounded-lg transition-all",
+                  temaAtivo === tema.id 
+                    ? `${tema.cor} text-white shadow-lg scale-105` 
+                    : "bg-white hover:bg-eco-green-light/10 shadow"
+                )}
+              >
+                <tema.icon size={24} />
+                <span className="font-medium text-center">{tema.titulo}</span>
+              </button>
+            ))}
+          </div>
  
          {temaSelecionado && (
            <div className="bg-white rounded-xl shadow-md overflow-hidden animate-fade-in">
