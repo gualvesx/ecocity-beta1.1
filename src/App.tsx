@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import { Toaster } from 'sonner';
 import Layout from '@/components/Layout';
-import { LanguageProvider } from '@/contexts/LanguageContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -33,28 +31,24 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <LanguageProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <Layout>
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:id" element={<BlogPost />} />
-                    <Route path="/map" element={<MapaEcologico />} />
-                    <Route path="/admin" element={<AdminPanel />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </Layout>
-              <Toaster position="top-right" richColors closeButton />
-            </AuthProvider>
-          </ThemeProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <Layout>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:id" element={<BlogPost />} />
+                <Route path="/map" element={<MapaEcologico />} />
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Layout>
+          <Toaster position="top-right" richColors closeButton />
+        </AuthProvider>
       </Router>
     </QueryClientProvider>
   );
