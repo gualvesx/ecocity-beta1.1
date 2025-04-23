@@ -50,23 +50,10 @@ const SecaoInterativa = () => {
            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark">
              {t('Apoie a Causa!')}
            </h2>
-           <p className="text-lg text-muted-foreground">
-             {t('monitoring-subtitle')}
-           </p>
          </div>
  
          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
            {temas.map((tema) => (
-             <button
-               key={tema.id}
-               onClick={() => setTemaAtivo(tema.id)}
-               className={cn(
-                 "flex flex-col items-center gap-3 p-4 rounded-lg transition-all",
-                 temaAtivo === tema.id 
-                   ? `${tema.cor} text-white shadow-lg scale-105` 
-                   : "bg-white hover:bg-eco-green-light/10 shadow"
-               )}
-             >
                <tema.icon size={24} />
                <span className="font-medium text-center">{tema.titulo}</span>
              </button>
