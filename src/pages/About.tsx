@@ -10,8 +10,7 @@ const About = () => {
   return (
     <div className="min-h-screen flex flex-col pt-20">
       <div className="container px-4 py-8">
-
-        <MissionSection />
+        <HeroSection />
         <TeamSection />
         <MapDataSection />
         <TimelineSection />
