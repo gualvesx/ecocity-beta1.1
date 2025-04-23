@@ -9,6 +9,7 @@ type TranslationDictionary = Record<TranslationKey, Translation>;
 // Define the structure of our language context
 interface LanguageContextType {
   t: (key: TranslationKey) => string;
+  language: string; // Add the language property
 }
 
 // Create the context
@@ -153,13 +154,14 @@ const translations: TranslationDictionary = {
 
 // Create a provider component
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-  // We now only have one language, so this is simple
+  const [language] = useState('pt-BR');
+  
   const t = (key: TranslationKey): string => {
     return translations[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ t }}>
+    <LanguageContext.Provider value={{ t, language }}>
       {children}
     </LanguageContext.Provider>
   );

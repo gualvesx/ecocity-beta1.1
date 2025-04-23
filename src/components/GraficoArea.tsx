@@ -168,27 +168,27 @@ export function GraficoArea() {
             bottom: 0,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" className={`stroke-muted ${theme === 'dark' ? 'opacity-30' : 'opacity-70'}`} />
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted opacity-70" />
           <XAxis
             dataKey="mes"
             className="text-xs font-medium"
             tickLine={false}
             axisLine={false}
-            stroke={theme === 'dark' ? '#adb5bd' : '#6c757d'}
+            stroke="#6c757d"
           />
           <YAxis
             className="text-xs font-medium"
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${value}`}
-            stroke={theme === 'dark' ? '#adb5bd' : '#6c757d'}
+            stroke="#6c757d"
           />
           <ChartTooltip
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 return (
                   <ChartTooltipContent
-                    className={`border-none ${theme === 'dark' ? 'bg-gray-800/90' : 'bg-white/90'} backdrop-blur-sm`}
+                    className="border-none bg-white/90 backdrop-blur-sm"
                     payload={payload}
                   />
                 );

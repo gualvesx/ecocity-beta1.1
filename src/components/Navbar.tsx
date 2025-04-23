@@ -7,7 +7,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,16 +52,14 @@ const Navbar = () => {
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300",
         scrolled 
-          ? theme === 'dark' 
-            ? "bg-background/90 backdrop-blur-md shadow-sm" 
-            : "bg-white/90 backdrop-blur-md shadow-sm" 
+          ? "bg-white/90 backdrop-blur-md shadow-sm" 
           : "bg-transparent"
       )}
     >
       <div className="container flex justify-between items-center py-4">
         <Link to="/" className="flex items-center space-x-2">
           <Leaf className="h-8 w-8 text-eco-green" />
-          <span className="font-semibold text-xl text-eco-green-dark dark:text-eco-green-light">EcoCity</span>
+          <span className="font-semibold text-xl text-eco-green-dark">EcoCity</span>
         </Link>
         
         {/* Desktop navigation */}
@@ -75,14 +72,14 @@ const Navbar = () => {
                   className={cn(
                     "px-1 py-2 font-medium transition-colors relative group",
                     location.pathname === item.path 
-                      ? "text-eco-green-dark dark:text-eco-green-light" 
-                      : "text-foreground/80 hover:text-eco-green-dark dark:hover:text-eco-green-light"
+                      ? "text-eco-green-dark" 
+                      : "text-foreground/80 hover:text-eco-green-dark"
                   )}
                 >
                   {item.name}
                   <span 
                     className={cn(
-                      "absolute bottom-0 left-0 w-full h-0.5 bg-eco-green-dark dark:bg-eco-green-light transform scale-x-0 transition-transform origin-left group-hover:scale-x-100",
+                      "absolute bottom-0 left-0 w-full h-0.5 bg-eco-green-dark transform scale-x-0 transition-transform origin-left group-hover:scale-x-100",
                       location.pathname === item.path && "scale-x-100"
                     )}
                   />
@@ -92,8 +89,6 @@ const Navbar = () => {
           </ul>
           
           <div className="ml-8 flex items-center gap-3">
-            <ThemeToggle />
-            
             {user ? (
               <>
                 <div className="text-sm mr-2">
@@ -122,7 +117,7 @@ const Navbar = () => {
                   variant="outline" 
                   size="sm"
                   onClick={handleLogout}
-                  className="text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20"
+                  className="text-red-500 border-red-200 hover:bg-red-50"
                 >
                   <LogOut className="h-4 w-4 mr-1" />
                   {t('sair')}
@@ -155,8 +150,6 @@ const Navbar = () => {
         
         {/* Mobile menu button */}
         <div className="md:hidden flex items-center gap-2">
-          <ThemeToggle />
-          
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-foreground focus:outline-none ml-2"
@@ -185,8 +178,8 @@ const Navbar = () => {
                 className={cn(
                   "block px-4 py-2 rounded-md transition-colors",
                   location.pathname === item.path
-                    ? "bg-eco-green-light/20 text-eco-green-dark dark:bg-eco-green-dark/20 dark:text-eco-green-light font-medium"
-                    : "hover:bg-eco-green-light/10 dark:hover:bg-eco-green-dark/10"
+                    ? "bg-eco-green-light/20 text-eco-green-dark font-medium"
+                    : "hover:bg-eco-green-light/10"
                 )}
               >
                 {item.name}
@@ -198,7 +191,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/admin"
-                className="block px-4 py-2 rounded-md transition-colors hover:bg-eco-green-light/10 dark:hover:bg-eco-green-dark/10 flex items-center"
+                className="block px-4 py-2 rounded-md transition-colors hover:bg-eco-green-light/10 flex items-center"
               >
                 <Shield className="h-4 w-4 mr-2" />
                 {t('painel-admin')}
@@ -206,7 +199,7 @@ const Navbar = () => {
             </li>
           )}
           
-          <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
+          <div className="border-t border-gray-100 my-2"></div>
           
           {user ? (
             <>
@@ -227,7 +220,7 @@ const Navbar = () => {
                   variant="outline" 
                   size="sm"
                   onClick={handleLogout}
-                  className="w-full text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/20"
+                  className="w-full text-red-500 border-red-200 hover:bg-red-50"
                 >
                   <LogOut className="h-4 w-4 mr-1" />
                   {t('sair')}
