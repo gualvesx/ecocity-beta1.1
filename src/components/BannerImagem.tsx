@@ -10,7 +10,7 @@ const BannerImagem = () => {
         className="relative min-h-[600px] bg-cover bg-center"
         style={{ 
           backgroundImage: "url('https://turismodagente.com.br/wp-content/uploads/2021/12/PARQUE-DO-POVO-presidente-prudente.png')",
-          backgroundPosition: "center 40%"
+          backgroundPosition: "center 50%"
         }}
       >
         <div className="container flex flex-col justify-center h-full px-4 py-16 relative z-20">
