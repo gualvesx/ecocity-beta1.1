@@ -21,11 +21,6 @@ const Inicio = () => {
       <SecaoInterativa />
       <div className="container px-4 py-12 md:py-16">
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-eco-green-dark mb-4">
-              {t('monitoring-title')}
-            </h2>
-          </div>
         </div>
       </div>
       <InfoCardsCarrossel />
