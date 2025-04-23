@@ -16,8 +16,8 @@ const Hero = () => {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-eco-green-dark">
               Cidades Sustentáveis para um <span className="text-eco-green">Futuro Verde</span>
             </h1>
-            <p className="text-lg text-black">Juntos, somos a força que protege o amanhã! 🌿 
- Cada ação conta na preservação do nosso planeta.</p>
+            <p className="text-lg text-black">Juntos, somos a força que protege o amanhã! 🌿 </p>
+            <p className="text-lg text-black">Cada ação conta na preservação do nosso planeta.</p>
             <div className="flex flex-wrap gap-4">
               <Link to="/map" className="inline-flex items-center gap-2 bg-eco-green text-white font-medium rounded-md px-6 py-3 shadow-sm hover:bg-eco-green-dark transition-colors">
                 <span>Ver Mapa</span>
