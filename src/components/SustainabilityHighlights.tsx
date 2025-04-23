@@ -77,7 +77,11 @@ const DestaquesSustentabilidade = () => {
               </div>
             </div>
             <div className="bg-eco-green h-full flex items-center justify-center p-8 lg:p-0">
-              <div className="url('https://b105adb4b5.clvaw-cdnwnd.com/b6fdcda8679ba81cd86c929d8204cf9b/200004824-5b5fa5c58e/Presidente%20Prudente.JPG"></div>
+                <img 
+                    src="https://b105adb4b5.clvaw-cdnwnd.com/b6fdcda8679ba81cd86c929d8204cf9b/200004824-5b5fa5c58e/Presidente%20Prudente.JPG" 
+                   alt="Presidente Prudente" 
+                  className="w-full h-full object-cover"
+                />
             </div>
           </div>
         </div>
