@@ -56,8 +56,7 @@ const SecaoInterativa = () => {
            {temas.map((tema) => (
                <tema.icon size={24} />
                <span className="font-medium text-center">{tema.titulo}</span>
-             </button>
-           ))}
+           )}
          </div>
  
          {temaSelecionado && (
