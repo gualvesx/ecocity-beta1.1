@@ -21,7 +21,7 @@ const HighlightCard = ({ icon, titulo, descricao, className, style }: HighlightC
     <div className="w-12 h-12 rounded-full bg-eco-green-light/20 flex items-center justify-center text-eco-green mb-4">
       {icon}
     </div>
-    <h3 className="text-xl font-semibold mb-2">Proteja sua Cidade!</h3>
+    <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-muted-foreground">{descricao}</p>
   </div>
 );
@@ -32,7 +32,7 @@ const DestaquesSustentabilidade = () => {
         <div className="container px-4 md:px-6">
          <div className="text-center max-w-3xl mx-auto mb-12">
            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-eco-green-dark">
-             Preserve
+             Preserve sua Cidade!
            </h2>
            <p className="text-lg text-muted-foreground">
              Acompanhe em tempo real os indicadores ambientais críticos e como estamos trabalhando para combater problemas ecológicos.
