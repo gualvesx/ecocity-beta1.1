@@ -51,7 +51,7 @@ return (
           {t('Apoie a Causa!')}
         </h2>
         <p className="text-lg text-muted-foreground">
-          {t('monitoring-subtitle')}
+          {t('EcoCity')}
         </p>
       </div>
 
