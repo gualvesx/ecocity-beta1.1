@@ -35,7 +35,7 @@ const DestaquesSustentabilidade = () => {
              Preserve sua Cidade!
            </h2>
            <p className="text-lg text-muted-foreground">
-             Acompanhe em tempo real os indicadores ambientais críticos e como estamos trabalhando para combater problemas ecológicos.
+             Seu apoio hoje é o oxigênio do futuro. Faça parte desta mudança!
            </p>
          </div>
          
@@ -45,9 +45,9 @@ const DestaquesSustentabilidade = () => {
         <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8 md:p-12">
-              <h3 className="text-2xl font-bold mb-4 text-eco-green-dark">Projeto de Alerta de Desmatamento</h3>
+              <h3 className="text-2xl font-bold mb-4 text-eco-green-dark">Projeto de Preservação Ambiental</h3>
               <p className="text-muted-foreground mb-4">
-                Nossa rede de monitoramento de desmatamento utiliza imagens de satélite e sensores IoT para detectar atividades de desmatamento ilegal em tempo real, permitindo uma resposta rápida.
+                Um ecomapa que mostra pontos de coleta pode ajudar a preservar o meio ambiente ao facilitar o descarte correto de resíduos. Ao indicar locais acessíveis para coleta seletiva, reciclagem e descarte de materiais específicos (como eletrônicos, óleo e pilhas), o mapa conscientiza a população, reduz o lixo em locais inadequados e promove a economia circular. Com mais pessoas participando, menos recursos naturais são extraídos, menos poluição é gerada e os ecossistemas são protegidos. É tecnologia a serviço da sustentabilidade! ♻️🌱
               </p>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -55,7 +55,7 @@ const DestaquesSustentabilidade = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">25% de redução</span> em atividades de desmatamento ilegal nas áreas monitoradas
+                    <span className="font-medium">Localiza</span> pontos de coleta facilmente
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -63,7 +63,7 @@ const DestaquesSustentabilidade = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">150+ alertas</span> enviados às autoridades nos últimos 30 dias
+                    <span className="font-medium">Combate </span>a poluição por descarte irregular
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -71,7 +71,7 @@ const DestaquesSustentabilidade = () => {
                     <Leaf size={14} />
                   </div>
                   <p className="text-sm">
-                    <span className="font-medium">12.000 hectares</span> de floresta sob monitoramento constante
+                    <span className="font-medium">Educa</span> para práticas ecoeficientes no dia a dia
                   </p>
                 </div>
               </div>
