@@ -19,10 +19,6 @@ const Inicio = () => {
       <Hero />
       <BannerImagem />
       <SecaoInterativa />
-      <div className="container px-4 py-12 md:py-16">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        </div>
-      </div>
       <DestaquesSustentabilidade />
       <ChamadaParaAcao />
     </div>
