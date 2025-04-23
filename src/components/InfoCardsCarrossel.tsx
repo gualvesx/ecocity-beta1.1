@@ -7,16 +7,16 @@ import { cn } from '@/lib/utils';
 const cards = [
   {
     id: 1,
-    titulo: 'Desmatamento',
-    descricao: 'Alerta de desmatamento em aumento na região amazônica, com 430 hectares afetados no último mês.',
+    titulo: 'Impacto Ambiental',
+    descricao: 'Quando o lixo é jogado no lugar errado, o solo perde vida e vira um terreno tóxico!',
     icone: Trees,
     cor: 'bg-red-500',
     porcentagem: 72
   },
   {
     id: 2,
-    titulo: 'Qualidade do Ar',
-    descricao: 'Índice de qualidade do ar em níveis preocupantes nas áreas industriais da cidade.',
+    titulo: 'Riscos às pessoas',
+    descricao: 'Moradores próximos a lixões eletrônicos inalam toxinas e sofrem com doenças graves – descarte incorreto mata!',
     icone: Globe,
     cor: 'bg-amber-500',
     porcentagem: 65
@@ -24,15 +24,15 @@ const cards = [
   {
     id: 3,
     titulo: 'Recursos Hídricos',
-    descricao: 'Níveis dos reservatórios urbanos em queda, atualmente em 45% da capacidade total.',
+    descricao: 'O descarte incorreto de lixo contamina o lençol freático, envenenando a água que bebemos e destruindo fontes naturais de vida!',
     icone: Droplets,
     cor: 'bg-blue-500',
     porcentagem: 45
   },
   {
     id: 4,
-    titulo: 'Alertas Ambientais',
-    descricao: 'Emitidos 28 alertas ambientais na última semana para eventos de poluição e descarte irregular.',
+    titulo: 'Danos ao ar',
+    descricao: 'Queimar lixo de forma irregular libera gases venenosos e destrói a qualidade do ar que respiramos!',
     icone: BadgeAlert,
     cor: 'bg-eco-green-dark',
     porcentagem: 58
