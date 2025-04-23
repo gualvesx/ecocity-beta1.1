@@ -24,7 +24,6 @@ const Inicio = () => {
         </div>
       </div>
       <DestaquesSustentabilidade />
-      <EstatisticasImpactoAmbiental />
       <ChamadaParaAcao />
     </div>
   );
