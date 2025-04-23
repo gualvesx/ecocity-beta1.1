@@ -1,5 +1,5 @@
 
-import { Globe, Users, Calendar } from 'lucide-react';
+import { Globe, Users, Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
