@@ -1,6 +1,5 @@
 
 import { GraficoArea } from '@/components/GraficoArea';
-import Hero from '@/components/Hero';
 import DestaquesSustentabilidade from '@/components/SustainabilityHighlights';
 import EstatisticasImpactoAmbiental from '@/components/EnvImpactStats';
 import ChamadaParaAcao from '@/components/CallToAction';
@@ -9,6 +8,7 @@ import BannerImagem from '@/components/BannerImagem';
 import { InfoCardsCarrossel } from '@/components/InfoCardsCarrossel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { MapPreview } from '@/components/MapPreview';
 
 const Inicio = () => {
   const { t } = useLanguage();
@@ -16,8 +16,7 @@ const Inicio = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Hero />
-      <BannerImagem />
+      <MapPreview />
       <SecaoInterativa />
       <DestaquesSustentabilidade />
       <ChamadaParaAcao />
