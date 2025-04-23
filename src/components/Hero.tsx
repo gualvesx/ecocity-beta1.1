@@ -5,7 +5,7 @@ const Hero = () => {
       {/* Background pattern */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmOGY4ZjgiIGZpbGwtb3BhY2l0eT0iMC4wNCI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiAwaDZ2LTZoLTZ2NnptLTEyIDZoNnYtNmgtNnY2em0xMiAwaDZ2LTZoLTZ2NnptLTYtMTJoNnYtNmgtNnY2em0xMiAwaDZ2LTZoLTZ2NnptLTI0LTEyaDZ2LTZoLTZ2NnptMTIgMGg2di02aC02djZ6bTEyIDBoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
       
-      <div className="container relative pt-12 pb-16 md:pt-16 md:pb-24">
+      <div className="container relative pt-12 pb-16 md:pt-16 md:pb-24 bg-white/0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div className="space-y-6 max-w-xl">
@@ -16,7 +16,7 @@ const Hero = () => {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-eco-green-dark">
               Cidades Sustentáveis para um <span className="text-eco-green">Futuro Verde</span>
             </h1>
-            <p className="text-lg text-muted-foreground">Poluir hoje é roubar o amanhã.</p>
+            <p className="text-lg text-stone-50">Juntos, somos a força que protege o amanhã! 🌿 Cada ação conta na preservação do nosso planeta.</p>
             <div className="flex flex-wrap gap-4">
               <Link to="/map" className="inline-flex items-center gap-2 bg-eco-green text-white font-medium rounded-md px-6 py-3 shadow-sm hover:bg-eco-green-dark transition-colors">
                 <span>Ver Mapa</span>
