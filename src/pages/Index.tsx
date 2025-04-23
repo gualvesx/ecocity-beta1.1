@@ -23,7 +23,6 @@ const Inicio = () => {
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
         </div>
       </div>
-      <InfoCardsCarrossel />
       <DestaquesSustentabilidade />
       <EstatisticasImpactoAmbiental />
       <ChamadaParaAcao />
