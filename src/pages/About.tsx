@@ -1,7 +1,8 @@
 
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Leaf, Globe, Users, Calendar, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Leaf, Globe, Users, Calendar, ArrowRight, User } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Card, CardContent } from '@/components/ui/card';
 
 const About = () => {
   const { t } = useLanguage();
@@ -87,6 +88,69 @@ const About = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-bold text-eco-green-dark mb-8">{t('about-team-title')}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Team Member 1 */}
+            <Card className="overflow-hidden">
+              <div className="aspect-square bg-eco-green/10 flex items-center justify-center">
+                <User size={80} className="text-eco-green-dark" />
+              </div>
+              <CardContent className="pt-6">
+                <h3 className="font-semibold text-lg mb-1">Carlos Silva</h3>
+                <p className="text-sm text-muted-foreground mb-3">{t('team-director')}</p>
+                <p className="text-sm">
+                  Especialista em sustentabilidade e gestão ambiental com mais de 15 anos de experiência.
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* Team Member 2 */}
+            <Card className="overflow-hidden">
+              <div className="aspect-square bg-eco-green/10 flex items-center justify-center">
+                <User size={80} className="text-eco-green-dark" />
+              </div>
+              <CardContent className="pt-6">
+                <h3 className="font-semibold text-lg mb-1">Ana Oliveira</h3>
+                <p className="text-sm text-muted-foreground mb-3">{t('team-coord')}</p>
+                <p className="text-sm">
+                  Mestre em Desenvolvimento Sustentável, coordena projetos de preservação ambiental.
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* Team Member 3 */}
+            <Card className="overflow-hidden">
+              <div className="aspect-square bg-eco-green/10 flex items-center justify-center">
+                <User size={80} className="text-eco-green-dark" />
+              </div>
+              <CardContent className="pt-6">
+                <h3 className="font-semibold text-lg mb-1">Lucas Santos</h3>
+                <p className="text-sm text-muted-foreground mb-3">{t('team-tech')}</p>
+                <p className="text-sm">
+                  Engenheiro ambiental e desenvolvedor de tecnologias para monitoramento ecológico.
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* Team Member 4 */}
+            <Card className="overflow-hidden">
+              <div className="aspect-square bg-eco-green/10 flex items-center justify-center">
+                <User size={80} className="text-eco-green-dark" />
+              </div>
+              <CardContent className="pt-6">
+                <h3 className="font-semibold text-lg mb-1">Mariana Costa</h3>
+                <p className="text-sm text-muted-foreground mb-3">{t('team-edu')}</p>
+                <p className="text-sm">
+                  Educadora ambiental com foco em iniciativas comunitárias e educação sustentável.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
         
