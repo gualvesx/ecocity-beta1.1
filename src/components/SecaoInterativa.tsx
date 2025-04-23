@@ -41,6 +41,5 @@ const SecaoInterativa = () => {
     }
   ];
 
-  const temaSelecionado = temas.find(tema => tema.id === temaAtivo);
 
 export default SecaoInterativa;
