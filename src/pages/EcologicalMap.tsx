@@ -87,8 +87,8 @@ const MapaEcologico = () => {
             </div>
             <div className="lg:col-span-2 bg-eco-sand p-8 flex items-center justify-center">
               <div className="max-w-xs">
-                <div className="text-4xl font-bold text-eco-green-dark mb-2">250+</div>
-                <p className="text-lg">Pontos ecológicos mapeados até agora com a ajuda de nossa comunidade</p>
+                <div className="text-4xl font-bold text-eco-green-dark mb-2">EcoCity em Ação!</div>
+                <p className="text-lg">Apoie essa causa!</p>
               </div>
             </div>
           </div>
