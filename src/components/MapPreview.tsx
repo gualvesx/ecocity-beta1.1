@@ -1,21 +1,34 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
 
 export const MapPreview = () => {
+  const mapRef = useRef(null);
+
   useEffect(() => {
-    // Initialize the map when the component mounts
-    const map = L.map('map').setView([-22.121389, -51.388611], 13);
+    if (typeof window !== 'undefined') {
+      // Initialize the map when the component mounts
+      const mapContainer = document.getElementById('map');
+      
+      if (mapContainer && !mapRef.current) {
+        const map = L.map('map').setView([-22.121389, -51.388611], 13);
+        mapRef.current = map;
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+      }
 
-    // Cleanup on unmount
-    return () => {
-      map.remove();
-    };
+      // Cleanup on unmount
+      return () => {
+        if (mapRef.current) {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+      };
+    }
   }, []);
 
   return (
