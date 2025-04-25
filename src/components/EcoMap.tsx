@@ -372,15 +372,15 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-              <span>{t('recycling-point')}</span>
+              <span>{t('Ponto Reciclagem')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-              <span>{t('recycling-center')}</span>
+              <span>{t('Ponto Lixo Eletrônico')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-              <span>{t('seedling-distribution')}</span>
+              <span>{t('Ponto Distribuição de Mudas')}</span>
             </div>
           </div>
         </div>
