@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Recycle, TreeDeciduous, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -57,7 +58,11 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
         
         try {
           const L = window.L;
-          const newMap = L.map(mapRef.current).setView([-22.125092, -51.389639], 13);
+          // Fix here - pass the element ID or create one if it doesn't exist
+          if (!mapRef.current.id) {
+            mapRef.current.id = `map-${Math.random().toString(36).substring(2, 9)}`;
+          }
+          const newMap = L.map(mapRef.current.id).setView([-22.125092, -51.389639], 13);
           
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

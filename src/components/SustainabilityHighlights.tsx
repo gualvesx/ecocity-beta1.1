@@ -21,7 +21,7 @@ const HighlightCard = ({ icon, titulo, descricao, className, style }: HighlightC
     <div className="w-12 h-12 rounded-full bg-eco-green-light/20 flex items-center justify-center text-eco-green mb-4">
       {icon}
     </div>
-    <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <h3 className="text-xl font-semibold mb-2">{titulo}</h3>
     <p className="text-muted-foreground">{descricao}</p>
   </div>
 );
