@@ -1,33 +1,45 @@
 
-import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import React, { useEffect, useRef, useState } from 'react';
 
 export const MapPreview = () => {
   const mapRef = useRef(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Initialize the map when the component mounts
-      const mapContainer = document.getElementById('map');
-      
-      if (mapContainer && !mapRef.current) {
-        const map = L.map('map').setView([-22.121389, -51.388611], 13);
-        mapRef.current = map;
+    // Make sure Leaflet is loaded from the window object
+    if (typeof window !== 'undefined' && window.L) {
+      try {
+        // Initialize the map when the component mounts
+        const mapContainer = document.getElementById('map');
+        
+        if (mapContainer && !mapRef.current) {
+          console.log('Creating map instance');
+          const map = window.L.map('map').setView([-22.121389, -51.388611], 13);
+          mapRef.current = map;
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+          // Add OpenStreetMap tiles
+          window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+          }).addTo(map);
+          
+          setMapLoaded(true);
+          console.log('Map instance created successfully');
+        }
+      } catch (error) {
+        console.error('Error initializing map:', error);
       }
 
       // Cleanup on unmount
       return () => {
         if (mapRef.current) {
+          console.log('Removing map instance');
           mapRef.current.remove();
           mapRef.current = null;
         }
       };
+    } else {
+      console.warn('Leaflet is not loaded on window object');
     }
   }, []);
 

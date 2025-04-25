@@ -2,6 +2,7 @@
 declare module 'leaflet' {
   export interface Map {
     remove(): void;
+    setView(center: [number, number], zoom: number): this;
   }
 
   export function map(id: string): Map;
@@ -10,7 +11,11 @@ declare module 'leaflet' {
 
 declare global {
   interface Window {
-    L: any;
+    L: {
+      map(id: string): any;
+      tileLayer(url: string, options?: any): any;
+      marker(latlng: [number, number], options?: any): any;
+    };
   }
 }
 
