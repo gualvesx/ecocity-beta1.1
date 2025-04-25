@@ -15,6 +15,7 @@ declare global {
       map(id: string): any;
       tileLayer(url: string, options?: any): any;
       marker(latlng: [number, number], options?: any): any;
+      divIcon(options: any): any;
     };
   }
 }

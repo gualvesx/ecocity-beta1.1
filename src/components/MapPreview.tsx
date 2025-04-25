@@ -1,47 +1,12 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import EcoMap from '@/components/EcoMap';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { Map } from 'lucide-react';
 
 export const MapPreview = () => {
-  const mapRef = useRef(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-
-  useEffect(() => {
-    // Make sure Leaflet is loaded from the window object
-    if (typeof window !== 'undefined' && window.L) {
-      try {
-        // Initialize the map when the component mounts
-        const mapContainer = document.getElementById('map');
-        
-        if (mapContainer && !mapRef.current) {
-          console.log('Creating map instance');
-          const map = window.L.map('map').setView([-22.121389, -51.388611], 13);
-          mapRef.current = map;
-
-          // Add OpenStreetMap tiles
-          window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-          }).addTo(map);
-          
-          setMapLoaded(true);
-          console.log('Map instance created successfully');
-        }
-      } catch (error) {
-        console.error('Error initializing map:', error);
-      }
-
-      // Cleanup on unmount
-      return () => {
-        if (mapRef.current) {
-          console.log('Removing map instance');
-          mapRef.current.remove();
-          mapRef.current = null;
-        }
-      };
-    } else {
-      console.warn('Leaflet is not loaded on window object');
-    }
-  }, []);
+  const navigate = useNavigate();
 
   return (
     <div className="relative w-full pt-20">
@@ -53,10 +18,18 @@ export const MapPreview = () => {
             </h1>
             <p className="text-lg text-black">Juntos, somos a força que protege o amanhã! 🌿 </p>
             <p className="text-lg text-black">Cada ação conta na preservação do nosso planeta.</p>
+            <Button 
+              onClick={() => navigate('/map')} 
+              size="lg"
+              className="bg-eco-green hover:bg-eco-green-dark"
+            >
+              <Map className="mr-2 h-5 w-5" />
+              Ver Mapa Completo
+            </Button>
           </div>
           
-          <div className="rounded-xl overflow-hidden shadow-xl border-4 border-white">
-            <div id="map" className="h-[400px] w-full"></div>
+          <div className="rounded-xl overflow-hidden shadow-xl border-4 border-white min-h-[400px]">
+            <EcoMap hideControls={true} />
           </div>
         </div>
       </div>

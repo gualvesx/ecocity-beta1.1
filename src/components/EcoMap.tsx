@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Recycle, TreeDeciduous, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Type definitions for the map points
 export interface MapPoint {
   id: number;
   name: string;
@@ -21,7 +19,11 @@ export interface MapPoint {
   address?: string;
 }
 
-const EcoMap = () => {
+interface EcoMapProps {
+  hideControls?: boolean;
+}
+
+const EcoMap = ({ hideControls = false }: EcoMapProps) => {
   const { t } = useLanguage();
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
@@ -44,30 +46,23 @@ const EcoMap = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Initialize the map - fixed to prevent reinitialization issues
   useEffect(() => {
-    // Only initialize the map if it hasn't been initialized and the ref exists
     if (!mapRef.current || isMapInitialized) return;
     
-    // Function to initialize the map
     const initializeMap = () => {
-      // Check if Leaflet is available
       if (typeof window !== 'undefined' && window.L) {
-        // Make sure the container has a size
         if (mapRef.current && mapRef.current.clientHeight === 0) {
           mapRef.current.style.height = '500px';
         }
         
         try {
           const L = window.L;
-          // Set the map view to Presidente Prudente, Brazil
           const newMap = L.map(mapRef.current).setView([-22.125092, -51.389639], 13);
           
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(newMap);
           
-          // Add event listener for adding new points
           newMap.on('click', function(e: any) {
             if (isAddingPoint) {
               setNewPointPosition({
@@ -83,7 +78,6 @@ const EcoMap = () => {
           console.error("Error initializing map:", err);
         }
       } else {
-        // Fallback to load Leaflet if not available
         const script = document.createElement('script');
         script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
         script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
@@ -93,10 +87,8 @@ const EcoMap = () => {
       }
     };
     
-    // Call the initialization function
     initializeMap();
     
-    // Cleanup
     return () => {
       if (map) {
         map.remove();
@@ -104,7 +96,6 @@ const EcoMap = () => {
     };
   }, [mapRef, isAddingPoint, isMapInitialized]);
 
-  // Function to filter map points based on type and search query
   const getFilteredPoints = () => {
     return mapPoints.filter(point => {
       const matchesFilter = filter === 'all' || point.type === filter;
@@ -116,18 +107,15 @@ const EcoMap = () => {
     });
   };
   
-  // Update markers when filter changes or points are loaded
   useEffect(() => {
     if (!map) return;
     
-    // Clear all markers
     map.eachLayer((layer: any) => {
       if (layer._icon && layer._icon.className.includes('leaflet-marker-icon')) {
         map.removeLayer(layer);
       }
     });
     
-    // Add temporary marker for new point
     if (isAddingPoint && newPointPosition) {
       const ecoIcon = window.L.divIcon({
         html: `<div class="flex items-center justify-center w-8 h-8 bg-eco-green-dark text-white rounded-full shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
@@ -139,7 +127,6 @@ const EcoMap = () => {
       window.L.marker([newPointPosition.lat, newPointPosition.lng], { icon: ecoIcon }).addTo(map);
     }
     
-    // Add filtered markers
     const filteredPoints = getFilteredPoints();
     filteredPoints.forEach(point => {
       const iconHtml = getMarkerIconHtml(point.type);
@@ -159,7 +146,6 @@ const EcoMap = () => {
     });
   }, [map, filter, searchQuery, mapPoints, isAddingPoint, newPointPosition]);
   
-  // Icon mapping for the different types of ecological points
   const getMarkerIcon = (type: string) => {
     switch (type) {
       case 'recycling-point':
@@ -173,7 +159,6 @@ const EcoMap = () => {
     }
   };
 
-  // Generate HTML for marker icon
   const getMarkerIconHtml = (type: string) => {
     let bgColor, iconSvg;
     
@@ -198,14 +183,12 @@ const EcoMap = () => {
     return `<div class="flex items-center justify-center w-8 h-8 ${bgColor} text-white rounded-full shadow-lg border-2 border-white">${iconSvg}</div>`;
   };
   
-  // Type icon and color mapping
   const typeInfo = {
     'recycling-point': { label: t('recycling-point'), color: 'bg-eco-green', description: t('recycling-description') },
     'recycling-center': { label: t('recycling-center'), color: 'bg-eco-blue', description: t('recycling-center-description') },
     'seedling-distribution': { label: t('seedling-distribution'), color: 'bg-eco-brown', description: t('seedling-description') }
   };
   
-  // Toggle point adding mode
   const toggleAddingPoint = () => {
     if (!user) {
       toast.error("Você precisa estar logado para adicionar pontos.");
@@ -221,7 +204,6 @@ const EcoMap = () => {
     }
   };
   
-  // Handle form submission for new point
   const handleAddNewPoint = async () => {
     if (!user) {
       toast.error("Você precisa estar logado para adicionar pontos.");
@@ -240,8 +222,6 @@ const EcoMap = () => {
     }
     
     try {
-      // Se temos uma posição selecionada mas não temos endereço, fazemos uma geocodificação reversa
-      // (simulada por enquanto)
       let address = newPointForm.address;
       if (newPointPosition && !address) {
         address = `Localização em Presidente Prudente - Lat: ${newPointPosition.lat.toFixed(6)}, Lng: ${newPointPosition.lng.toFixed(6)}`;
@@ -257,7 +237,6 @@ const EcoMap = () => {
       
       await addMapPoint(newPoint);
       
-      // Reset form
       setNewPointForm({
         name: '',
         type: 'recycling-point',
@@ -274,135 +253,135 @@ const EcoMap = () => {
 
   return (
     <div className="relative bg-eco-sand/50 rounded-xl overflow-hidden shadow-md">
-      {/* Map Container */}
       <div ref={mapRef} className="h-[70vh] w-full z-10"></div>
       
-      {/* Search and Filter Bar */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col md:flex-row gap-2">
-        <div className="relative flex-grow">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <input
-            type="text"
-            placeholder="Buscar pontos ecológicos..."
-            className="w-full pl-10 py-2 pr-4 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-eco-green/50"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        
-        <div className="relative">
-          <button
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2 py-2 px-4 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-gray-200 hover:bg-eco-green-light/10"
-          >
-            <Filter className="h-4 w-4" />
-            <span>Filtrar</span>
-          </button>
-          
-          {isFilterOpen && (
-            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-30">
-              <div className="p-2">
-                <button
-                  onClick={() => { setFilter('all'); setIsFilterOpen(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-md",
-                    filter === 'all' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
-                  )}
-                >
-                  Todos os Pontos
-                </button>
-                
-                <button
-                  onClick={() => { setFilter('recycling-point'); setIsFilterOpen(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
-                    filter === 'recycling-point' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
-                  )}
-                >
-                  <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-                  {t('recycling-point')}
-                </button>
-                
-                <button
-                  onClick={() => { setFilter('recycling-center'); setIsFilterOpen(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
-                    filter === 'recycling-center' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
-                  )}
-                >
-                  <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-                  {t('recycling-center')}
-                </button>
-                
-                <button
-                  onClick={() => { setFilter('seedling-distribution'); setIsFilterOpen(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
-                    filter === 'seedling-distribution' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
-                  )}
-                >
-                  <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-                  {t('seedling-distribution')}
-                </button>
-              </div>
+      {!hideControls && (
+        <div className="absolute top-4 left-4 right-4 z-20 flex flex-col md:flex-row gap-2">
+          <div className="relative flex-grow">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search className="h-4 w-4 text-muted-foreground" />
             </div>
-          )}
-        </div>
-        
-        <Button 
-          onClick={toggleAddingPoint}
-          className={cn(
-            "gap-1 py-2",
-            isAddingPoint ? "bg-red-500 hover:bg-red-600" : "bg-eco-green hover:bg-eco-green-dark"
-          )}
-        >
-          {isAddingPoint ? (
-            <>
-              <X size={16} />
-              <span>Cancelar</span>
-            </>
-          ) : (
-            <>
-              <Plus size={16} />
-              <span>Adicionar Ponto</span>
-            </>
-          )}
-        </Button>
-        
-        {user?.isAdmin && (
+            <input
+              type="text"
+              placeholder="Buscar pontos ecológicos..."
+              className="w-full pl-10 py-2 pr-4 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-eco-green/50"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <div className="relative">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="flex items-center gap-2 py-2 px-4 bg-white/90 backdrop-blur-sm rounded-md shadow-sm border border-gray-200 hover:bg-eco-green-light/10"
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filtrar</span>
+            </button>
+            
+            {isFilterOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-30">
+                <div className="p-2">
+                  <button
+                    onClick={() => { setFilter('all'); setIsFilterOpen(false); }}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-md",
+                      filter === 'all' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                    )}
+                  >
+                    Todos os Pontos
+                  </button>
+                  
+                  <button
+                    onClick={() => { setFilter('recycling-point'); setIsFilterOpen(false); }}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
+                      filter === 'recycling-point' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                    )}
+                  >
+                    <div className="w-3 h-3 rounded-full bg-eco-green"></div>
+                    {t('recycling-point')}
+                  </button>
+                  
+                  <button
+                    onClick={() => { setFilter('recycling-center'); setIsFilterOpen(false); }}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
+                      filter === 'recycling-center' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                    )}
+                  >
+                    <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
+                    {t('recycling-center')}
+                  </button>
+                  
+                  <button
+                    onClick={() => { setFilter('seedling-distribution'); setIsFilterOpen(false); }}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-md flex items-center gap-2",
+                      filter === 'seedling-distribution' ? "bg-eco-green-light/20 text-eco-green-dark" : "hover:bg-eco-green-light/10"
+                    )}
+                  >
+                    <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
+                    {t('seedling-distribution')}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
           <Button 
-            onClick={() => navigate('/admin')}
-            className="gap-1 py-2 bg-eco-brown hover:bg-eco-brown/80"
+            onClick={toggleAddingPoint}
+            className={cn(
+              "gap-1 py-2",
+              isAddingPoint ? "bg-red-500 hover:bg-red-600" : "bg-eco-green hover:bg-eco-green-dark"
+            )}
           >
-            <Shield size={16} />
-            <span>Painel Admin</span>
+            {isAddingPoint ? (
+              <>
+                <X size={16} />
+                <span>Cancelar</span>
+              </>
+            ) : (
+              <>
+                <Plus size={16} />
+                <span>Adicionar Ponto</span>
+              </>
+            )}
           </Button>
-        )}
-      </div>
+          
+          {user?.isAdmin && (
+            <Button 
+              onClick={() => navigate('/admin')}
+              className="gap-1 py-2 bg-eco-brown hover:bg-eco-brown/80"
+            >
+              <Shield size={16} />
+              <span>Painel Admin</span>
+            </Button>
+          )}
+        </div>
+      )}
       
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-md shadow-sm border border-gray-200 z-20">
-        <h4 className="text-sm font-medium mb-2">Legenda</h4>
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-eco-green"></div>
-            <span>{t('recycling-point')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
-            <span>{t('recycling-center')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
-            <span>{t('seedling-distribution')}</span>
+      {!hideControls && (
+        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-md shadow-sm border border-gray-200 z-20">
+          <h4 className="text-sm font-medium mb-2">Legenda</h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-eco-green"></div>
+              <span>{t('recycling-point')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
+              <span>{t('recycling-center')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
+              <span>{t('seedling-distribution')}</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       
-      {/* Add New Point Form */}
-      {isAddingPoint && (
+      {isAddingPoint && !hideControls && (
         <div className="absolute bottom-4 right-4 w-full max-w-md bg-white/95 backdrop-blur-md p-4 rounded-lg shadow-lg border border-eco-green-light/30 z-20">
           <div className="flex justify-between items-start mb-3">
             <h3 className="font-medium">Adicionar Novo Ponto Ecológico</h3>
@@ -501,7 +480,6 @@ const EcoMap = () => {
         </div>
       )}
       
-      {/* Selected Point Information */}
       {selectedPoint && !isAddingPoint && (
         <div className="absolute bottom-4 right-4 w-full max-w-md bg-white/95 backdrop-blur-md p-4 rounded-lg shadow-lg border border-eco-green-light/30 z-20">
           <div className="flex justify-between items-start">
