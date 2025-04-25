@@ -38,9 +38,9 @@ const MapaEcologico = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-green">
-            <h3 className="font-semibold text-lg mb-2">{t('recycling-point')}</h3>
+            <h3 className="font-semibold text-lg mb-2">{t('Ponto de Coleta de Recicláveis')}</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              {t('recycling-description')}
+              {t('Pontos com objetivo de coletar recicláveis diversos.')}
             </p>
             <div className="flex items-center gap-2 text-sm text-eco-green">
               <div className="w-3 h-3 rounded-full bg-eco-green"></div>
@@ -49,9 +49,9 @@ const MapaEcologico = () => {
           </div>
           
           <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-blue">
-            <h3 className="font-semibold text-lg mb-2">{t('recycling-center')}</h3>
+            <h3 className="font-semibold text-lg mb-2">{t('Pontos de Coleta de Lixo Eletrônico')}</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              {t('recycling-center-description')}
+              {t('Pontos com objetivo de coletar lixo eletrônico.')}
             </p>
             <div className="flex items-center gap-2 text-sm text-eco-blue">
               <div className="w-3 h-3 rounded-full bg-eco-blue"></div>
@@ -60,9 +60,9 @@ const MapaEcologico = () => {
           </div>
           
           <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-eco-brown">
-            <h3 className="font-semibold text-lg mb-2">{t('seedling-distribution')}</h3>
+            <h3 className="font-semibold text-lg mb-2">{t('Pontos de Distribuição de Mudas')}</h3>
             <p className="text-muted-foreground text-sm mb-4">
-              {t('seedling-description')}
+              {t('Pontos com objetivo de distribuir mudas.')}
             </p>
             <div className="flex items-center gap-2 text-sm text-eco-brown">
               <div className="w-3 h-3 rounded-full bg-eco-brown"></div>
