@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Recycle, TreeDeciduous } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -49,7 +48,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Initialize map
+  // Initialize map without click event listener
   useEffect(() => {
     if (!mapRef.current || isMapInitialized) return;
     
@@ -69,15 +68,6 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(newMap);
-          
-          newMap.on('click', function(e: any) {
-            if (isAddingPoint) {
-              setNewPointPosition({
-                lat: e.latlng.lat,
-                lng: e.latlng.lng
-              });
-            }
-          });
           
           setMap(newMap);
           setIsMapInitialized(true);
@@ -101,7 +91,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
         map.remove();
       }
     };
-  }, [mapRef, isAddingPoint, isMapInitialized]);
+  }, [mapRef, isMapInitialized]);
 
   const getFilteredPoints = () => {
     return mapPoints.filter(point => {
@@ -123,17 +113,6 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
       }
     });
     
-    if (isAddingPoint && newPointPosition) {
-      const ecoIcon = window.L.divIcon({
-        html: `<div class="flex items-center justify-center w-8 h-8 bg-eco-green-dark text-white rounded-full shadow-lg border-2 border-white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-        className: '',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
-      });
-      
-      window.L.marker([newPointPosition.lat, newPointPosition.lng], { icon: ecoIcon }).addTo(map);
-    }
-    
     const filteredPoints = getFilteredPoints();
     filteredPoints.forEach(point => {
       const iconHtml = getMarkerIconHtml(point.type);
@@ -151,7 +130,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
         setSelectedPoint(point);
       });
     });
-  }, [map, filter, searchQuery, mapPoints, isAddingPoint, newPointPosition]);
+  }, [map, filter, searchQuery, mapPoints]);
   
   const getMarkerIcon = (type: string) => {
     switch (type) {
@@ -205,9 +184,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
     
     setIsAddingPoint(!isAddingPoint);
     if (!isAddingPoint) {
-      toast.info("Clique no mapa para selecionar a localização do novo ponto ecológico ou preencha o endereço");
-    } else {
-      setNewPointPosition(null);
+      toast.info("Preencha o endereço para adicionar um novo ponto ecológico");
     }
   };
   
@@ -223,23 +200,18 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
       return;
     }
     
-    if (!newPointPosition && !newPointForm.address) {
-      toast.error("Selecione um local no mapa ou preencha o endereço!");
+    if (!newPointForm.address) {
+      toast.error("Preencha o endereço!");
       return;
     }
     
     try {
-      let address = newPointForm.address;
-      if (newPointPosition && !address) {
-        address = `Localização em Presidente Prudente - Lat: ${newPointPosition.lat.toFixed(6)}, Lng: ${newPointPosition.lng.toFixed(6)}`;
-      }
-      
       const newPoint = {
         name: newPointForm.name,
         type: newPointForm.type,
         description: newPointForm.description,
         impact: newPointForm.impact || "Impacto ambiental não especificado.",
-        address: address
+        address: newPointForm.address
       };
       
       await addMapPoint(newPoint);
@@ -251,7 +223,6 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
         impact: '',
         address: ''
       });
-      setNewPointPosition(null);
       setIsAddingPoint(false);
     } catch (err) {
       toast.error("Erro ao adicionar ponto: " + (err instanceof Error ? err.message : String(err)));
@@ -290,7 +261,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
             <AddPointForm
               newPointForm={newPointForm}
               setNewPointForm={setNewPointForm}
-              newPointPosition={newPointPosition}
+              newPointPosition={null}
               setNewPointPosition={setNewPointPosition}
               setIsAddingPoint={setIsAddingPoint}
               handleAddNewPoint={handleAddNewPoint}

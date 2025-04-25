@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { MapPoint } from '@/components/EcoMap';
@@ -141,24 +142,33 @@ export const useMapPoints = () => {
 
   const geocodeAddress = async (address: string): Promise<{lat: number, lng: number} | null> => {
     try {
+      // Use a more specific query with country and city to improve accuracy
+      const fullAddress = `${address}, Presidente Prudente, SP, Brasil`;
+      console.log("Geocoding address:", fullAddress);
+      
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address + ', Presidente Prudente, SP, Brasil')}&format=json&limit=1`
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1&addressdetails=1`
       );
       
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`Geocoding request failed with status ${response.status}`);
+      }
       
-      if (data && data[0]) {
+      const data = await response.json();
+      console.log("Geocoding response:", data);
+      
+      if (data && data.length > 0) {
         return {
           lat: parseFloat(data[0].lat),
           lng: parseFloat(data[0].lon)
         };
       }
       
-      toast.error("Endereço não encontrado");
+      toast.error("Endereço não encontrado. Por favor, verifique e tente novamente");
       return null;
     } catch (error) {
       console.error('Geocoding error:', error);
-      toast.error("Erro ao buscar coordenadas do endereço");
+      toast.error("Erro ao buscar coordenadas do endereço. Por favor, tente novamente");
       return null;
     }
   };
@@ -172,12 +182,19 @@ export const useMapPoints = () => {
     try {
       setIsLoading(true);
       
+      if (!newPoint.address) {
+        toast.error("Por favor, forneça um endereço para o ponto.");
+        return null;
+      }
+      
+      // Get coordinates from address
       const geoLocation = await geocodeAddress(newPoint.address);
       
       if (!geoLocation) {
-        toast.error("Não foi possível obter as coordenadas para este endereço.");
-        return null;
+        return null; // Error toast already shown by geocodeAddress
       }
+      
+      console.log("Geocoded location:", geoLocation);
       
       const completePoint: Omit<MapPoint, 'id'> = {
         ...newPoint,

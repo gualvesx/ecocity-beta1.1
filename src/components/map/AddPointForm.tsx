@@ -35,7 +35,6 @@ export const AddPointForm = ({
         <h3 className="font-medium">Adicionar Novo Ponto Ecológico</h3>
         <button 
           onClick={() => {
-            setNewPointPosition(null);
             setIsAddingPoint(false);
           }}
           className="text-gray-500 hover:text-gray-700"
@@ -82,10 +81,7 @@ export const AddPointForm = ({
             />
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {newPointPosition ? 
-              "Você selecionou um ponto no mapa. O endereço é opcional." : 
-              "Digite o endereço ou clique no mapa para selecionar um ponto."
-            }
+            Digite o endereço completo para marcar o ponto no mapa.
           </p>
         </div>
         
@@ -110,12 +106,6 @@ export const AddPointForm = ({
             placeholder="Qual o impacto positivo deste ponto?"
           ></textarea>
         </div>
-        
-        {newPointPosition && (
-          <div className="text-xs text-muted-foreground mb-3">
-            Coordenadas: Lat {newPointPosition.lat.toFixed(6)}, Lng {newPointPosition.lng.toFixed(6)}
-          </div>
-        )}
         
         <Button 
           onClick={handleAddNewPoint}
