@@ -1,80 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { MapPoint } from '@/components/EcoMap';
 import { createClient } from '@supabase/supabase-js';
 import { useAuth } from '@/contexts/AuthContext';
+import { MapPoint } from '@/types/map';
+import { geocodeAddress } from '@/services/geocoding';
+import { getStoredPoints, storePoints } from '@/services/mapStorage';
 
-// Supabase client configuration - using environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lygvpskjhiwgzsmqiojc.supabase.co';
+// Supabase configuration
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-// Only create the client if we have both URL and key
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
-
-// Sample data for when Supabase is not configured
-const samplePoints: MapPoint[] = [
-  {
-    id: 1,
-    name: "Ecoponto Vila Furquim",
-    type: "recycling-point",
-    lat: -22.119511,
-    lng: -51.392290,
-    description: "Ponto de coleta de resíduos recicláveis e materiais volumosos.",
-    impact: "Coleta aproximadamente 3 toneladas de materiais recicláveis por semana.",
-    address: "Rua das Flores, 123 - Vila Furquim, Presidente Prudente - SP"
-  },
-  {
-    id: 2,
-    name: "Viveiro Municipal",
-    type: "seedling-distribution",
-    lat: -22.128580,
-    lng: -51.388310,
-    description: "Centro de distribuição de mudas nativas para plantio urbano e rural.",
-    impact: "Distribui mais de 5.000 mudas por ano para projetos de reflorestamento e arborização urbana.",
-    address: "Av. 14 de Setembro - Vila Marcondes, Presidente Prudente - SP"
-  },
-  {
-    id: 3,
-    name: "Centro de Reciclagem Cambuci",
-    type: "recycling-center",
-    lat: -22.134160,
-    lng: -51.401930,
-    description: "Centro de processamento e reciclagem de materiais diversos.",
-    impact: "Processamento de 2 toneladas de materiais por semana.",
-    address: "Rua Cambuci, 456 - Jardim Paulista, Presidente Prudente - SP"
-  },
-  {
-    id: 4,
-    name: "Ponto de Coleta Córrego do Veado",
-    type: "recycling-point",
-    lat: -22.121650,
-    lng: -51.378750,
-    description: "Ponto de coleta para resíduos recicláveis.",
-    impact: "Contribui para a preservação do córrego, evitando o descarte incorreto de mais de 300kg de resíduos mensais.",
-    address: "Av. Washington Luiz - Parque Residencial Jequitibás, Presidente Prudente - SP"
-  },
-  {
-    id: 5,
-    name: "Centro de Reciclagem COHAB",
-    type: "recycling-center",
-    lat: -22.111234,
-    lng: -51.413456,
-    description: "Centro de processamento e reciclagem com foco em plásticos e metais.",
-    impact: "Redução de 15% no lixo enviado ao aterro sanitário da região.",
-    address: "Rua Paraná, 789 - COHAB, Presidente Prudente - SP"
-  },
-  {
-    id: 6,
-    name: "Viveiro São Lucas",
-    type: "seedling-distribution",
-    lat: -22.138765,
-    lng: -51.389012,
-    description: "Viveiro privado que distribui mudas de espécies nativas.",
-    impact: "Contribui para o aumento da cobertura vegetal e da biodiversidade local.",
-    address: "Estrada Municipal, km 5 - Zona Rural, Presidente Prudente - SP"
-  },
-];
 
 export const useMapPoints = () => {
   const [mapPoints, setMapPoints] = useState<MapPoint[]>([]);
@@ -86,18 +22,10 @@ export const useMapPoints = () => {
     try {
       setIsLoading(true);
       
-      const localPoints = localStorage.getItem('mapPoints');
-      
       if (!supabase) {
-        console.warn('Supabase not configured, using local or example data');
-        
-        if (localPoints) {
-          setMapPoints(JSON.parse(localPoints));
-        } else {
-          setMapPoints(samplePoints);
-          localStorage.setItem('mapPoints', JSON.stringify(samplePoints));
-        }
-        
+        console.warn('Supabase not configured, using local storage');
+        const points = getStoredPoints();
+        setMapPoints(points);
         setIsLoading(false);
         return;
       }
@@ -120,56 +48,16 @@ export const useMapPoints = () => {
       }));
       
       setMapPoints(formattedPoints);
-      
-      localStorage.setItem('mapPoints', JSON.stringify(formattedPoints));
+      storePoints(formattedPoints);
     } catch (err) {
       console.error('Error fetching points:', err);
       setError(err instanceof Error ? err : new Error('Unknown error fetching points'));
       
-      const localPoints = localStorage.getItem('mapPoints');
-      if (localPoints) {
-        setMapPoints(JSON.parse(localPoints));
-        toast.warning("Usando dados salvos localmente devido a um erro de conexão.");
-      } else {
-        setMapPoints(samplePoints);
-        localStorage.setItem('mapPoints', JSON.stringify(samplePoints));
-        toast.error("Erro ao carregar pontos do banco de dados. Usando dados de exemplo.");
-      }
+      const points = getStoredPoints();
+      setMapPoints(points);
+      toast.warning("Usando dados salvos localmente devido a um erro de conexão.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const geocodeAddress = async (address: string): Promise<{lat: number, lng: number} | null> => {
-    try {
-      // Use a more specific query with country and city to improve accuracy
-      const fullAddress = `${address}, Presidente Prudente, SP, Brasil`;
-      console.log("Geocoding address:", fullAddress);
-      
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1&addressdetails=1`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`Geocoding request failed with status ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log("Geocoding response:", data);
-      
-      if (data && data.length > 0) {
-        return {
-          lat: parseFloat(data[0].lat),
-          lng: parseFloat(data[0].lon)
-        };
-      }
-      
-      toast.error("Endereço não encontrado. Por favor, verifique e tente novamente");
-      return null;
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      toast.error("Erro ao buscar coordenadas do endereço. Por favor, tente novamente");
-      return null;
     }
   };
 
@@ -182,53 +70,42 @@ export const useMapPoints = () => {
     try {
       setIsLoading(true);
       
-      if (!newPoint.address) {
-        toast.error("Por favor, forneça um endereço para o ponto.");
-        return null;
-      }
-      
-      // Get coordinates from address
       const geoLocation = await geocodeAddress(newPoint.address);
       
       if (!geoLocation) {
-        return null; // Error toast already shown by geocodeAddress
+        toast.error("Endereço não encontrado. Por favor, verifique e tente novamente");
+        return null;
       }
       
-      console.log("Geocoded location:", geoLocation);
-      
-      const completePoint: Omit<MapPoint, 'id'> = {
-        ...newPoint,
-        lat: geoLocation.lat,
-        lng: geoLocation.lng
-      };
-      
       if (!supabase) {
-        console.warn('Supabase not configured, simulating point addition');
-        const newId = Math.max(0, ...mapPoints.map(p => p.id)) + 1;
-        const pointWithId: MapPoint = { ...completePoint, id: newId };
+        const points = getStoredPoints();
+        const newId = Math.max(0, ...points.map(p => p.id)) + 1;
+        const pointWithLocation: MapPoint = {
+          ...newPoint,
+          id: newId,
+          lat: geoLocation.lat,
+          lng: geoLocation.lng
+        };
         
-        const updatedPoints = [...mapPoints, pointWithId];
+        const updatedPoints = [...points, pointWithLocation];
         setMapPoints(updatedPoints);
-        
-        localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
+        storePoints(updatedPoints);
         
         toast.success("Ponto adicionado localmente!");
-        return pointWithId;
+        return pointWithLocation;
       }
       
       const { data, error } = await supabase
         .from('eco_points')
-        .insert([
-          {
-            name: completePoint.name,
-            type: completePoint.type,
-            latitude: completePoint.lat,
-            longitude: completePoint.lng,
-            description: completePoint.description,
-            impact: completePoint.impact,
-            address: completePoint.address
-          }
-        ])
+        .insert([{
+          name: newPoint.name,
+          type: newPoint.type,
+          latitude: geoLocation.lat,
+          longitude: geoLocation.lng,
+          description: newPoint.description,
+          impact: newPoint.impact,
+          address: newPoint.address
+        }])
         .select();
       
       if (error) throw error;
@@ -244,13 +121,10 @@ export const useMapPoints = () => {
         address: data[0].address
       };
       
-      const updatedPoints = [...mapPoints, createdPoint];
-      setMapPoints(updatedPoints);
-      
-      localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
+      setMapPoints([...mapPoints, createdPoint]);
+      storePoints([...mapPoints, createdPoint]);
       
       toast.success("Ponto ecológico salvo com sucesso!");
-      
       return createdPoint;
     } catch (err) {
       console.error('Error adding point:', err);
@@ -273,7 +147,7 @@ export const useMapPoints = () => {
       if (!supabase) {
         const updatedPoints = mapPoints.filter(point => point.id !== pointId);
         setMapPoints(updatedPoints);
-        localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
+        storePoints(updatedPoints);
         toast.success("Ponto removido com sucesso!");
         return true;
       }
@@ -287,7 +161,7 @@ export const useMapPoints = () => {
 
       const updatedPoints = mapPoints.filter(point => point.id !== pointId);
       setMapPoints(updatedPoints);
-      localStorage.setItem('mapPoints', JSON.stringify(updatedPoints));
+      storePoints(updatedPoints);
       
       toast.success("Ponto removido com sucesso!");
       return true;

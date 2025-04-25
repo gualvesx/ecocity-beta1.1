@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
 import { useMapPoints } from '@/hooks/useMapPoints';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MapPoint } from '@/types/map';
 import { MapControls } from './map/MapControls';
 import { MapLegend } from './map/MapLegend';
 import { AddPointForm } from './map/AddPointForm';
@@ -48,7 +49,6 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Initialize map without click event listener
   useEffect(() => {
     if (!mapRef.current || isMapInitialized) return;
     

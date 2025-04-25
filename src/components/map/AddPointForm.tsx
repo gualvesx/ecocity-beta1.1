@@ -1,18 +1,11 @@
-
 import { X, MapPinned, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MapPoint } from '@/components/EcoMap';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { NewPoint } from '@/types/map';
 
 interface AddPointFormProps {
-  newPointForm: {
-    name: string;
-    type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
-    description: string;
-    impact: string;
-    address: string;
-  };
-  setNewPointForm: (form: any) => void;
+  newPointForm: NewPoint;
+  setNewPointForm: (form: NewPoint) => void;
   newPointPosition: { lat: number; lng: number } | null;
   setNewPointPosition: (position: { lat: number; lng: number } | null) => void;
   setIsAddingPoint: (isAdding: boolean) => void;
