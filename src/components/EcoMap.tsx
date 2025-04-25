@@ -1,6 +1,5 @@
-
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Recycle, TreeDeciduous, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield } from 'lucide-react';
+import { MapPin, Recycle, TreeDeciduous, Search, Filter, X, Plus, Save, MapPinned, Navigation, Shield, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 import { useMapPoints } from '@/hooks/useMapPoints';
@@ -43,7 +42,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
   });
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   
-  const { mapPoints, addMapPoint, isLoading, error } = useMapPoints();
+  const { mapPoints, addMapPoint, deleteMapPoint, isLoading, error } = useMapPoints();
   const { user } = useAuth();
   const navigate = useNavigate();
   
@@ -58,7 +57,6 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
         
         try {
           const L = window.L;
-          // Fix here - pass the element ID or create one if it doesn't exist
           if (!mapRef.current.id) {
             mapRef.current.id = `map-${Math.random().toString(36).substring(2, 9)}`;
           }
@@ -153,7 +151,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
   
   const getMarkerIcon = (type: string) => {
     switch (type) {
-      case 'recycling-poin':
+      case 'recycling-point':
         return <MapPin className="h-4 w-4" />;
       case 'recycling-center':
         return <Recycle className="h-4 w-4" />;
@@ -253,6 +251,15 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
       setIsAddingPoint(false);
     } catch (err) {
       toast.error("Erro ao adicionar ponto: " + (err instanceof Error ? err.message : String(err)));
+    }
+  };
+
+  const handleDeletePoint = async (pointId: number) => {
+    if (window.confirm('Tem certeza que deseja remover este ponto do mapa?')) {
+      const success = await deleteMapPoint(pointId);
+      if (success) {
+        setSelectedPoint(null);
+      }
     }
   };
 
@@ -494,12 +501,24 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
               </div>
               <h3 className="font-medium">{selectedPoint.name}</h3>
             </div>
-            <button 
-              onClick={() => setSelectedPoint(null)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {user?.isAdmin && (
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => handleDeletePoint(selectedPoint.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+              <button 
+                onClick={() => setSelectedPoint(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </div>
           
           <div className="mt-3 space-y-2">
