@@ -5,25 +5,15 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const teamMembers = [
   {
-    name: 'Carlos Silva',
+    name: 'Gustavo Alves',
     role: 'team-director',
-    description: 'Especialista em sustentabilidade e gestão ambiental com mais de 15 anos de experiência.',
+    description: 'Criador do projeto, desenvolvedor em aprendizagem, 17 anos e entusiasta da Ecologia.',
   },
   {
-    name: 'Ana Oliveira',
+    name: 'Gabriel Gedolin',
     role: 'team-coord',
-    description: 'Mestre em Desenvolvimento Sustentável, coordena projetos de preservação ambiental.',
-  },
-  {
-    name: 'Lucas Santos',
-    role: 'team-tech',
-    description: 'Engenheiro ambiental e desenvolvedor de tecnologias para monitoramento ecológico.',
-  },
-  {
-    name: 'Mariana Costa',
-    role: 'team-edu',
-    description: 'Educadora ambiental com foco em iniciativas comunitárias e educação sustentável.',
-  },
+    description: 'Desenvolvedor aprendiz, 17 anos, apoiador do projeto EcoCity e apoiador da Ecologia.',
+  }
 ];
 
 export const TeamSection = () => {
