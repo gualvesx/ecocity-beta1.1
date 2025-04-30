@@ -1,5 +1,5 @@
-#🌱 EcoCity - Mapeamento Sustentável de Resíduos
-## Apoie a Ecologia!
+#🌱 Ecologia
+## EcoCity - Mapeamento Sustentável de Resíduos
 
 **URL**: https://test-green-iota-34.vercel.app/
 
