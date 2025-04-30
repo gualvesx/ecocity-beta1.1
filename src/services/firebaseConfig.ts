@@ -1,4 +1,8 @@
 
+// Import the auth and firestore modules - will be defined in their respective files
+import { firebaseAuth } from './firebaseAuth';
+import { firebaseFirestore } from './firebaseFirestore';
+
 // Firebase configuration simulation
 export const firebaseConfig = {
   apiKey: "simulated-firebase-api-key",

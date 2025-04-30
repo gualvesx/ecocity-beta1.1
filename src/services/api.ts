@@ -1,4 +1,3 @@
-
 import { firebaseAuth } from './firebaseAuth';
 import { firebaseFirestore } from './firebaseFirestore';
 import { User } from '@/contexts/AuthContext';
@@ -231,8 +230,8 @@ export const environmentApi = {
       await firebaseFirestore.initEnvironmentalData();
       const data = await firebaseFirestore.getEnvironmentalData();
       
-      // Remove Firestore-specific fields
-      const { id, createdAt, updatedAt, ...envData } = data;
+      // Remove Firestore-specific fields but keep the id
+      const { createdAt, updatedAt, ...envData } = data;
       
       return {
         success: true,
