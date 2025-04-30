@@ -18,7 +18,7 @@ const Navbar = () => {
   const { t } = useLanguage();
   
   const navItems = [
-    { name: t('Inicio'), path: '/' },
+    { name: t('Início'), path: '/' },
     { name: t('Mapa'), path: '/map' },
     { name: t('Blog'), path: '/blog' },
     { name: t('Sobre'), path: '/about' },
