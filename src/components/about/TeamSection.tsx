@@ -21,10 +21,10 @@ export const TeamSection = () => {
   
   return (
     <div className="mb-16">
-      <h2 className="text-2xl font-bold text-eco-green-dark mb-8">{t('about-team-title')}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <h2 className="text-2xl font-bold text-eco-green-dark mb-8 text-center">{t('about-team-title')}</h2>
+      <div className="flex flex-wrap justify-center gap-6">
         {teamMembers.map((member) => (
-          <Card key={member.name} className="overflow-hidden">
+          <Card key={member.name} className="overflow-hidden w-full max-w-xs">
             <div className="aspect-square bg-eco-green/10 flex items-center justify-center">
               <User size={80} className="text-eco-green-dark" />
             </div>

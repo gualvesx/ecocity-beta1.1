@@ -21,6 +21,7 @@ const About = lazy(() => import('@/pages/About'));
 const Blog = lazy(() => import('@/pages/Blog'));
 const BlogPost = lazy(() => import('@/pages/BlogPost'));
 const MapaEcologico = lazy(() => import('@/pages/EcologicalMap'));
+const Events = lazy(() => import('@/pages/Events'));
 const AdminPanel = lazy(() => import('@/pages/AdminPanel'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
@@ -48,6 +49,7 @@ function App() {
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:id" element={<BlogPost />} />
                     <Route path="/map" element={<MapaEcologico />} />
+                    <Route path="/events" element={<Events />} />
                     <Route path="/admin" element={<AdminPanel />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

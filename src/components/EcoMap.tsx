@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Recycle, TreeDeciduous } from 'lucide-react';
+import { MapPin, Recycle, TreeDeciduous, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,19 +11,23 @@ import { MapControls } from './map/MapControls';
 import { MapLegend } from './map/MapLegend';
 import { AddPointForm } from './map/AddPointForm';
 import { PointDetails } from './map/PointDetails';
+import { useEventStore, Event } from '@/hooks/useEventStore';
 
 interface EcoMapProps {
   hideControls?: boolean;
+  eventMode?: boolean;
+  searchQuery?: string;
 }
 
-const EcoMap = ({ hideControls = false }: EcoMapProps) => {
+const EcoMap = ({ hideControls = false, eventMode = false, searchQuery = '' }: EcoMapProps) => {
   const { t } = useLanguage();
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [filter, setFilter] = useState<string>('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [isAddingPoint, setIsAddingPoint] = useState(false);
   const [newPointPosition, setNewPointPosition] = useState<{lat: number, lng: number} | null>(null);
   const [newPointForm, setNewPointForm] = useState({
@@ -36,8 +40,12 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   
   const { mapPoints, addMapPoint, deleteMapPoint } = useMapPoints();
+  const { events } = useEventStore();
   const { user } = useAuth();
   const navigate = useNavigate();
+  
+  // Use the search query from props if provided (for event mode)
+  const effectiveSearchQuery = searchQuery || localSearchQuery;
   
   useEffect(() => {
     if (!mapRef.current || isMapInitialized) return;
@@ -83,44 +91,90 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
     };
   }, [mapRef, isMapInitialized]);
 
+  // Filter map points based on type and search query
   const getFilteredPoints = () => {
+    if (eventMode) {
+      return [];  // Don't show eco points in event mode
+    }
+    
     return mapPoints.filter(point => {
       const matchesFilter = filter === 'all' || point.type === filter;
       const matchesSearch = 
-        point.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        point.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (point.address && point.address.toLowerCase().includes(searchQuery.toLowerCase()));
+        point.name.toLowerCase().includes(effectiveSearchQuery.toLowerCase()) ||
+        point.description.toLowerCase().includes(effectiveSearchQuery.toLowerCase()) ||
+        (point.address && point.address.toLowerCase().includes(effectiveSearchQuery.toLowerCase()));
       return matchesFilter && matchesSearch;
     });
   };
   
+  // Filter events based on search query
+  const getFilteredEvents = () => {
+    if (!eventMode) {
+      return [];  // Don't show events in eco point mode
+    }
+    
+    return events.filter(event => 
+      event.title.toLowerCase().includes(effectiveSearchQuery.toLowerCase()) ||
+      event.description.toLowerCase().includes(effectiveSearchQuery.toLowerCase()) ||
+      event.address.toLowerCase().includes(effectiveSearchQuery.toLowerCase()) ||
+      event.organizer.toLowerCase().includes(effectiveSearchQuery.toLowerCase())
+    );
+  };
+  
+  // Add markers to map
   useEffect(() => {
     if (!map) return;
     
+    // Clear existing markers
     map.eachLayer((layer: any) => {
       if (layer._icon && layer._icon.className.includes('leaflet-marker-icon')) {
         map.removeLayer(layer);
       }
     });
     
+    const L = window.L;
+    
+    // Add filtered points
     const filteredPoints = getFilteredPoints();
     filteredPoints.forEach(point => {
       const iconHtml = getMarkerIconHtml(point.type);
       
-      const icon = window.L.divIcon({
+      const icon = L.divIcon({
         html: iconHtml,
         className: '',
         iconSize: [32, 32],
         iconAnchor: [16, 16]
       });
       
-      const marker = window.L.marker([point.lat, point.lng], { icon }).addTo(map);
+      const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
       
       marker.on('click', () => {
         setSelectedPoint(point);
+        setSelectedEvent(null);
       });
     });
-  }, [map, filter, searchQuery, mapPoints]);
+    
+    // Add event markers if in event mode
+    const filteredEvents = getFilteredEvents();
+    filteredEvents.forEach(event => {
+      const iconHtml = getEventMarkerIconHtml();
+      
+      const icon = L.divIcon({
+        html: iconHtml,
+        className: '',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+      });
+      
+      const marker = L.marker([event.lat, event.lng], { icon }).addTo(map);
+      
+      marker.on('click', () => {
+        setSelectedEvent(event);
+        setSelectedPoint(null);
+      });
+    });
+    
+  }, [map, filter, effectiveSearchQuery, mapPoints, events, eventMode]);
   
   const getMarkerIcon = (type: string) => {
     switch (type) {
@@ -130,6 +184,8 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
         return <Recycle className="h-4 w-4" />;
       case 'seedling-distribution':
         return <TreeDeciduous className="h-4 w-4" />;
+      case 'event':
+        return <Calendar className="h-4 w-4" />;
       default:
         return <MapPin className="h-4 w-4" />;
     }
@@ -157,6 +213,17 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
     }
     
     return `<div class="flex items-center justify-center w-8 h-8 ${bgColor} text-white rounded-full shadow-lg border-2 border-white">${iconSvg}</div>`;
+  };
+  
+  const getEventMarkerIconHtml = () => {
+    return `<div class="flex items-center justify-center w-8 h-8 bg-purple-500 text-white rounded-full shadow-lg border-2 border-white">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </div>`;
   };
 
   const typeInfo = {
@@ -227,16 +294,73 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
       }
     }
   };
+  
+  // Render event details when an event is selected
+  const renderEventDetails = () => {
+    if (!selectedEvent) return null;
+    
+    const eventDate = new Date(selectedEvent.date);
+    
+    return (
+      <div className="absolute bottom-4 right-4 w-full max-w-md bg-white/95 backdrop-blur-md p-4 rounded-lg shadow-lg border border-purple-300 z-20">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full flex items-center justify-center bg-purple-500">
+              <Calendar className="text-white h-4 w-4" />
+            </div>
+            <h3 className="font-medium">{selectedEvent.title}</h3>
+          </div>
+          <button 
+            onClick={() => setSelectedEvent(null)}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        
+        <div className="mt-3 space-y-2">
+          <div className="flex items-start gap-2 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-500 mt-0.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>{format(eventDate, 'dd/MM/yyyy')} às {selectedEvent.time}</span>
+          </div>
+          
+          <div className="flex items-start gap-2 text-sm">
+            <MapPin className="h-4 w-4 text-purple-500 mt-0.5 shrink-0" />
+            <span>{selectedEvent.address}</span>
+          </div>
+          
+          <div className="flex items-start gap-2 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-500 mt-0.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>{selectedEvent.organizer}</span>
+          </div>
+          
+          <p className="text-sm mt-2">{selectedEvent.description}</p>
+          
+          <div className="flex justify-end mt-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs"
+              onClick={() => map?.setView([selectedEvent.lat, selectedEvent.lng], 15)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+              Centralizar no mapa
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="relative bg-eco-sand/50 rounded-xl overflow-hidden shadow-md">
       <div ref={mapRef} className="h-[70vh] w-full z-10"></div>
       
-      {!hideControls && (
+      {!hideControls && !eventMode && (
         <>
           <MapControls
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
+            searchQuery={localSearchQuery}
+            setSearchQuery={setLocalSearchQuery}
             filter={filter}
             setFilter={setFilter}
             isFilterOpen={isFilterOpen}
@@ -269,6 +393,18 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
             />
           )}
         </>
+      )}
+      
+      {eventMode && selectedEvent && renderEventDetails()}
+      
+      {eventMode && (
+        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-md shadow-sm border border-gray-200 z-20">
+          <h4 className="text-sm font-medium mb-2">Legenda</h4>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span className="text-sm">Evento Ecológico</span>
+          </div>
+        </div>
       )}
     </div>
   );

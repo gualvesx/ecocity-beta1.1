@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Leaf, LogIn, LogOut, User, UserPlus, Shield } from 'lucide-react';
+import { Menu, X, Leaf, LogIn, LogOut, User, UserPlus, Shield, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -20,6 +20,7 @@ const Navbar = () => {
   const navItems = [
     { name: t('Inicio'), path: '/' },
     { name: t('Mapa'), path: '/map' },
+    { name: t('Eventos'), path: '/events' },
     { name: t('Blog'), path: '/blog' },
     { name: t('Sobre'), path: '/about' },
   ];
