@@ -1,7 +1,7 @@
 
 import { X, MapPin, Navigation, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MapPoint } from '@/components/EcoMap';
+import { MapPoint } from '@/types/map';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
