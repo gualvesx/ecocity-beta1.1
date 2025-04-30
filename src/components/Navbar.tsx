@@ -18,10 +18,10 @@ const Navbar = () => {
   const { t } = useLanguage();
   
   const navItems = [
-    { name: t('inicio'), path: '/' },
-    { name: t('mapa'), path: '/map' },
-    { name: t('blog'), path: '/blog' },
-    { name: t('sobre'), path: '/about' },
+    { name: t('Inicio'), path: '/' },
+    { name: t('Mapa'), path: '/map' },
+    { name: t('Blog'), path: '/blog' },
+    { name: t('Sobre'), path: '/about' },
   ];
 
   useEffect(() => {
@@ -132,7 +132,7 @@ const Navbar = () => {
                   className="text-foreground"
                 >
                   <UserPlus className="h-4 w-4 mr-1" />
-                  {t('cadastrar')}
+                  {t('Cadastrar')}
                 </Button>
                 
                 <Button
@@ -141,7 +141,7 @@ const Navbar = () => {
                   className="bg-eco-green hover:bg-eco-green-dark"
                 >
                   <LogIn className="h-4 w-4 mr-1" />
-                  {t('entrar')}
+                  {t('Entrar')}
                 </Button>
               </>
             )}
