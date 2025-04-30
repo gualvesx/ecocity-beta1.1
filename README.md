@@ -11,10 +11,10 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone [<YOUR_GIT_URL>](https://github.com/gualvesx/EcoCity.git)
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd EcoCity
 
 # Step 3: Install the necessary dependencies.
 npm i
@@ -57,4 +57,42 @@ Yes it is!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBvuILIDo5uxxkX4SRo1rkMGN3EVKf_cRQ",
+  authDomain: "ecocity-801cc.firebaseapp.com",
+  projectId: "ecocity-801cc",
+  storageBucket: "ecocity-801cc.firebasestorage.app",
+  messagingSenderId: "825751292076",
+  appId: "1:825751292076:web:11dcde0f9a5d153b64b709",
+  measurementId: "G-9NQK92Q42X"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+--
+
+npm install firebase
+npm install -g firebase-tools
+
+É possível implantar agora ou depois. Para implantar agora, abra uma janela de terminal e navegue ou crie um diretório raiz a partir do seu app da Web.
+
+Faça login no Google
+firebase login
+Iniciar seu projeto
+Execute este comando do diretório raiz do seu app:
+
+firebase init
+Quando tudo estiver pronto, implante seu app da Web
+Inclua seus arquivos estáticos (por exemplo, HTML, CSS, JS) no diretório de implantação do app (o padrão é "público"). Em seguida, execute este comando no diretório raiz dele:
+
+firebase deploy
