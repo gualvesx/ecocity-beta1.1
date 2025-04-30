@@ -8,14 +8,14 @@ export const MapDataSection = () => {
   const { t } = useLanguage();
   
   const dataCards = [
-    { icon: Globe, title: 'research-partnerships', desc: 'partnerships-description' },
+    { icon: Globe, title: 'Redução da Contaminação do Meio Ambiente', desc: 'Lixo eletrônico (pilhas, celulares, baterias) e lâmpadas fluorescentes contêm metais pesados (chumbo, mercúrio, cádmio) que, se descartados incorretamente, poluem o solo e a água, intoxicando ecossistemas e prejudicando a saúde humana. Um EcoMapa ajuda a direcionar esses resíduos para pontos de coleta especializados, evitando danos ambientais' },
     { icon: Users, title: 'community-contributions', desc: 'contributions-description' },
     { icon: Calendar, title: 'regular-updates', desc: 'updates-description' },
   ];
   
   return (
     <div className="mb-16">
-      <h2 className="text-2xl font-bold text-eco-green-dark mb-4">{t('how-data-collected')}</h2>
+      <h2 className="text-2xl font-bold text-eco-green-dark mb-4">{t('Causa')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {dataCards.map(({ icon, title, desc }) => (
           <DataCard key={title} icon={icon} titleKey={title} descKey={desc} />
