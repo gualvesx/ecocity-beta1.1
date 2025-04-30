@@ -1,15 +1,7 @@
 
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { toast } from 'sonner';
-import { createClient } from '@supabase/supabase-js';
 import { firebaseAuth } from '@/services/firebaseAuth';
-
-// Initialize Supabase client with fallback values
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lygvpskjhiwgzsmqiojc.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-// Only create the Supabase client if we have both URL and key
-const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 // User types
 export interface User {
@@ -34,20 +26,20 @@ interface AuthContextType {
 // Creating the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Dummy users list
+// Dummy users list (apenas para fallback, o Firebase é a fonte principal)
 const dummyUsers: (User & { password: string })[] = [
   {
     id: '1',
     name: 'Admin',
-    email: 'admin@example.com',
-    password: 'admin123',
+    email: 'admin@terraverde.com',
+    password: 'admin@123',
     isAdmin: true,
   },
   {
     id: '2',
     name: 'Usuário',
-    email: 'user@example.com',
-    password: 'user123',
+    email: 'usuario@terraverde.com',
+    password: 'usuario@123',
     isAdmin: false,
   }
 ];
@@ -61,78 +53,25 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Try to get users locally
-        const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          setUsers(JSON.parse(storedUsers));
-        } else {
-          setUsers(dummyUsers);
-          localStorage.setItem('users', JSON.stringify(dummyUsers));
+        // Manter os dados de usuário dummy apenas para fallback
+        setUsers(dummyUsers);
+        console.log("Usando dados de usuário para fallback local");
+
+        // Check if a user is logged in
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
         }
-        console.log("Using local storage for users");
       } catch (error) {
         console.error("Error loading users:", error);
-        // Fallback to dummy users
         setUsers(dummyUsers);
-      }
-
-      // Check if a user is logged in
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-      
-      setIsLoading(false);
-      
-      // Check Supabase session if Supabase is initialized
-      if (supabase) {
-        checkSupabaseSession();
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchInitialData();
   }, []);
-  
-  // Check Supabase session at startup
-  const checkSupabaseSession = async () => {
-    try {
-      if (!supabase) return;
-      
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Error checking session:', error.message);
-        return;
-      }
-      
-      if (data.session) {
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', data.session.user.id)
-          .single();
-          
-        if (userError) {
-          console.error('Error fetching user data:', userError.message);
-          return;
-        }
-        
-        if (userData) {
-          const currentUser = {
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            isAdmin: userData.is_admin || false,
-          };
-          
-          setUser(currentUser);
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        }
-      }
-    } catch (error) {
-      console.error('Error checking Supabase session:', error);
-    }
-  };
 
   // Login function
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -155,52 +94,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         console.log("Firebase login failed, trying alternatives", firebaseError);
       }
       
-      // Try Supabase login if available
-      if (supabase) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (error) {
-          console.error('Supabase login error:', error.message);
-          
-          // Fallback to local login
-          return loginWithLocalData(email, password);
-        }
-        
-        // Successful Supabase login
-        if (data.user) {
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', data.user.id)
-            .single();
-            
-          if (userError) {
-            console.error('Error fetching user data:', userError.message);
-            toast.error('Error fetching user data');
-            return false;
-          }
-          
-          const currentUser = {
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            isAdmin: userData.is_admin || false,
-          };
-          
-          setUser(currentUser);
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          toast.success(`Welcome, ${currentUser.name}!`);
-          return true;
-        }
-        
-        return false;
-      } else {
-        // If Supabase is not available, use local login
-        return loginWithLocalData(email, password);
-      }
+      // Fallback to local login
+      return loginWithLocalData(email, password);
     } catch (error) {
       toast.error('Error logging in');
       console.error('Login error:', error);
@@ -210,7 +105,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
   
-  // Helper for local login
+  // Helper for local login (fallback)
   const loginWithLocalData = (email: string, password: string): boolean => {
     const foundUser = users.find(u => 
       u.email.toLowerCase() === email.toLowerCase() && 
@@ -234,7 +129,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setIsLoading(true);
     
     try {
-      // Try Firebase registration first
+      // Try Firebase registration
       try {
         console.log("Attempting registration with Firebase...");
         const { user: firebaseUser } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
@@ -247,68 +142,11 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
           return true;
         }
       } catch (firebaseError) {
-        console.log("Firebase registration failed, falling back to other methods", firebaseError);
-      }
-      
-      // Try Supabase registration if available
-      if (supabase) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name,
-            },
-          },
-        });
-        
-        if (error) {
-          console.error('Supabase registration error:', error.message);
-          
-          // Fallback to local registration
-          return registerLocally(name, email, password);
-        }
-        
-        // Successful Supabase registration
-        if (data.user) {
-          // Insert additional data in users table
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert([
-              { 
-                id: data.user.id,
-                name, 
-                email,
-                is_admin: false,
-              }
-            ]);
-            
-          if (insertError) {
-            console.error('Error inserting user data:', insertError.message);
-            toast.error('Error completing registration');
-            return false;
-          }
-          
-          // Create local user for consistency
-          const newUser = {
-            id: data.user.id,
-            name,
-            email,
-            isAdmin: false,
-          };
-          
-          setUser(newUser);
-          localStorage.setItem('currentUser', JSON.stringify(newUser));
-          
-          toast.success('Registration successful!');
-          return true;
-        }
-        
-        return false;
-      } else {
-        // If Supabase is not available, use local registration
+        console.log("Firebase registration failed, falling back to local methods", firebaseError);
         return registerLocally(name, email, password);
       }
+      
+      return false;
     } catch (error) {
       toast.error('Error registering user');
       console.error('Registration error:', error);
@@ -318,7 +156,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
   
-  // Helper for local registration
+  // Helper for local registration (fallback)
   const registerLocally = (name: string, email: string, password: string): boolean => {
     // Check if email already exists
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
@@ -337,14 +175,13 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     
     const updatedUsers = [...users, newUser];
     setUsers(updatedUsers);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
     
     // Auto-login the user
     const { password: _, ...userWithoutPassword } = newUser;
     setUser(userWithoutPassword);
     localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
     
-    toast.success('Registration successful!');
+    toast.success('Registration successful (local mode)!');
     return true;
   };
 
@@ -356,12 +193,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         await firebaseAuth.signOut();
         console.log("Logged out from Firebase");
       } catch (firebaseError) {
-        console.log("Firebase logout failed, proceeding with other methods", firebaseError);
-      }
-      
-      // Supabase logout if available
-      if (supabase) {
-        await supabase.auth.signOut();
+        console.log("Firebase logout failed", firebaseError);
       }
     } catch (error) {
       console.error('Error logging out:', error);
@@ -385,38 +217,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         console.error('Error fetching Firebase users:', error);
         return null;
       }
-    };
-    
-    // Try to fetch users from Supabase
-    const fetchSupabaseUsers = async () => {
-      try {
-        if (!supabase) return null;
-        
-        const { data, error } = await supabase
-          .from('users')
-          .select('*');
-          
-        if (error) {
-          console.error('Error fetching users from Supabase:', error.message);
-          return null;
-        }
-        
-        if (data && data.length > 0) {
-          // Map Supabase data to expected format
-          const formattedUsers = data.map(u => ({
-            id: u.id,
-            name: u.name,
-            email: u.email,
-            isAdmin: u.is_admin || false,
-          }));
-          
-          return formattedUsers;
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-      
-      return null;
     };
     
     // Use local users as fallback
@@ -444,26 +244,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         console.log("Firebase update failed, falling back to other methods", firebaseError);
       }
       
-      // Try to update in Supabase next
-      if (supabase) {
-        const { error } = await supabase
-          .from('users')
-          .update({ is_admin: isAdmin })
-          .eq('id', userId);
-          
-        if (error) {
-          console.error('Error updating admin status in Supabase:', error.message);
-          
-          // Fallback to local update
-          return updateLocalUserAdminStatus(userId, isAdmin);
-        }
-        
-        // If no error, update local data as well for consistency
-        return updateLocalUserAdminStatus(userId, isAdmin);
-      } else {
-        // If Supabase is not available, use local update
-        return updateLocalUserAdminStatus(userId, isAdmin);
-      }
+      // If Firebase is not available, use local update
+      return updateLocalUserAdminStatus(userId, isAdmin);
     } catch (error) {
       console.error('Error updating user status:', error);
       return false;
@@ -479,9 +261,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
       return u;
     });
     
-    // Update state and localStorage
+    // Update state
     setUsers(updatedUsers);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
     
     // If the modified user is the current user, update their state too
     if (user && user.id === userId) {
@@ -521,55 +302,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         toast.success('User created successfully in Firebase!');
         return true;
       } catch (firebaseError) {
-        console.log("Firebase user creation failed, falling back", firebaseError);
-      }
-      
-      // Try to create user in Supabase
-      if (supabase) {
-        // Note: In a real app, this would require server-side code with admin privileges
-        // This is a simplified approach for the demo
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { name },
-          },
-        });
-        
-        if (error) {
-          console.error('Error creating user in Supabase:', error.message);
-          
-          // Fallback to local creation
-          return createLocalUserByAdmin(name, email, password, isAdmin);
-        }
-        
-        // Successful creation in Supabase
-        if (data.user) {
-          // Insert additional data in users table
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert([
-              { 
-                id: data.user.id,
-                name, 
-                email,
-                is_admin: isAdmin,
-              }
-            ]);
-            
-          if (insertError) {
-            console.error('Error inserting user data:', insertError.message);
-            toast.error('Error completing user registration');
-            return false;
-          }
-          
-          toast.success('User created successfully!');
-          return true;
-        }
-        
-        return false;
-      } else {
-        // If Supabase is not available, use local creation
+        console.log("Firebase user creation failed, falling back to local", firebaseError);
         return createLocalUserByAdmin(name, email, password, isAdmin);
       }
     } catch (error) {
@@ -600,9 +333,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     
     const updatedUsers = [...users, newUser];
     setUsers(updatedUsers);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
     
-    toast.success('User created successfully!');
+    toast.success('User created successfully (local mode)!');
     return true;
   };
 

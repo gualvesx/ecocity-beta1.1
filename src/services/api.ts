@@ -11,7 +11,7 @@ interface ApiResponse<T> {
   data?: T;
 }
 
-// Environmental monitoring stats
+// Environmental monitoring stats (mock data for UI)
 interface EnvironmentalStats {
   hectaresMonitored: number;
   riskAreasIdentified: number;
@@ -24,7 +24,7 @@ export const environmentApi = {
   getMonitoringStats: async (): Promise<ApiResponse<EnvironmentalStats>> => {
     try {
       // This is a mock implementation that returns hardcoded values
-      // In a real application, this would connect to actual data sources
+      // In a real application, this would connect to Firebase
       return {
         success: true,
         data: {
