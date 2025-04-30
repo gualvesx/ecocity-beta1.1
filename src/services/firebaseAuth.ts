@@ -19,17 +19,17 @@ const authState: AuthState = {
   users: [
     {
       uid: "admin-uid-123",
-      email: "admin@example.com",
-      displayName: "Admin User",
+      email: "admin@terraverde.com",
+      displayName: "Administrador",
       isAdmin: true,
-      password: "admin123"
+      password: "admin@123"
     },
     {
       uid: "user-uid-456",
-      email: "user@example.com",
-      displayName: "Regular User",
+      email: "usuario@terraverde.com",
+      displayName: "Usuário Padrão",
       isAdmin: false,
-      password: "user123"
+      password: "usuario@123"
     }
   ]
 };

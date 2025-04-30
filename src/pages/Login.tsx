@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LogIn, User, Leaf, Mail, Lock } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 const Login = () => {
   const { login, isLoading } = useAuth();
@@ -19,6 +20,16 @@ const Login = () => {
     if (success) {
       navigate('/map');
     }
+  };
+
+  const setAdminCredentials = () => {
+    setEmail('admin@terraverde.com');
+    setPassword('admin@123');
+  };
+
+  const setUserCredentials = () => {
+    setEmail('usuario@terraverde.com');
+    setPassword('usuario@123');
   };
 
   return (
@@ -92,17 +103,45 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="mt-8 bg-eco-green-light/20 rounded-lg p-4 max-w-md text-center">
-          <h3 className="font-medium text-eco-green-dark mb-2">Credenciais de teste</h3>
-          <div className="space-y-2 text-sm">
-            <div>
-              <strong>Admin:</strong> admin@example.com / admin123
+        <Card className="mt-8 p-6 max-w-md w-full border-eco-green">
+          <h3 className="text-center font-semibold text-lg text-eco-green-dark mb-4">Credenciais de Acesso</h3>
+          
+          <div className="space-y-4">
+            <div className="bg-eco-green/10 p-4 rounded-lg">
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Administrador
+              </h4>
+              <p><strong>Email:</strong> admin@terraverde.com</p>
+              <p><strong>Senha:</strong> admin@123</p>
+              <Button 
+                onClick={setAdminCredentials} 
+                variant="outline" 
+                size="sm"
+                className="mt-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white"
+              >
+                Usar estas credenciais
+              </Button>
             </div>
-            <div>
-              <strong>Usuário:</strong> user@example.com / user123
+            
+            <div className="bg-eco-sand/20 p-4 rounded-lg">
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Usuário Padrão
+              </h4>
+              <p><strong>Email:</strong> usuario@terraverde.com</p>
+              <p><strong>Senha:</strong> usuario@123</p>
+              <Button 
+                onClick={setUserCredentials} 
+                variant="outline"
+                size="sm"
+                className="mt-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white"
+              >
+                Usar estas credenciais
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
