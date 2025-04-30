@@ -1,77 +1,67 @@
+
 import { firebaseAuth } from './firebaseAuth';
 import { firebaseFirestore } from './firebaseFirestore';
 import { User } from '@/contexts/AuthContext';
-import { EnvironmentalData, EnvironmentalRisk } from './envData';
+import { Event, EventRequest } from '@/hooks/useEventStore';
 
-// API response interfaces
+// Interfaces de resposta da API
 interface ApiResponse<T> {
   success: boolean;
   message?: string;
   data?: T;
 }
 
-// User API endpoints
+// API de usuários
 export const userApi = {
-  // Get all users
+  // Obter todos os usuários
   getAllUsers: async (): Promise<ApiResponse<User[]>> => {
     try {
-      console.log("API: Fetching all users");
+      console.log("API: Buscando todos os usuários");
       
       const users = await firebaseAuth.getAllUsers();
-      const appUsers = users.map(user => ({
-        id: user.uid,
-        name: user.displayName,
-        email: user.email,
-        isAdmin: !!user.isAdmin
-      }));
       
       return {
         success: true,
-        data: appUsers
+        data: users
       };
     } catch (error) {
       console.error("API error fetching users:", error);
       return {
         success: false,
-        message: "Failed to fetch users"
+        message: "Falha ao buscar usuários"
       };
     }
   },
   
-  // Get user by ID
+  // Obter usuário por ID
   getUserById: async (userId: string): Promise<ApiResponse<User>> => {
     try {
-      console.log(`API: Fetching user with ID ${userId}`);
+      console.log(`API: Buscando usuário com ID ${userId}`);
       
       const users = await firebaseAuth.getAllUsers();
-      const user = users.find(u => u.uid === userId);
+      const user = users.find(u => u.id === userId);
       
       if (!user) {
         return {
           success: false,
-          message: "User not found"
+          message: "Usuário não encontrado"
         };
       }
       
       return {
         success: true,
-        data: {
-          id: user.uid,
-          name: user.displayName,
-          email: user.email,
-          isAdmin: !!user.isAdmin
-        }
+        data: user
       };
     } catch (error) {
       console.error(`API error fetching user ${userId}:`, error);
       return {
         success: false,
-        message: "Failed to fetch user"
+        message: "Falha ao buscar usuário"
       };
     }
   },
   
-  // Create user (admin only)
+  // Criar usuário (somente admin)
   createUser: async (
     name: string, 
     email: string, 
@@ -79,7 +69,7 @@ export const userApi = {
     isAdmin: boolean
   ): Promise<ApiResponse<User>> => {
     try {
-      console.log(`API: Creating user ${email}`);
+      console.log(`API: Criando usuário ${email}`);
       
       const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
       
@@ -87,31 +77,28 @@ export const userApi = {
         await firebaseAuth.updateUserAdmin(user.uid, true);
       }
       
+      const appUser = await firebaseAuth.convertToContextUser(user);
+      
       return {
         success: true,
-        data: {
-          id: user.uid,
-          name: user.displayName,
-          email: user.email,
-          isAdmin: !!user.isAdmin
-        }
+        data: appUser!
       };
     } catch (error) {
       console.error("API error creating user:", error);
       return {
         success: false,
-        message: error instanceof Error ? error.message : "Failed to create user"
+        message: error instanceof Error ? error.message : "Falha ao criar usuário"
       };
     }
   },
   
-  // Update user admin status
+  // Atualizar status de admin do usuário
   updateUserAdmin: async (
     userId: string, 
     isAdmin: boolean
   ): Promise<ApiResponse<null>> => {
     try {
-      console.log(`API: Updating user ${userId} admin status to ${isAdmin}`);
+      console.log(`API: Atualizando usuário ${userId} para status de admin: ${isAdmin}`);
       
       await firebaseAuth.updateUserAdmin(userId, isAdmin);
       
@@ -122,44 +109,24 @@ export const userApi = {
       console.error(`API error updating user ${userId}:`, error);
       return {
         success: false,
-        message: "Failed to update user"
-      };
-    }
-  },
-  
-  // Delete user (not implemented in the UI yet)
-  deleteUser: async (userId: string): Promise<ApiResponse<null>> => {
-    try {
-      console.log(`API: Deleting user ${userId}`);
-      
-      // Firebase delete user would be implemented here
-      // For simulation, we just return success
-      
-      return {
-        success: true
-      };
-    } catch (error) {
-      console.error(`API error deleting user ${userId}:`, error);
-      return {
-        success: false,
-        message: "Failed to delete user"
+        message: "Falha ao atualizar usuário"
       };
     }
   }
 };
 
-// Authentication API endpoints
+// API de autenticação
 export const authApi = {
   // Login
   login: async (email: string, password: string): Promise<ApiResponse<User>> => {
     try {
-      console.log(`API: Login attempt for ${email}`);
+      console.log(`API: Tentativa de login para ${email}`);
       
       const { user } = await firebaseAuth.signInWithEmailAndPassword(email, password);
-      const appUser = firebaseAuth.convertToContextUser(user);
+      const appUser = await firebaseAuth.convertToContextUser(user);
       
       if (!appUser) {
-        throw new Error("Failed to convert user data");
+        throw new Error("Falha ao converter dados do usuário");
       }
       
       return {
@@ -170,21 +137,21 @@ export const authApi = {
       console.error("API login error:", error);
       return {
         success: false,
-        message: "Invalid email or password"
+        message: "Email ou senha inválidos"
       };
     }
   },
   
-  // Register
+  // Registro
   register: async (name: string, email: string, password: string): Promise<ApiResponse<User>> => {
     try {
-      console.log(`API: Registration attempt for ${email}`);
+      console.log(`API: Tentativa de registro para ${email}`);
       
       const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
-      const appUser = firebaseAuth.convertToContextUser(user);
+      const appUser = await firebaseAuth.convertToContextUser(user);
       
       if (!appUser) {
-        throw new Error("Failed to convert user data");
+        throw new Error("Falha ao converter dados do usuário");
       }
       
       return {
@@ -195,7 +162,7 @@ export const authApi = {
       console.error("API registration error:", error);
       return {
         success: false,
-        message: error instanceof Error ? error.message : "Registration failed"
+        message: error instanceof Error ? error.message : "Falha no registro"
       };
     }
   },
@@ -203,7 +170,7 @@ export const authApi = {
   // Logout
   logout: async (): Promise<ApiResponse<null>> => {
     try {
-      console.log("API: Logout attempt");
+      console.log("API: Tentativa de logout");
       
       await firebaseAuth.signOut();
       
@@ -214,82 +181,90 @@ export const authApi = {
       console.error("API logout error:", error);
       return {
         success: false,
-        message: "Logout failed"
+        message: "Falha ao fazer logout"
       };
     }
   }
 };
 
-// Environment API endpoints for Presidente Prudente
-export const environmentApi = {
-  // Get current environmental data
-  getCurrentData: async (): Promise<ApiResponse<EnvironmentalData>> => {
+// API de eventos
+export const eventApi = {
+  // Obter todos os eventos
+  getAllEvents: async (): Promise<ApiResponse<Event[]>> => {
     try {
-      console.log("API: Fetching current environmental data for Presidente Prudente");
+      console.log("API: Buscando todos os eventos");
       
-      await firebaseFirestore.initEnvironmentalData();
-      const data = await firebaseFirestore.getEnvironmentalData();
-      
-      // Remove Firestore-specific fields but keep the id
-      const { createdAt, updatedAt, ...envData } = data;
+      const events = await firebaseFirestore.events.getAll();
       
       return {
         success: true,
-        data: envData
+        data: events
       };
     } catch (error) {
-      console.error("API error fetching environmental data:", error);
+      console.error("API error fetching events:", error);
       return {
         success: false,
-        message: "Failed to fetch environmental data"
+        message: "Falha ao buscar eventos"
       };
     }
   },
   
-  // Get all environmental risks
-  getEnvironmentalRisks: async (): Promise<ApiResponse<EnvironmentalRisk[]>> => {
+  // Adicionar evento
+  addEvent: async (eventData: Omit<Event, 'id'>): Promise<ApiResponse<Event>> => {
     try {
-      console.log("API: Fetching environmental risks for Presidente Prudente");
+      console.log("API: Adicionando novo evento");
       
-      await firebaseFirestore.initEnvironmentalData();
-      const snapshot = await firebaseFirestore.collection<any>('environmentalRisks').get();
-      
-      const risks: EnvironmentalRisk[] = snapshot.docs.map(doc => {
-        const data = doc.data();
-        // Remove Firestore-specific fields
-        const { id, createdAt, updatedAt, ...risk } = data;
-        return risk as EnvironmentalRisk;
-      });
+      const event = await firebaseFirestore.events.add(eventData);
       
       return {
         success: true,
-        data: risks
+        data: event
       };
     } catch (error) {
-      console.error("API error fetching environmental risks:", error);
+      console.error("API error adding event:", error);
       return {
         success: false,
-        message: "Failed to fetch environmental risks"
+        message: "Falha ao adicionar evento"
       };
     }
   },
   
-  // Get monitoring statistics
-  getMonitoringStats: async () => {
+  // Obter solicitações de eventos
+  getEventRequests: async (): Promise<ApiResponse<EventRequest[]>> => {
     try {
-      console.log("API: Fetching monitoring statistics");
+      console.log("API: Buscando solicitações de eventos");
       
-      const stats = await firebaseFirestore.getMonitoringStatistics();
+      const requests = await firebaseFirestore.eventRequests.getAll();
       
       return {
         success: true,
-        data: stats
+        data: requests
       };
     } catch (error) {
-      console.error("API error fetching monitoring statistics:", error);
+      console.error("API error fetching event requests:", error);
       return {
         success: false,
-        message: "Failed to fetch monitoring statistics"
+        message: "Falha ao buscar solicitações de eventos"
+      };
+    }
+  },
+  
+  // Adicionar solicitação de evento
+  addEventRequest: async (requestData: Omit<EventRequest, 'id'>): Promise<ApiResponse<EventRequest>> => {
+    try {
+      console.log("API: Adicionando nova solicitação de evento");
+      
+      const request = await firebaseFirestore.eventRequests.add(requestData);
+      
+      return {
+        success: true,
+        data: request
+      };
+    } catch (error) {
+      console.error("API error adding event request:", error);
+      return {
+        success: false,
+        message: "Falha ao adicionar solicitação de evento"
       };
     }
   }

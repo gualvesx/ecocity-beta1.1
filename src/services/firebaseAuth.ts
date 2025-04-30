@@ -1,155 +1,118 @@
 
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  updateProfile,
+  User as FirebaseUser
+} from "firebase/auth";
+import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import { auth, firestore } from './firebaseConfig';
 import { User } from '@/contexts/AuthContext';
 
-// Simulated Firebase Auth service
-export interface AuthUser {
-  uid: string;
-  email: string;
-  displayName: string;
-  isAdmin?: boolean;
-}
-
-interface AuthState {
-  currentUser: AuthUser | null;
-  users: (AuthUser & { password: string })[];
-}
-
-const authState: AuthState = {
-  currentUser: null,
-  users: [
-    {
-      uid: "admin-uid-123",
-      email: "admin@terraverde.com",
-      displayName: "Administrador",
-      isAdmin: true,
-      password: "admin@123"
-    },
-    {
-      uid: "user-uid-456",
-      email: "usuario@terraverde.com",
-      displayName: "Usuário Padrão",
-      isAdmin: false,
-      password: "usuario@123"
-    }
-  ]
-};
-
-// Simulated Firebase Auth instance
-export const firebaseAuth = {
-  // Get current authenticated user
-  currentUser: () => authState.currentUser,
+// Converter FirebaseUser para User da aplicação
+const convertToContextUser = async (firebaseUser: FirebaseUser | null): Promise<User | null> => {
+  if (!firebaseUser) return null;
   
-  // Sign in with email and password
-  signInWithEmailAndPassword: async (email: string, password: string) => {
-    console.log(`Attempting to sign in with email: ${email}`);
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const user = authState.users.find(
-      u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
-    
-    if (!user) {
-      throw new Error("auth/invalid-credentials");
-    }
-    
-    const { password: _, ...authUser } = user;
-    authState.currentUser = authUser;
-    
-    console.log(`User ${email} signed in successfully`);
+  try {
+    // Verificar se o usuário tem dados adicionais no Firestore
+    const userDoc = await getDoc(doc(firestore, "users", firebaseUser.uid));
+    const userData = userDoc.data();
     
     return {
-      user: authUser
+      id: firebaseUser.uid,
+      name: firebaseUser.displayName || userData?.name || "Usuário",
+      email: firebaseUser.email || userData?.email || "",
+      isAdmin: userData?.isAdmin || false
     };
-  },
-  
-  // Create a new user with email and password
-  createUserWithEmailAndPassword: async (email: string, password: string, displayName: string) => {
-    console.log(`Attempting to create user with email: ${email}`);
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Check if email already exists
-    if (authState.users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-      throw new Error("auth/email-already-in-use");
-    }
-    
-    const newUser: AuthUser & { password: string } = {
-      uid: `user-uid-${Date.now()}`,
-      email,
-      displayName,
-      isAdmin: false,
-      password
-    };
-    
-    authState.users.push(newUser);
-    
-    const { password: _, ...authUser } = newUser;
-    authState.currentUser = authUser;
-    
-    console.log(`User ${email} created successfully`);
-    
+  } catch (error) {
+    console.error("Error converting user:", error);
+    // Fallback para dados básicos do Firebase Auth
     return {
-      user: authUser
-    };
-  },
-  
-  // Sign out the current user
-  signOut: async () => {
-    console.log("Signing out current user");
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    authState.currentUser = null;
-    
-    console.log("User signed out successfully");
-  },
-  
-  // Update a user's admin status
-  updateUserAdmin: async (uid: string, isAdmin: boolean) => {
-    console.log(`Updating admin status for user ${uid} to ${isAdmin}`);
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    const userIndex = authState.users.findIndex(u => u.uid === uid);
-    if (userIndex === -1) {
-      throw new Error("auth/user-not-found");
-    }
-    
-    authState.users[userIndex].isAdmin = isAdmin;
-    
-    // Update current user if it's the same user
-    if (authState.currentUser?.uid === uid) {
-      authState.currentUser.isAdmin = isAdmin;
-    }
-    
-    console.log(`User ${uid} admin status updated to ${isAdmin}`);
-  },
-  
-  // Get all users (admin only)
-  getAllUsers: async () => {
-    console.log("Fetching all users");
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 700));
-    
-    // Remove passwords before returning
-    return authState.users.map(({ password, ...user }) => user);
-  },
-  
-  // Convert AuthUser to User for the app context
-  convertToContextUser: (authUser: AuthUser | null): User | null => {
-    if (!authUser) return null;
-    
-    return {
-      id: authUser.uid,
-      name: authUser.displayName,
-      email: authUser.email,
-      isAdmin: !!authUser.isAdmin
+      id: firebaseUser.uid,
+      name: firebaseUser.displayName || "Usuário",
+      email: firebaseUser.email || "",
+      isAdmin: false
     };
   }
+};
+
+export const firebaseAuth = {
+  // Registrar novo usuário
+  createUserWithEmailAndPassword: async (email: string, password: string, name: string): Promise<{ user: FirebaseUser }> => {
+    try {
+      // Criar usuário no Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Atualizar perfil com nome de exibição
+      await updateProfile(userCredential.user, {
+        displayName: name
+      });
+      
+      // Armazenar dados adicionais no Firestore
+      await setDoc(doc(firestore, "users", userCredential.user.uid), {
+        name,
+        email,
+        isAdmin: false
+      });
+      
+      return { user: userCredential.user };
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
+  },
+  
+  // Login de usuário
+  signInWithEmailAndPassword: async (email: string, password: string): Promise<{ user: FirebaseUser }> => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return { user: userCredential.user };
+    } catch (error) {
+      console.error("Error signing in:", error);
+      throw error;
+    }
+  },
+  
+  // Sair
+  signOut: async (): Promise<void> => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out:", error);
+      throw error;
+    }
+  },
+  
+  // Atualizar status de administrador
+  updateUserAdmin: async (uid: string, isAdmin: boolean): Promise<void> => {
+    try {
+      const userRef = doc(firestore, "users", uid);
+      await setDoc(userRef, { isAdmin }, { merge: true });
+    } catch (error) {
+      console.error(`Error updating user ${uid} admin status:`, error);
+      throw error;
+    }
+  },
+  
+  // Obter todos os usuários
+  getAllUsers: async (): Promise<User[]> => {
+    try {
+      const usersRef = collection(firestore, "users");
+      const snapshot = await getDocs(usersRef);
+      
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        name: doc.data().name || "Usuário",
+        email: doc.data().email || "",
+        isAdmin: doc.data().isAdmin || false
+      }));
+    } catch (error) {
+      console.error("Error getting all users:", error);
+      throw error;
+    }
+  },
+  
+  // Utilitários
+  convertToContextUser
 };

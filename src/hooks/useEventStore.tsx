@@ -4,8 +4,9 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { geocodeAddress } from '@/services/geocoding';
 import { firebaseFirestore } from '@/services/firebaseFirestore';
+import { eventApi } from '@/services/api';
 
-// Types
+// Tipos
 export interface Event {
   id: string;
   title: string;
@@ -38,16 +39,17 @@ export function useEventStore() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   
-  // Fetch events on initialization
+  // Buscar eventos na inicialização
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
-        const snapshot = await firebaseFirestore.collection<any>('events').get();
-        const eventsData = snapshot.docs.map(doc => 
-          firebaseFirestore.convertToEvent(doc.data())
-        );
-        setEvents(eventsData);
+        const response = await eventApi.getAllEvents();
+        if (response.success && response.data) {
+          setEvents(response.data);
+        } else {
+          toast.error("Erro ao carregar eventos");
+        }
       } catch (error) {
         console.error('Error fetching events:', error);
         toast.error("Erro ao carregar eventos");
@@ -59,7 +61,7 @@ export function useEventStore() {
     fetchEvents();
   }, []);
   
-  // Fetch event requests (admin only)
+  // Buscar solicitações de eventos (somente admin)
   const fetchEventRequests = useCallback(async () => {
     if (!user?.isAdmin) {
       toast.error("Apenas administradores podem acessar solicitações de eventos");
@@ -68,11 +70,12 @@ export function useEventStore() {
     
     setIsLoading(true);
     try {
-      const snapshot = await firebaseFirestore.collection<any>('eventRequests').get();
-      const requestsData = snapshot.docs.map(doc => 
-        firebaseFirestore.convertToEventRequest(doc.data())
-      );
-      setEventRequests(requestsData);
+      const response = await eventApi.getEventRequests();
+      if (response.success && response.data) {
+        setEventRequests(response.data);
+      } else {
+        toast.error("Erro ao carregar solicitações de eventos");
+      }
     } catch (error) {
       console.error('Error fetching event requests:', error);
       toast.error("Erro ao carregar solicitações de eventos");
@@ -81,7 +84,7 @@ export function useEventStore() {
     }
   }, [user?.isAdmin]);
   
-  // Add a new event (admin only)
+  // Adicionar novo evento (somente admin)
   const addEvent = useCallback(async (eventData: Omit<Event, 'id' | 'lat' | 'lng'>) => {
     if (!user?.isAdmin) {
       toast.error("Apenas administradores podem adicionar eventos");
@@ -90,24 +93,24 @@ export function useEventStore() {
     
     setIsLoading(true);
     try {
-      // Geocode the address to get coordinates
+      // Geocodificar o endereço para obter coordenadas
       const coordinates = await geocodeAddress(eventData.address);
       if (!coordinates) {
         toast.error("Não foi possível encontrar as coordenadas do endereço fornecido");
         return;
       }
       
-      const docRef = await firebaseFirestore.collection<any>('events').add({
+      const response = await eventApi.addEvent({
         ...eventData,
         lat: coordinates.lat,
         lng: coordinates.lng
       });
       
-      const newEventSnap = await docRef.get();
-      if (newEventSnap.exists) {
-        const newEvent = firebaseFirestore.convertToEvent(newEventSnap.data());
-        setEvents(prev => [...prev, newEvent]);
-        return newEvent;
+      if (response.success && response.data) {
+        setEvents(prev => [...prev, response.data!]);
+        return response.data;
+      } else {
+        toast.error("Erro ao adicionar evento");
       }
     } catch (error) {
       console.error('Error adding event:', error);
@@ -118,7 +121,7 @@ export function useEventStore() {
     }
   }, [user?.isAdmin]);
   
-  // Update an existing event (admin only)
+  // Atualizar evento existente (somente admin)
   const updateEvent = useCallback(async (eventId: string, eventData: Omit<Event, 'id' | 'lat' | 'lng'>) => {
     if (!user?.isAdmin) {
       toast.error("Apenas administradores podem atualizar eventos");
@@ -127,26 +130,24 @@ export function useEventStore() {
     
     setIsLoading(true);
     try {
-      // Geocode the address to get coordinates
+      // Geocodificar o endereço para obter coordenadas
       const coordinates = await geocodeAddress(eventData.address);
       if (!coordinates) {
         toast.error("Não foi possível encontrar as coordenadas do endereço fornecido");
         return;
       }
       
-      // Update the event in Firestore
-      await firebaseFirestore.collection<any>('events').doc(eventId).update({
+      await firebaseFirestore.events.update(eventId, {
         ...eventData,
         lat: coordinates.lat,
         lng: coordinates.lng
       });
       
-      // Get the updated event
-      const updatedEventSnap = await firebaseFirestore.collection<any>('events').doc(eventId).get();
-      if (updatedEventSnap.exists) {
-        const updatedEvent = firebaseFirestore.convertToEvent(updatedEventSnap.data());
-        
-        // Update local state
+      // Buscar o evento atualizado
+      const updatedEvent = await firebaseFirestore.events.getById(eventId);
+      
+      if (updatedEvent) {
+        // Atualizar o estado local
         setEvents(prev => prev.map(event => 
           event.id === eventId ? updatedEvent : event
         ));
@@ -162,7 +163,7 @@ export function useEventStore() {
     }
   }, [user?.isAdmin]);
   
-  // Delete an event (admin only)
+  // Excluir evento (somente admin)
   const deleteEvent = useCallback(async (eventId: string) => {
     if (!user?.isAdmin) {
       toast.error("Apenas administradores podem excluir eventos");
@@ -170,7 +171,7 @@ export function useEventStore() {
     }
     
     try {
-      await firebaseFirestore.collection<any>('events').doc(eventId).delete();
+      await firebaseFirestore.events.delete(eventId);
       setEvents(prev => prev.filter(event => event.id !== eventId));
       return true;
     } catch (error) {
@@ -180,17 +181,17 @@ export function useEventStore() {
     }
   }, [user?.isAdmin]);
   
-  // Add event request (any user)
+  // Adicionar solicitação de evento (qualquer usuário)
   const addEventRequest = useCallback(async (requestData: Omit<EventRequest, 'id'>) => {
     setIsLoading(true);
     try {
-      const docRef = await firebaseFirestore.collection<any>('eventRequests').add(requestData);
+      const response = await eventApi.addEventRequest(requestData);
       
-      const newRequestSnap = await docRef.get();
-      if (newRequestSnap.exists) {
-        const newRequest = firebaseFirestore.convertToEventRequest(newRequestSnap.data());
-        setEventRequests(prev => [...prev, newRequest]);
-        return newRequest;
+      if (response.success && response.data) {
+        setEventRequests(prev => [...prev, response.data!]);
+        return response.data;
+      } else {
+        toast.error("Erro ao enviar solicitação de evento");
       }
     } catch (error) {
       console.error('Error adding event request:', error);
@@ -201,7 +202,7 @@ export function useEventStore() {
     }
   }, []);
   
-  // Approve event request (admin only)
+  // Aprovar solicitação de evento (somente admin)
   const approveEventRequest = useCallback(async (requestId: string) => {
     if (!user?.isAdmin) {
       toast.error("Apenas administradores podem aprovar solicitações");
@@ -210,24 +211,24 @@ export function useEventStore() {
     
     setIsLoading(true);
     try {
-      // Get the request
-      const requestSnap = await firebaseFirestore.collection<any>('eventRequests').doc(requestId).get();
-      if (!requestSnap.exists) {
+      // Buscar solicitação
+      const requests = await firebaseFirestore.eventRequests.getAll();
+      const request = requests.find(req => req.id === requestId);
+      
+      if (!request) {
         toast.error("Solicitação não encontrada");
         return;
       }
       
-      const request = requestSnap.data();
-      
-      // Geocode the address to get coordinates
+      // Geocodificar o endereço para obter coordenadas
       const coordinates = await geocodeAddress(request.address);
       if (!coordinates) {
         toast.error("Não foi possível encontrar as coordenadas do endereço fornecido");
         return;
       }
       
-      // Create new event from the request
-      const eventDocRef = await firebaseFirestore.collection<any>('events').add({
+      // Criar novo evento a partir da solicitação
+      const newEvent = await firebaseFirestore.events.add({
         title: request.title,
         description: request.description,
         date: request.date,
@@ -236,21 +237,18 @@ export function useEventStore() {
         organizer: request.organizer,
         lat: coordinates.lat,
         lng: coordinates.lng,
-        createdBy: request.createdBy
+        createdBy: request.createdBy,
+        createdAt: request.createdAt
       });
       
-      // Get the new event
-      const newEventSnap = await eventDocRef.get();
-      if (newEventSnap.exists) {
-        const newEvent = firebaseFirestore.convertToEvent(newEventSnap.data());
-        setEvents(prev => [...prev, newEvent]);
-        
-        // Delete the request
-        await firebaseFirestore.collection<any>('eventRequests').doc(requestId).delete();
-        setEventRequests(prev => prev.filter(req => req.id !== requestId));
-        
-        return newEvent;
-      }
+      // Adicionar o novo evento ao estado
+      setEvents(prev => [...prev, newEvent]);
+      
+      // Excluir a solicitação
+      await firebaseFirestore.eventRequests.delete(requestId);
+      setEventRequests(prev => prev.filter(req => req.id !== requestId));
+      
+      return newEvent;
     } catch (error) {
       console.error('Error approving event request:', error);
       toast.error("Erro ao aprovar solicitação");
@@ -260,7 +258,7 @@ export function useEventStore() {
     }
   }, [user?.isAdmin]);
   
-  // Reject event request (admin only)
+  // Rejeitar solicitação de evento (somente admin)
   const rejectEventRequest = useCallback(async (requestId: string) => {
     if (!user?.isAdmin) {
       toast.error("Apenas administradores podem rejeitar solicitações");
@@ -268,7 +266,7 @@ export function useEventStore() {
     }
     
     try {
-      await firebaseFirestore.collection<any>('eventRequests').doc(requestId).delete();
+      await firebaseFirestore.eventRequests.delete(requestId);
       setEventRequests(prev => prev.filter(req => req.id !== requestId));
       return true;
     } catch (error) {
