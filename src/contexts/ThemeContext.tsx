@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import * as React from 'react';
 
 // Define the theme context type
 interface ThemeContextType {
@@ -8,11 +8,11 @@ interface ThemeContextType {
 }
 
 // Create the context
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = React.createContext<ThemeContextType | undefined>(undefined);
 
 // Create the provider
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme] = useState<'light'>('light');
+  const [theme] = React.useState<'light'>('light');
 
   const setTheme = () => {
     // Do nothing since we only support light theme now
@@ -29,7 +29,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 // Create the hook to use the theme context
 export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
+  const context = React.useContext(ThemeContext);
   
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
