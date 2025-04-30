@@ -6,12 +6,12 @@ import { Card, CardContent } from '@/components/ui/card';
 const teamMembers = [
   {
     name: 'Gustavo Alves',
-    role: 'team-director',
+    role: 'Diretor',
     description: 'Criador do projeto, desenvolvedor em aprendizagem, 17 anos e entusiasta da Ecologia.',
   },
   {
     name: 'Gabriel Gedolin',
-    role: 'team-coord',
+    role: 'Coordenador',
     description: 'Desenvolvedor aprendiz, 17 anos, apoiador do projeto EcoCity e apoiador da Ecologia.',
   }
 ];
