@@ -28,7 +28,7 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          <div className="rounded-xl overflow-hidden shadow-xl border-4 border-white min-h-[400px]">
+          <div className="rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-4 border-white min-h-[400px] hover:shadow-[0_8px_40px_rgba(76,124,84,0.2)] transition-shadow duration-300">
             <EcoMap hideControls={true} />
           </div>
         </div>
