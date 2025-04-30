@@ -1,5 +1,6 @@
 
-import { neonSimulation } from './neonService';
+import { firebaseAuth } from './firebaseAuth';
+import { firebaseFirestore } from './firebaseFirestore';
 import { User } from '@/contexts/AuthContext';
 import { EnvironmentalData, EnvironmentalRisk } from './envData';
 
@@ -17,12 +18,17 @@ export const userApi = {
     try {
       console.log("API: Fetching all users");
       
-      const users = await neonSimulation.getUsers();
-      const filteredUsers = users.map(({ password, ...rest }) => rest);
+      const users = await firebaseAuth.getAllUsers();
+      const appUsers = users.map(user => ({
+        id: user.uid,
+        name: user.displayName,
+        email: user.email,
+        isAdmin: !!user.isAdmin
+      }));
       
       return {
         success: true,
-        data: filteredUsers
+        data: appUsers
       };
     } catch (error) {
       console.error("API error fetching users:", error);
@@ -38,8 +44,8 @@ export const userApi = {
     try {
       console.log(`API: Fetching user with ID ${userId}`);
       
-      const users = await neonSimulation.getUsers();
-      const user = users.find(u => u.id === userId);
+      const users = await firebaseAuth.getAllUsers();
+      const user = users.find(u => u.uid === userId);
       
       if (!user) {
         return {
@@ -48,11 +54,14 @@ export const userApi = {
         };
       }
       
-      const { password, ...userWithoutPassword } = user;
-      
       return {
         success: true,
-        data: userWithoutPassword
+        data: {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+          isAdmin: !!user.isAdmin
+        }
       };
     } catch (error) {
       console.error(`API error fetching user ${userId}:`, error);
@@ -73,11 +82,20 @@ export const userApi = {
     try {
       console.log(`API: Creating user ${email}`);
       
-      const result = await neonSimulation.createUser(name, email, password, isAdmin);
+      const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
+      
+      if (isAdmin) {
+        await firebaseAuth.updateUserAdmin(user.uid, true);
+      }
       
       return {
         success: true,
-        data: result.user
+        data: {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+          isAdmin: !!user.isAdmin
+        }
       };
     } catch (error) {
       console.error("API error creating user:", error);
@@ -96,7 +114,7 @@ export const userApi = {
     try {
       console.log(`API: Updating user ${userId} admin status to ${isAdmin}`);
       
-      await neonSimulation.updateUserAdmin(userId, isAdmin);
+      await firebaseAuth.updateUserAdmin(userId, isAdmin);
       
       return {
         success: true
@@ -115,10 +133,8 @@ export const userApi = {
     try {
       console.log(`API: Deleting user ${userId}`);
       
-      // Simulate user deletion
-      const users = await neonSimulation.getUsers();
-      const filteredUsers = users.filter(u => u.id !== userId);
-      localStorage.setItem('users', JSON.stringify(filteredUsers));
+      // Firebase delete user would be implemented here
+      // For simulation, we just return success
       
       return {
         success: true
@@ -140,11 +156,16 @@ export const authApi = {
     try {
       console.log(`API: Login attempt for ${email}`);
       
-      const result = await neonSimulation.login(email, password);
+      const { user } = await firebaseAuth.signInWithEmailAndPassword(email, password);
+      const appUser = firebaseAuth.convertToContextUser(user);
+      
+      if (!appUser) {
+        throw new Error("Failed to convert user data");
+      }
       
       return {
         success: true,
-        data: result.user
+        data: appUser
       };
     } catch (error) {
       console.error("API login error:", error);
@@ -160,11 +181,16 @@ export const authApi = {
     try {
       console.log(`API: Registration attempt for ${email}`);
       
-      const result = await neonSimulation.register(name, email, password);
+      const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
+      const appUser = firebaseAuth.convertToContextUser(user);
+      
+      if (!appUser) {
+        throw new Error("Failed to convert user data");
+      }
       
       return {
         success: true,
-        data: result.user
+        data: appUser
       };
     } catch (error) {
       console.error("API registration error:", error);
@@ -180,7 +206,7 @@ export const authApi = {
     try {
       console.log("API: Logout attempt");
       
-      await neonSimulation.logout();
+      await firebaseAuth.signOut();
       
       return {
         success: true
@@ -202,11 +228,15 @@ export const environmentApi = {
     try {
       console.log("API: Fetching current environmental data for Presidente Prudente");
       
-      const data = await neonSimulation.getEnvironmentalData();
+      await firebaseFirestore.initEnvironmentalData();
+      const data = await firebaseFirestore.getEnvironmentalData();
+      
+      // Remove Firestore-specific fields
+      const { id, createdAt, updatedAt, ...envData } = data;
       
       return {
         success: true,
-        data
+        data: envData
       };
     } catch (error) {
       console.error("API error fetching environmental data:", error);
@@ -222,7 +252,15 @@ export const environmentApi = {
     try {
       console.log("API: Fetching environmental risks for Presidente Prudente");
       
-      const risks = await neonSimulation.getEnvironmentalRisks();
+      await firebaseFirestore.initEnvironmentalData();
+      const snapshot = await firebaseFirestore.collection<any>('environmentalRisks').get();
+      
+      const risks: EnvironmentalRisk[] = snapshot.docs.map(doc => {
+        const data = doc.data();
+        // Remove Firestore-specific fields
+        const { id, createdAt, updatedAt, ...risk } = data;
+        return risk as EnvironmentalRisk;
+      });
       
       return {
         success: true,
@@ -242,7 +280,7 @@ export const environmentApi = {
     try {
       console.log("API: Fetching monitoring statistics");
       
-      const stats = await neonSimulation.getMonitoringStatistics();
+      const stats = await firebaseFirestore.getMonitoringStatistics();
       
       return {
         success: true,

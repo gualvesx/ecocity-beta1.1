@@ -1,8 +1,9 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { geocodeAddress } from '@/services/geocoding';
+import { firebaseFirestore } from '@/services/firebaseFirestore';
 
 // Types
 export interface Event {
@@ -31,53 +32,31 @@ export interface EventRequest {
   createdAt: string;
 }
 
-// Sample data for events
-const sampleEvents = [
-  {
-    id: '1',
-    title: 'Plantio de Árvores no Parque Ecológico',
-    description: 'Venha participar do nosso evento de plantio de árvores no Parque Ecológico da cidade. Traga sua família e amigos para esta importante ação ambiental.',
-    date: '2025-05-15',
-    time: '09:00',
-    address: 'Parque Ecológico, Avenida Brasil, 1000',
-    organizer: 'Associação Ambiental Verde Vivo',
-    lat: -22.125092,
-    lng: -51.379639,
-    createdBy: 'admin',
-    createdAt: '2025-04-01T10:00:00Z'
-  },
-  {
-    id: '2',
-    title: 'Palestra sobre Sustentabilidade',
-    description: 'Palestra com especialistas sobre práticas sustentáveis que podemos implementar em nosso dia a dia.',
-    date: '2025-05-20',
-    time: '19:00',
-    address: 'Auditório da Universidade FCT Unesp',
-    organizer: 'Grupo Acadêmico de Ecologia',
-    lat: -22.120092,
-    lng: -51.409639,
-    createdBy: 'admin',
-    createdAt: '2025-04-05T14:30:00Z'
-  }
-];
-
 export function useEventStore() {
-  const [events, setEvents] = useState<Event[]>(sampleEvents);
+  const [events, setEvents] = useState<Event[]>([]);
   const [eventRequests, setEventRequests] = useState<EventRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   
-  // Fetch events from localStorage on initialization
-  useCallback(() => {
-    const storedEvents = localStorage.getItem('ecoEvents');
-    if (storedEvents) {
-      setEvents(JSON.parse(storedEvents));
-    }
+  // Fetch events on initialization
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const snapshot = await firebaseFirestore.collection<any>('events').get();
+        const eventsData = snapshot.docs.map(doc => 
+          firebaseFirestore.convertToEvent(doc.data())
+        );
+        setEvents(eventsData);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error("Erro ao carregar eventos");
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    const storedRequests = localStorage.getItem('ecoEventRequests');
-    if (storedRequests) {
-      setEventRequests(JSON.parse(storedRequests));
-    }
+    fetchEvents();
   }, []);
   
   // Fetch event requests (admin only)
@@ -89,10 +68,11 @@ export function useEventStore() {
     
     setIsLoading(true);
     try {
-      const storedRequests = localStorage.getItem('ecoEventRequests');
-      if (storedRequests) {
-        setEventRequests(JSON.parse(storedRequests));
-      }
+      const snapshot = await firebaseFirestore.collection<any>('eventRequests').get();
+      const requestsData = snapshot.docs.map(doc => 
+        firebaseFirestore.convertToEventRequest(doc.data())
+      );
+      setEventRequests(requestsData);
     } catch (error) {
       console.error('Error fetching event requests:', error);
       toast.error("Erro ao carregar solicitações de eventos");
@@ -117,18 +97,18 @@ export function useEventStore() {
         return;
       }
       
-      const newEvent: Event = {
+      const docRef = await firebaseFirestore.collection<any>('events').add({
         ...eventData,
-        id: `event_${Date.now()}`,
         lat: coordinates.lat,
-        lng: coordinates.lng,
-      };
+        lng: coordinates.lng
+      });
       
-      const updatedEvents = [...events, newEvent];
-      setEvents(updatedEvents);
-      localStorage.setItem('ecoEvents', JSON.stringify(updatedEvents));
-      
-      return newEvent;
+      const newEventSnap = await docRef.get();
+      if (newEventSnap.exists) {
+        const newEvent = firebaseFirestore.convertToEvent(newEventSnap.data());
+        setEvents(prev => [...prev, newEvent]);
+        return newEvent;
+      }
     } catch (error) {
       console.error('Error adding event:', error);
       toast.error("Erro ao adicionar evento");
@@ -136,7 +116,7 @@ export function useEventStore() {
     } finally {
       setIsLoading(false);
     }
-  }, [events, user?.isAdmin]);
+  }, [user?.isAdmin]);
   
   // Update an existing event (admin only)
   const updateEvent = useCallback(async (eventId: string, eventData: Omit<Event, 'id' | 'lat' | 'lng'>) => {
@@ -154,16 +134,25 @@ export function useEventStore() {
         return;
       }
       
-      const updatedEvents = events.map(event => 
-        event.id === eventId 
-          ? { ...event, ...eventData, lat: coordinates.lat, lng: coordinates.lng }
-          : event
-      );
+      // Update the event in Firestore
+      await firebaseFirestore.collection<any>('events').doc(eventId).update({
+        ...eventData,
+        lat: coordinates.lat,
+        lng: coordinates.lng
+      });
       
-      setEvents(updatedEvents);
-      localStorage.setItem('ecoEvents', JSON.stringify(updatedEvents));
-      
-      return updatedEvents.find(e => e.id === eventId);
+      // Get the updated event
+      const updatedEventSnap = await firebaseFirestore.collection<any>('events').doc(eventId).get();
+      if (updatedEventSnap.exists) {
+        const updatedEvent = firebaseFirestore.convertToEvent(updatedEventSnap.data());
+        
+        // Update local state
+        setEvents(prev => prev.map(event => 
+          event.id === eventId ? updatedEvent : event
+        ));
+        
+        return updatedEvent;
+      }
     } catch (error) {
       console.error('Error updating event:', error);
       toast.error("Erro ao atualizar evento");
@@ -171,7 +160,7 @@ export function useEventStore() {
     } finally {
       setIsLoading(false);
     }
-  }, [events, user?.isAdmin]);
+  }, [user?.isAdmin]);
   
   // Delete an event (admin only)
   const deleteEvent = useCallback(async (eventId: string) => {
@@ -181,32 +170,28 @@ export function useEventStore() {
     }
     
     try {
-      const updatedEvents = events.filter(event => event.id !== eventId);
-      setEvents(updatedEvents);
-      localStorage.setItem('ecoEvents', JSON.stringify(updatedEvents));
-      
+      await firebaseFirestore.collection<any>('events').doc(eventId).delete();
+      setEvents(prev => prev.filter(event => event.id !== eventId));
       return true;
     } catch (error) {
       console.error('Error deleting event:', error);
       toast.error("Erro ao excluir evento");
       return false;
     }
-  }, [events, user?.isAdmin]);
+  }, [user?.isAdmin]);
   
   // Add event request (any user)
   const addEventRequest = useCallback(async (requestData: Omit<EventRequest, 'id'>) => {
     setIsLoading(true);
     try {
-      const newRequest: EventRequest = {
-        ...requestData,
-        id: `request_${Date.now()}`
-      };
+      const docRef = await firebaseFirestore.collection<any>('eventRequests').add(requestData);
       
-      const updatedRequests = [...eventRequests, newRequest];
-      setEventRequests(updatedRequests);
-      localStorage.setItem('ecoEventRequests', JSON.stringify(updatedRequests));
-      
-      return newRequest;
+      const newRequestSnap = await docRef.get();
+      if (newRequestSnap.exists) {
+        const newRequest = firebaseFirestore.convertToEventRequest(newRequestSnap.data());
+        setEventRequests(prev => [...prev, newRequest]);
+        return newRequest;
+      }
     } catch (error) {
       console.error('Error adding event request:', error);
       toast.error("Erro ao enviar solicitação de evento");
@@ -214,7 +199,7 @@ export function useEventStore() {
     } finally {
       setIsLoading(false);
     }
-  }, [eventRequests]);
+  }, []);
   
   // Approve event request (admin only)
   const approveEventRequest = useCallback(async (requestId: string) => {
@@ -225,11 +210,14 @@ export function useEventStore() {
     
     setIsLoading(true);
     try {
-      const request = eventRequests.find(req => req.id === requestId);
-      if (!request) {
+      // Get the request
+      const requestSnap = await firebaseFirestore.collection<any>('eventRequests').doc(requestId).get();
+      if (!requestSnap.exists) {
         toast.error("Solicitação não encontrada");
         return;
       }
+      
+      const request = requestSnap.data();
       
       // Geocode the address to get coordinates
       const coordinates = await geocodeAddress(request.address);
@@ -239,24 +227,30 @@ export function useEventStore() {
       }
       
       // Create new event from the request
-      const newEvent: Event = {
-        ...request,
-        id: `event_${Date.now()}`,
+      const eventDocRef = await firebaseFirestore.collection<any>('events').add({
+        title: request.title,
+        description: request.description,
+        date: request.date,
+        time: request.time,
+        address: request.address,
+        organizer: request.organizer,
         lat: coordinates.lat,
         lng: coordinates.lng,
-      };
+        createdBy: request.createdBy
+      });
       
-      // Add the new event
-      const updatedEvents = [...events, newEvent];
-      setEvents(updatedEvents);
-      localStorage.setItem('ecoEvents', JSON.stringify(updatedEvents));
-      
-      // Remove the request
-      const updatedRequests = eventRequests.filter(req => req.id !== requestId);
-      setEventRequests(updatedRequests);
-      localStorage.setItem('ecoEventRequests', JSON.stringify(updatedRequests));
-      
-      return newEvent;
+      // Get the new event
+      const newEventSnap = await eventDocRef.get();
+      if (newEventSnap.exists) {
+        const newEvent = firebaseFirestore.convertToEvent(newEventSnap.data());
+        setEvents(prev => [...prev, newEvent]);
+        
+        // Delete the request
+        await firebaseFirestore.collection<any>('eventRequests').doc(requestId).delete();
+        setEventRequests(prev => prev.filter(req => req.id !== requestId));
+        
+        return newEvent;
+      }
     } catch (error) {
       console.error('Error approving event request:', error);
       toast.error("Erro ao aprovar solicitação");
@@ -264,7 +258,7 @@ export function useEventStore() {
     } finally {
       setIsLoading(false);
     }
-  }, [events, eventRequests, user?.isAdmin]);
+  }, [user?.isAdmin]);
   
   // Reject event request (admin only)
   const rejectEventRequest = useCallback(async (requestId: string) => {
@@ -274,17 +268,15 @@ export function useEventStore() {
     }
     
     try {
-      const updatedRequests = eventRequests.filter(req => req.id !== requestId);
-      setEventRequests(updatedRequests);
-      localStorage.setItem('ecoEventRequests', JSON.stringify(updatedRequests));
-      
+      await firebaseFirestore.collection<any>('eventRequests').doc(requestId).delete();
+      setEventRequests(prev => prev.filter(req => req.id !== requestId));
       return true;
     } catch (error) {
       console.error('Error rejecting event request:', error);
       toast.error("Erro ao rejeitar solicitação");
       return false;
     }
-  }, [eventRequests, user?.isAdmin]);
+  }, [user?.isAdmin]);
   
   return {
     events,
