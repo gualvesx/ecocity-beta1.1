@@ -1,27 +1,27 @@
 
-import { doc, collection, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where } from "firebase/firestore";
+import { doc, collection, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, CollectionReference, DocumentData } from "firebase/firestore";
 import { firestore } from './firebaseConfig';
 import { Event, EventRequest } from '@/hooks/useEventStore';
 import { MapPoint } from '@/types/map';
 
 // Converter MapPoint do Firestore para o tipo MapPoint da aplicação
 const convertToMapPoint = (doc: any): MapPoint => {
-  const data = doc.data();
+  const data = doc.data ? doc.data() : doc;
   return {
-    id: parseInt(doc.id),  // Converte para número para compatibilidade
+    id: parseInt(doc.id || "0"),
     name: data.name,
     type: data.type,
     lat: data.lat,
     lng: data.lng,
     description: data.description,
     impact: data.impact,
-    address: data.address
+    address: data.address || ''
   };
 };
 
 // Converter Event do Firestore para o tipo Event da aplicação
 const convertToEvent = (doc: any): Event => {
-  const data = doc.data();
+  const data = doc.data ? doc.data() : doc;
   return {
     id: doc.id,
     title: data.title,
@@ -39,7 +39,7 @@ const convertToEvent = (doc: any): Event => {
 
 // Converter EventRequest do Firestore para o tipo EventRequest da aplicação
 const convertToEventRequest = (doc: any): EventRequest => {
-  const data = doc.data();
+  const data = doc.data ? doc.data() : doc;
   return {
     id: doc.id,
     title: data.title,
@@ -55,6 +55,11 @@ const convertToEventRequest = (doc: any): EventRequest => {
 
 // Serviço para interagir com o Firestore
 export const firebaseFirestore = {
+  // Método para obter referência de coleção
+  collection: <T = DocumentData>(collectionPath: string): CollectionReference<T, T> => {
+    return collection(firestore, collectionPath) as CollectionReference<T, T>;
+  },
+  
   // Métodos para eventos
   events: {
     // Obter todos os eventos
@@ -62,7 +67,7 @@ export const firebaseFirestore = {
       try {
         const eventsRef = collection(firestore, "events");
         const snapshot = await getDocs(eventsRef);
-        return snapshot.docs.map(doc => convertToEvent({ id: doc.id, ...doc }));
+        return snapshot.docs.map(doc => convertToEvent({ id: doc.id, data: () => doc.data() }));
       } catch (error) {
         console.error("Error getting events:", error);
         throw error;
@@ -136,7 +141,7 @@ export const firebaseFirestore = {
       try {
         const requestsRef = collection(firestore, "eventRequests");
         const snapshot = await getDocs(requestsRef);
-        return snapshot.docs.map(doc => convertToEventRequest({ id: doc.id, ...doc }));
+        return snapshot.docs.map(doc => convertToEventRequest({ id: doc.id, data: () => doc.data() }));
       } catch (error) {
         console.error("Error getting event requests:", error);
         throw error;
@@ -167,6 +172,49 @@ export const firebaseFirestore = {
         await deleteDoc(requestRef);
       } catch (error) {
         console.error(`Error deleting event request ${id}:`, error);
+        throw error;
+      }
+    }
+  },
+  
+  // Métodos para mapPoints
+  mapPoints: {
+    // Obter todos os pontos do mapa
+    getAll: async (): Promise<MapPoint[]> => {
+      try {
+        const pointsRef = collection(firestore, "mapPoints");
+        const snapshot = await getDocs(pointsRef);
+        return snapshot.docs.map(doc => convertToMapPoint({ id: doc.id, data: () => doc.data() }));
+      } catch (error) {
+        console.error("Error getting map points:", error);
+        throw error;
+      }
+    },
+    
+    // Adicionar um novo ponto no mapa
+    add: async (pointData: Omit<MapPoint, 'id'>): Promise<MapPoint> => {
+      try {
+        const pointsRef = collection(firestore, "mapPoints");
+        const docRef = await addDoc(pointsRef, {
+          ...pointData,
+          createdAt: new Date().toISOString()
+        });
+        
+        const pointDoc = await getDoc(docRef);
+        return convertToMapPoint({ id: docRef.id, data: () => pointDoc.data() });
+      } catch (error) {
+        console.error("Error adding map point:", error);
+        throw error;
+      }
+    },
+    
+    // Excluir um ponto do mapa
+    delete: async (id: string): Promise<void> => {
+      try {
+        const pointRef = doc(firestore, "mapPoints", id.toString());
+        await deleteDoc(pointRef);
+      } catch (error) {
+        console.error(`Error deleting map point ${id}:`, error);
         throw error;
       }
     }

@@ -115,28 +115,19 @@ export const useMapPoints = () => {
         return createdPoint;
       } else {
         // Otherwise use our Firebase API
-        const docRef = await firebaseFirestore.collection<any>('mapPoints').add({
+        const createdPoint = await firebaseFirestore.mapPoints.add({
           name: newPoint.name,
           type: newPoint.type,
           lat: geoLocation.lat,
           lng: geoLocation.lng,
           description: newPoint.description,
           impact: newPoint.impact,
-          address: newPoint.address,
-          createdBy: user.id
+          address: newPoint.address
         });
         
-        const newPointSnap = await docRef.get();
-        if (newPointSnap.exists) {
-          const pointData = newPointSnap.data();
-          const createdPoint = firebaseFirestore.convertToMapPoint(pointData);
-          
-          setMapPoints([...mapPoints, createdPoint]);
-          toast.success("Ponto ecológico salvo com sucesso!");
-          return createdPoint;
-        }
-        
-        throw new Error("Failed to retrieve created point");
+        setMapPoints([...mapPoints, createdPoint]);
+        toast.success("Ponto ecológico salvo com sucesso!");
+        return createdPoint;
       }
     } catch (err) {
       console.error('Error adding point:', err);
@@ -166,7 +157,7 @@ export const useMapPoints = () => {
         if (error) throw error;
       } else {
         // Otherwise use our Firebase API
-        await firebaseFirestore.collection<any>('mapPoints').doc(String(pointId)).delete();
+        await firebaseFirestore.mapPoints.delete(pointId.toString());
       }
 
       // Update the local state regardless of which API was used

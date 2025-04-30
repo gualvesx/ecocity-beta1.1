@@ -5,12 +5,7 @@ import { firebaseFirestore } from './firebaseFirestore';
 export const getStoredPoints = async (): Promise<MapPoint[]> => {
   try {
     console.log('Fetching map points from Firebase...');
-    const snapshot = await firebaseFirestore.collection<any>('mapPoints').get();
-    
-    return snapshot.docs.map(doc => {
-      const pointData = doc.data();
-      return firebaseFirestore.convertToMapPoint(pointData);
-    });
+    return await firebaseFirestore.mapPoints.getAll();
   } catch (error) {
     console.error('Error fetching points from Firebase:', error);
     // Return empty array if there's an error
@@ -28,15 +23,17 @@ export const storePoints = async (points: MapPoint[]): Promise<void> => {
     // This implementation is simplified and would not be recommended in production
     
     // Get current points
-    const snapshot = await firebaseFirestore.collection<any>('mapPoints').get();
-    const existingIds = snapshot.docs.map(doc => doc.id);
+    const existingPoints = await firebaseFirestore.mapPoints.getAll();
+    const existingIds = existingPoints.map(point => String(point.id));
     
     // Points to update or add
     for (const point of points) {
       const pointId = String(point.id);
       if (existingIds.includes(pointId)) {
-        // Update existing point
-        await firebaseFirestore.collection<any>('mapPoints').doc(pointId).update({
+        // Update existing point - since we don't have a separate update method,
+        // we'll simulate by deleting and re-adding
+        await firebaseFirestore.mapPoints.delete(pointId);
+        await firebaseFirestore.mapPoints.add({
           name: point.name,
           type: point.type,
           lat: point.lat,
@@ -47,18 +44,14 @@ export const storePoints = async (points: MapPoint[]): Promise<void> => {
         });
       } else {
         // Add new point
-        const now = new Date().toISOString();
-        await firebaseFirestore.collection<any>('mapPoints').add({
+        await firebaseFirestore.mapPoints.add({
           name: point.name,
           type: point.type,
           lat: point.lat,
           lng: point.lng,
           description: point.description,
           impact: point.impact,
-          address: point.address || '',
-          createdBy: 'system', // Since we don't have user context here
-          createdAt: now,
-          updatedAt: now
+          address: point.address || ''
         });
       }
     }

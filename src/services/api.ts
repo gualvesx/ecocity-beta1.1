@@ -11,6 +11,39 @@ interface ApiResponse<T> {
   data?: T;
 }
 
+// Environmental monitoring stats
+interface EnvironmentalStats {
+  hectaresMonitored: number;
+  riskAreasIdentified: number;
+  deforestationAlerts: number;
+  airQualityIndex: number;
+}
+
+// Mock environmental API
+export const environmentApi = {
+  getMonitoringStats: async (): Promise<ApiResponse<EnvironmentalStats>> => {
+    try {
+      // This is a mock implementation that returns hardcoded values
+      // In a real application, this would connect to actual data sources
+      return {
+        success: true,
+        data: {
+          hectaresMonitored: 5822,
+          riskAreasIdentified: 42,
+          deforestationAlerts: 127,
+          airQualityIndex: 61
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching environmental stats:', error);
+      return {
+        success: false,
+        message: 'Failed to fetch environmental data'
+      };
+    }
+  }
+};
+
 // API de usuários
 export const userApi = {
   // Obter todos os usuários
