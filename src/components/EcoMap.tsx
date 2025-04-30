@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Recycle, TreeDeciduous } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -10,17 +11,6 @@ import { MapControls } from './map/MapControls';
 import { MapLegend } from './map/MapLegend';
 import { AddPointForm } from './map/AddPointForm';
 import { PointDetails } from './map/PointDetails';
-
-export interface MapPoint {
-  id: number;
-  name: string;
-  type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
-  lat: number;
-  lng: number;
-  description: string;
-  impact: string;
-  address?: string;
-}
 
 interface EcoMapProps {
   hideControls?: boolean;
@@ -261,7 +251,7 @@ const EcoMap = ({ hideControls = false }: EcoMapProps) => {
             <AddPointForm
               newPointForm={newPointForm}
               setNewPointForm={setNewPointForm}
-              newPointPosition={null}
+              newPointPosition={newPointPosition}
               setNewPointPosition={setNewPointPosition}
               setIsAddingPoint={setIsAddingPoint}
               handleAddNewPoint={handleAddNewPoint}

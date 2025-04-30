@@ -1,11 +1,24 @@
+
 import { X, MapPinned, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { NewPoint } from '@/types/map';
+import { Dispatch, SetStateAction } from 'react';
 
 interface AddPointFormProps {
-  newPointForm: NewPoint;
-  setNewPointForm: (form: NewPoint) => void;
+  newPointForm: {
+    name: string;
+    type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
+    description: string;
+    impact: string;
+    address: string;
+  };
+  setNewPointForm: Dispatch<SetStateAction<{
+    name: string;
+    type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
+    description: string;
+    impact: string;
+    address: string;
+  }>>;
   newPointPosition: { lat: number; lng: number } | null;
   setNewPointPosition: (position: { lat: number; lng: number } | null) => void;
   setIsAddingPoint: (isAdding: boolean) => void;
@@ -52,7 +65,7 @@ export const AddPointForm = ({
           <label className="block text-sm font-medium mb-1">Tipo</label>
           <select
             value={newPointForm.type}
-            onChange={(e) => setNewPointForm({...newPointForm, type: e.target.value as any})}
+            onChange={(e) => setNewPointForm({...newPointForm, type: e.target.value as 'recycling-point' | 'recycling-center' | 'seedling-distribution'})}
             className="w-full p-2 border border-gray-300 rounded"
           >
             <option value="recycling-point">{t('recycling-point')}</option>
