@@ -28,10 +28,11 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          <div className="rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] relative min-h-[400px] hover:shadow-[0_8px_40px_rgba(76,124,84,0.2)] transition-shadow duration-300">
-            <div className="absolute inset-0 z-10 pointer-events-none rounded-xl">
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-30"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background opacity-30"></div>
+          <div className="relative min-h-[400px] rounded-xl overflow-hidden">
+            {/* Gradient overlays for blending with the page */}
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-40"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white opacity-40"></div>
             </div>
             <EcoMap hideControls={true} />
           </div>

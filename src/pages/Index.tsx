@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { MapPreview } from '@/components/MapPreview';
 
-const Inicio = () => {
+const Index = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
   
@@ -20,4 +20,4 @@ const Inicio = () => {
   );
 };
 
-export default Inicio;
+export default Index;

@@ -11,8 +11,10 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 // Create a client
 const queryClient = new QueryClient();
 
-// Lazy load pages for better performance
-const Index = lazy(() => import('@/pages/Index'));
+// Non-lazy loaded index page to avoid dynamic import issues
+import Index from '@/pages/Index';
+
+// Lazy load other pages for better performance
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
 const About = lazy(() => import('@/pages/About'));
