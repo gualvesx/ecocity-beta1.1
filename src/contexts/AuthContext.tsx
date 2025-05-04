@@ -134,6 +134,9 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         const { user: firebaseUser } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
         console.log("User created in Firebase, getting context user");
         
+        // Wait a moment for Firestore write to complete
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const newUser = await firebaseAuth.convertToContextUser(firebaseUser);
         
         if (newUser) {
@@ -146,15 +149,15 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         
         console.log("Failed to get context user after Firebase registration");
         return false;
-      } catch (firebaseError) {
+      } catch (firebaseError: any) {
         console.error("Firebase registration failed", firebaseError);
+        console.error("Error code:", firebaseError.code);
+        console.error("Error message:", firebaseError.message);
         
         // Check specific Firebase error codes
-        if (firebaseError instanceof Error) {
-          if (firebaseError.message.includes('email-already-in-use')) {
-            toast.error('Este email já está em uso');
-            return false;
-          }
+        if (firebaseError.code === 'auth/email-already-in-use') {
+          toast.error('Este email já está em uso');
+          throw new Error('Este email já está em uso');
         }
         
         // Try local registration as fallback

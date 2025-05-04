@@ -25,13 +25,21 @@ const Register = () => {
 
     try {
       // Validações básicas
+      if (!name.trim()) {
+        setError('Nome é obrigatório');
+        setLocalLoading(false);
+        return;
+      }
+
       if (password !== confirmPassword) {
         setError('As senhas não coincidem');
+        setLocalLoading(false);
         return;
       }
 
       if (password.length < 6) {
         setError('A senha deve ter pelo menos 6 caracteres');
+        setLocalLoading(false);
         return;
       }
 
@@ -39,15 +47,28 @@ const Register = () => {
       const success = await register(name, email, password);
       
       if (success) {
+        console.log("Registration successful");
         toast.success("Conta criada com sucesso!");
         navigate('/map');
       } else {
+        console.log("Registration failed");
         setError('Falha ao criar conta. Tente novamente.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Registration error:", err);
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
-      setError(errorMessage);
+      
+      // Handle specific Firebase errors
+      if (err.code === 'auth/email-already-in-use') {
+        setError('Este e-mail já está em uso. Tente outro e-mail.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('E-mail inválido. Por favor, verifique.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Senha muito fraca. Use uma senha mais forte.');
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
+        setError(errorMessage);
+      }
+      
       toast.error("Erro ao criar conta");
     } finally {
       setLocalLoading(false);

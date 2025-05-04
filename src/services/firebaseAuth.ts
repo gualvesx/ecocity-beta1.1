@@ -45,13 +45,13 @@ export const firebaseAuth = {
       
       // Criar usuário no Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User created in Firebase Auth, now updating profile");
+      console.log("User created in Firebase Auth with UID:", userCredential.user.uid);
       
       // Atualizar perfil com nome de exibição
       await updateProfile(userCredential.user, {
         displayName: name
       });
-      console.log("Profile updated with displayName");
+      console.log("Profile updated with displayName:", name);
       
       // Armazenar dados adicionais no Firestore
       const userRef = doc(firestore, "users", userCredential.user.uid);
@@ -61,11 +61,13 @@ export const firebaseAuth = {
         isAdmin: false,
         createdAt: new Date().toISOString()
       });
-      console.log("User data stored in Firestore");
+      console.log("User data stored in Firestore collection 'users'");
       
       return { user: userCredential.user };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user:", error);
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
       throw error;
     }
   },
