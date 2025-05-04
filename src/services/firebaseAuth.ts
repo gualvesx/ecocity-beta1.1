@@ -21,8 +21,8 @@ const convertToContextUser = async (firebaseUser: FirebaseUser | null): Promise<
     
     return {
       id: firebaseUser.uid,
-      name: firebaseUser.displayName || userData?.name || "Usuário",
-      email: firebaseUser.email || userData?.email || "",
+      name: userData?.name || firebaseUser.displayName || "Usuário",
+      email: userData?.email || firebaseUser.email || "",
       isAdmin: userData?.isAdmin || false
     };
   } catch (error) {
@@ -38,30 +38,30 @@ const convertToContextUser = async (firebaseUser: FirebaseUser | null): Promise<
 };
 
 export const firebaseAuth = {
-  // Registrar novo usuário - Fixed user creation flow
+  // Registrar novo usuário - Fixed to match exact Firestore structure
   createUserWithEmailAndPassword: async (email: string, password: string, name: string): Promise<{ user: FirebaseUser }> => {
     try {
       console.log(`Creating user with email: ${email}, name: ${name}`);
       
-      // Criar usuário no Firebase Auth
+      // 1. Criar usuário no Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("User created in Firebase Auth with UID:", userCredential.user.uid);
       
-      // Atualizar perfil com nome de exibição
+      // 2. Atualizar perfil com nome de exibição
       await updateProfile(userCredential.user, {
         displayName: name
       });
       console.log("Profile updated with displayName:", name);
       
-      // Armazenar dados adicionais no Firestore
+      // 3. Armazenar dados adicionais no Firestore - EXACTLY matching the structure
+      // Note: id is the document ID, not a field in the document
       const userRef = doc(firestore, "users", userCredential.user.uid);
       await setDoc(userRef, {
-        name,
-        email,
-        isAdmin: false,
-        createdAt: new Date().toISOString()
+        name: name,
+        email: email,
+        isAdmin: false
       });
-      console.log("User data stored in Firestore collection 'users'");
+      console.log("User data stored in Firestore collection 'users' with correct structure");
       
       return { user: userCredential.user };
     } catch (error: any) {

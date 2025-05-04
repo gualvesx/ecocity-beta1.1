@@ -31,6 +31,12 @@ const Register = () => {
         return;
       }
 
+      if (!email.trim()) {
+        setError('E-mail é obrigatório');
+        setLocalLoading(false);
+        return;
+      }
+
       if (password !== confirmPassword) {
         setError('As senhas não coincidem');
         setLocalLoading(false);

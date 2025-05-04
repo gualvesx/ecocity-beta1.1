@@ -10,7 +10,7 @@ const firebaseConfig = {
   authDomain: "ecocity-801cc.firebaseapp.com",
   databaseURL: "https://ecocity-801cc-default-rtdb.firebaseio.com",
   projectId: "ecocity-801cc",
-  storageBucket: "ecocity-801cc.firebasestorage.app",
+  storageBucket: "ecocity-801cc.appspot.com",
   messagingSenderId: "825751292076",
   appId: "1:825751292076:web:11dcde0f9a5d153b64b709",
   measurementId: "G-9NQK92Q42X"

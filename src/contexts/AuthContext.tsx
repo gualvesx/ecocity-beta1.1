@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { toast } from 'sonner';
 import { firebaseAuth } from '@/services/firebaseAuth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/services/firebaseConfig';
 
 // User types
 export interface User {
@@ -48,23 +50,48 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<(User & { password: string })[]>([]);
 
-  // Initialize with existing or dummy users
+  // Initialize with Firebase Auth listener and fallback to local storage
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         // Manter os dados de usuário dummy apenas para fallback
         setUsers(dummyUsers);
-        console.log("Usando dados de usuário para fallback local");
-
-        // Check if a user is logged in
+        console.log("Dados de usuário carregados para fallback local");
+        
+        // Set up Firebase Auth listener
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          console.log("Auth state changed:", firebaseUser ? `User ${firebaseUser.uid}` : "No user");
+          
+          if (firebaseUser) {
+            // User is logged in
+            const appUser = await firebaseAuth.convertToContextUser(firebaseUser);
+            if (appUser) {
+              setUser(appUser);
+              localStorage.setItem('currentUser', JSON.stringify(appUser));
+            }
+          } else {
+            // Check if a user is stored locally
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+              setUser(JSON.parse(storedUser));
+            } else {
+              setUser(null);
+            }
+          }
+          setIsLoading(false);
+        });
+        
+        return unsubscribe;
+      } catch (error) {
+        console.error("Error loading users:", error);
+        
+        // Fallback to local storage if Firebase fails
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
           setUser(JSON.parse(storedUser));
         }
-      } catch (error) {
-        console.error("Error loading users:", error);
+        
         setUsers(dummyUsers);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -123,23 +150,29 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
-  // Registration function - Improved with better error handling
+  // Registration function - Fixed to ensure user is created properly
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
+    console.log("Starting registration process for:", name, email);
     
     try {
       // Try Firebase registration
       try {
-        console.log("Attempting registration with Firebase...", { name, email });
+        console.log("Attempting registration with Firebase...");
+        
+        // 1. Create user in Firebase Auth and Firestore
         const { user: firebaseUser } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
-        console.log("User created in Firebase, getting context user");
+        console.log("User created in Firebase with UID:", firebaseUser.uid);
         
-        // Wait a moment for Firestore write to complete
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // 2. Wait a moment for Firestore write to complete (important!)
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
+        // 3. Fetch the user data to verify it was created properly
         const newUser = await firebaseAuth.convertToContextUser(firebaseUser);
+        console.log("User data from Firestore:", newUser);
         
         if (newUser) {
+          // 4. Set user in context and local storage
           console.log("Setting user in context:", newUser);
           setUser(newUser);
           localStorage.setItem('currentUser', JSON.stringify(newUser));
@@ -147,14 +180,14 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
           return true;
         }
         
-        console.log("Failed to get context user after Firebase registration");
+        console.error("Failed to get context user after Firebase registration");
         return false;
       } catch (firebaseError: any) {
-        console.error("Firebase registration failed", firebaseError);
+        console.error("Firebase registration failed:", firebaseError);
         console.error("Error code:", firebaseError.code);
         console.error("Error message:", firebaseError.message);
         
-        // Check specific Firebase error codes
+        // Handle specific Firebase error codes
         if (firebaseError.code === 'auth/email-already-in-use') {
           toast.error('Este email já está em uso');
           throw new Error('Este email já está em uso');
@@ -180,7 +213,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   
   // Helper for local registration (fallback)
   const registerLocally = (name: string, email: string, password: string): boolean => {
-    // Check if email already exists
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
       toast.error('Email already registered');
       return false;
@@ -227,7 +259,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     toast.info('You have logged out');
   };
 
-  // Function to get all users (admin only) - Use useCallback to memoize
+  // Function to get all users (admin only)
   const getAllUsers = useCallback((): User[] => {
     if (!user?.isAdmin) return [];
     
@@ -243,11 +275,10 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     
     // Use local users as fallback
     return users.map(({ password, ...userWithoutPassword }) => userWithoutPassword);
-  }, [users, user?.isAdmin]); // Add dependencies
+  }, [users, user?.isAdmin]);
 
   // Function to update a user's admin status
   const updateUserAdminStatus = async (userId: string, isAdmin: boolean): Promise<boolean> => {
-    // Check if current user is admin
     if (!user?.isAdmin) {
       toast.error('You do not have permission to perform this action');
       return false;
@@ -303,7 +334,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     password: string, 
     isAdmin: boolean
   ): Promise<boolean> => {
-    // Check if current user is admin
     if (!user?.isAdmin) {
       toast.error('You do not have permission to perform this action');
       return false;
@@ -338,7 +368,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   
   // Helper for local user creation by admin
   const createLocalUserByAdmin = (name: string, email: string, password: string, isAdmin: boolean): boolean => {
-    // Check if email already exists
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
       toast.error('Email already registered');
       return false;
