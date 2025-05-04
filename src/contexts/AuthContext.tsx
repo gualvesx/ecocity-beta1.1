@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { toast } from 'sonner';
 import { firebaseAuth } from '@/services/firebaseAuth';
@@ -124,32 +123,52 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
-  // Registration function
+  // Registration function - Improved with better error handling
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
     try {
       // Try Firebase registration
       try {
-        console.log("Attempting registration with Firebase...");
+        console.log("Attempting registration with Firebase...", { name, email });
         const { user: firebaseUser } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
+        console.log("User created in Firebase, getting context user");
+        
         const newUser = await firebaseAuth.convertToContextUser(firebaseUser);
         
         if (newUser) {
+          console.log("Setting user in context:", newUser);
           setUser(newUser);
           localStorage.setItem('currentUser', JSON.stringify(newUser));
-          toast.success('Registration successful via Firebase!');
+          toast.success('Registro realizado com sucesso!');
           return true;
         }
+        
+        console.log("Failed to get context user after Firebase registration");
+        return false;
       } catch (firebaseError) {
-        console.log("Firebase registration failed, falling back to local methods", firebaseError);
+        console.error("Firebase registration failed", firebaseError);
+        
+        // Check specific Firebase error codes
+        if (firebaseError instanceof Error) {
+          if (firebaseError.message.includes('email-already-in-use')) {
+            toast.error('Este email já está em uso');
+            return false;
+          }
+        }
+        
+        // Try local registration as fallback
         return registerLocally(name, email, password);
       }
-      
-      return false;
     } catch (error) {
-      toast.error('Error registering user');
       console.error('Registration error:', error);
+      
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Erro ao registrar usuário');
+      }
+      
       return false;
     } finally {
       setIsLoading(false);
@@ -181,7 +200,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setUser(userWithoutPassword);
     localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
     
-    toast.success('Registration successful (local mode)!');
+    toast.success('Registro realizado com sucesso! (modo local)');
     return true;
   };
 

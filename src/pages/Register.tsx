@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UserPlus, Leaf, User, Mail, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Register = () => {
   const { register, isLoading } = useAuth();
@@ -15,25 +16,41 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [localLoading, setLocalLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLocalLoading(true);
 
-    // Validações básicas
-    if (password !== confirmPassword) {
-      setError('As senhas não coincidem');
-      return;
-    }
+    try {
+      // Validações básicas
+      if (password !== confirmPassword) {
+        setError('As senhas não coincidem');
+        return;
+      }
 
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres');
-      return;
-    }
+      if (password.length < 6) {
+        setError('A senha deve ter pelo menos 6 caracteres');
+        return;
+      }
 
-    const success = await register(name, email, password);
-    if (success) {
-      navigate('/map');
+      console.log("Attempting to register user:", name, email);
+      const success = await register(name, email, password);
+      
+      if (success) {
+        toast.success("Conta criada com sucesso!");
+        navigate('/map');
+      } else {
+        setError('Falha ao criar conta. Tente novamente.');
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
+      setError(errorMessage);
+      toast.error("Erro ao criar conta");
+    } finally {
+      setLocalLoading(false);
     }
   };
 
@@ -126,9 +143,9 @@ const Register = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-eco-green hover:bg-eco-green-dark"
-                disabled={isLoading}
+                disabled={isLoading || localLoading}
               >
-                {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+                {isLoading || localLoading ? 'Cadastrando...' : 'Cadastrar'}
                 <UserPlus className="ml-2 h-4 w-4" />
               </Button>
             </form>

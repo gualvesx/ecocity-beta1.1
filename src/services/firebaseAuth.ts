@@ -38,23 +38,30 @@ const convertToContextUser = async (firebaseUser: FirebaseUser | null): Promise<
 };
 
 export const firebaseAuth = {
-  // Registrar novo usuário
+  // Registrar novo usuário - Fixed user creation flow
   createUserWithEmailAndPassword: async (email: string, password: string, name: string): Promise<{ user: FirebaseUser }> => {
     try {
+      console.log(`Creating user with email: ${email}, name: ${name}`);
+      
       // Criar usuário no Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User created in Firebase Auth, now updating profile");
       
       // Atualizar perfil com nome de exibição
       await updateProfile(userCredential.user, {
         displayName: name
       });
+      console.log("Profile updated with displayName");
       
       // Armazenar dados adicionais no Firestore
-      await setDoc(doc(firestore, "users", userCredential.user.uid), {
+      const userRef = doc(firestore, "users", userCredential.user.uid);
+      await setDoc(userRef, {
         name,
         email,
-        isAdmin: false
+        isAdmin: false,
+        createdAt: new Date().toISOString()
       });
+      console.log("User data stored in Firestore");
       
       return { user: userCredential.user };
     } catch (error) {
