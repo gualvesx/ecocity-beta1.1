@@ -98,45 +98,93 @@ export const userApi = {
     }
   },
   
-  // Criar usuário (somente admin)
-  createUser: async (
-    name: string, 
-    email: string, 
-    password: string, 
-    isAdmin: boolean
-  ): Promise<ApiResponse<User>> => {
-    try {
-      console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
-      
-      const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
-      
-      if (isAdmin) {
-        console.log(`API: Setting user ${user.uid} as admin`);
-        await firebaseAuth.updateUserAdmin(user.uid, true);
-      }
-      
-      // Wait for Firestore writes to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const appUser = await firebaseAuth.convertToContextUser(user);
-      console.log("API: Created user:", appUser);
-      
-      if (!appUser) {
-        throw new Error("Failed to convert user data after creation");
-      }
-      
-      return {
-        success: true,
-        data: appUser
-      };
-    } catch (error) {
-      console.error("API error creating user:", error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : "Falha ao criar usuário"
-      };
+// Criar usuário (somente admin)
+createUser: async (
+  name: string,
+  email: string,
+  password: string,
+  isAdmin: boolean
+): Promise<ApiResponse<User>> => {
+  try {
+    console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
+
+    // 1. Criar o usuário com email e senha (CORRIGIDO)
+    const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user; // Obter o objeto User
+
+    // 2. Atualizar o perfil do usuário com o nome (OPCIONAL, MAS COMUM)
+    if (user) {
+      await user.updateProfile({
+        displayName: name
+        // photoURL: ... // Você pode adicionar uma foto aqui se tiver
+      });
+      console.log(`API: Perfil do usuário ${user.uid} atualizado com nome: ${name}`);
     }
-  },
+
+
+    // **Observação:** As funções 'updateUserAdmin' e 'convertToContextUser' não são funções padrão do SDK do Firebase Auth
+    // Se 'firebaseAuth' é um wrapper customizado, a lógica para admin e conversão deve estar implementada dentro dele.
+    // Geralmente, o gerenciamento de funções (como admin) é feito no lado do servidor (por exemplo, com Cloud Functions
+    // e o Admin SDK) definindo Custom Claims, pois é mais seguro do que a lógica no cliente.
+
+    // Exemplo (ASSUMINDO QUE SEU WRAPPER firebaseAuth TEM updateAdminStatus e convertUser):
+    if (isAdmin && firebaseAuth.updateAdminStatus) { // Verifique se a função existe no seu wrapper
+       console.log(`API: Setting user ${user.uid} as admin`);
+       // Esta função customizada provavelmente chama o Admin SDK no backend
+       await firebaseAuth.updateAdminStatus(user.uid, true);
+    }
+
+    // 3. Converter para o seu tipo de usuário customizado (ASSUMINDO QUE SEU WRAPPER TEM convertUser)
+    const appUser = firebaseAuth.convertUser ? firebaseAuth.convertUser(user) : user; // Use seu wrapper se existir
+
+    console.log("API: Created user:", appUser);
+
+    if (!appUser) {
+      throw new Error("Failed to process user data after creation"); // Mensagem ajustada
+    }
+
+    // Wait for potential backend writes like admin status (if done in backend)
+    // The setTimeout might be needed depending on your backend logic flow,
+    // but relying on promises from backend calls is generally better.
+    // await new Promise(resolve => setTimeout(resolve, 500));
+
+
+    return {
+      success: true,
+      data: appUser as User // Ajuste de tipo se necessário
+    };
+  } catch (error) {
+    console.error("API error creating user:", error);
+    // Tratamento de erros específicos do Auth
+    let userMessage = "Falha ao criar usuário";
+    if (error && typeof error === 'object' && 'code' in error) {
+        switch ((error as any).code) {
+            case 'auth/email-already-in-use':
+                userMessage = 'Este email já está em uso.';
+                break;
+            case 'auth/invalid-email':
+                userMessage = 'O formato do email é inválido.';
+                break;
+            case 'auth/operation-not-allowed':
+                userMessage = 'Autenticação por Email/Senha não está ativada. Habilite no Console Firebase.';
+                break;
+            case 'auth/weak-password':
+                userMessage = 'A senha é muito fraca.';
+                break;
+            default:
+                userMessage = `Falha ao criar usuário: ${error.message}`;
+                break;
+        }
+    }
+
+
+    return {
+      success: false,
+      message: userMessage // Use a mensagem de erro tratada ou a original
+    };
+  }
+},
+
   
   // Atualizar status de admin do usuário
   updateUserAdmin: async (
