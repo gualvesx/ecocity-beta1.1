@@ -164,96 +164,100 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile menu */}
+      {/* Mobile menu - Fixed positioning with proper initial state */}
       <div 
         className={cn(
-          "fixed top-[72px] right-0 left-0 bg-background/95 backdrop-blur-md md:hidden transition-transform transform duration-300 shadow-md z-50",
-          isOpen ? "translate-y-0" : "-translate-y-full"
+          "fixed inset-0 top-[72px] bg-background/95 backdrop-blur-md md:hidden transition-opacity duration-300 z-50",
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
       >
-        <ul className="flex flex-col space-y-1 p-4">
-          {navItems.map((item) => (
-            <li key={item.name}>
-              <Link
-                to={item.path}
-                className={cn(
-                  "block px-4 py-2 rounded-md transition-colors",
-                  location.pathname === item.path
-                    ? "bg-eco-green-light/20 text-eco-green-dark font-medium"
-                    : "hover:bg-eco-green-light/10"
-                )}
-              >
-                {item.name}
-              </Link>
-            </li>
-          ))}
-          
-          {user?.isAdmin && (
-            <li>
-              <Link
-                to="/admin"
-                className="block px-4 py-2 rounded-md transition-colors hover:bg-eco-green-light/10 flex items-center"
-              >
-                <Shield className="h-4 w-4 mr-2" />
-                {t('painel-admin')}
-              </Link>
-            </li>
-          )}
-          
-          <div className="border-t border-gray-100 my-2"></div>
-          
-          {user ? (
-            <>
-              <div className="px-4 py-2">
-                <div className="flex items-center mb-2">
-                  <User className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">{t('ola')} </span>
-                    <span className="font-medium text-foreground">{user.name}</span>
-                    {user.isAdmin && (
-                      <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-eco-green text-white">
-                        {t('admin')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleLogout}
-                  className="w-full text-red-500 border-red-200 hover:bg-red-50"
+        <div className="h-full overflow-y-auto">
+          <ul className="flex flex-col space-y-1 p-4">
+            {navItems.map((item) => (
+              <li key={item.name}>
+                <Link
+                  to={item.path}
+                  className={cn(
+                    "block px-4 py-2 rounded-md transition-colors",
+                    location.pathname === item.path
+                      ? "bg-eco-green-light/20 text-eco-green-dark font-medium"
+                      : "hover:bg-eco-green-light/10"
+                  )}
+                  onClick={() => setIsOpen(false)}
                 >
-                  <LogOut className="h-4 w-4 mr-1" />
-                  {t('sair')}
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+            
+            {user?.isAdmin && (
+              <li>
+                <Link
+                  to="/admin"
+                  className="block px-4 py-2 rounded-md transition-colors hover:bg-eco-green-light/10 flex items-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  {t('painel-admin')}
+                </Link>
+              </li>
+            )}
+            
+            <div className="border-t border-gray-100 my-2"></div>
+            
+            {user ? (
+              <>
+                <div className="px-4 py-2">
+                  <div className="flex items-center mb-2">
+                    <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">{t('ola')} </span>
+                      <span className="font-medium text-foreground">{user.name}</span>
+                      {user.isAdmin && (
+                        <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-eco-green text-white">
+                          {t('admin')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleLogout}
+                    className="w-full text-red-500 border-red-200 hover:bg-red-50"
+                  >
+                    <LogOut className="h-4 w-4 mr-1" />
+                    {t('sair')}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col gap-2 p-4">
+                <Button
+                  onClick={() => {
+                    navigate('/login');
+                    setIsOpen(false);
+                  }}
+                  className="w-full bg-eco-green hover:bg-eco-green-dark"
+                >
+                  <LogIn className="h-4 w-4 mr-1" />
+                  {t('entrar')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    navigate('/register');
+                    setIsOpen(false);
+                  }}
+                  className="w-full"
+                >
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  {t('cadastrar')}
                 </Button>
               </div>
-            </>
-          ) : (
-            <div className="flex flex-col gap-2 p-4">
-              <Button
-                onClick={() => {
-                  navigate('/login');
-                  setIsOpen(false);
-                }}
-                className="w-full bg-eco-green hover:bg-eco-green-dark"
-              >
-                <LogIn className="h-4 w-4 mr-1" />
-                {t('entrar')}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  navigate('/register');
-                  setIsOpen(false);
-                }}
-                className="w-full"
-              >
-                <UserPlus className="h-4 w-4 mr-1" />
-                {t('cadastrar')}
-              </Button>
-            </div>
-          )}
-        </ul>
+            )}
+          </ul>
+        </div>
       </div>
     </header>
   );
