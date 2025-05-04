@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { CalendarDays, Clock, MapPin, SearchIcon, User } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEventStore } from '@/hooks/useEventStore';
 
@@ -24,7 +24,20 @@ export function EventList() {
   
   // Group events by month
   const eventsByMonth = filteredEvents.reduce((acc, event) => {
-    const date = new Date(event.date);
+    // Safely parse the date string and validate before using
+    let date;
+    try {
+      date = parseISO(event.date);
+      // If the date is invalid, skip this event
+      if (!isValid(date)) {
+        console.error(`Invalid date format for event ${event.id}: ${event.date}`);
+        return acc;
+      }
+    } catch (error) {
+      console.error(`Error parsing date for event ${event.id}: ${event.date}`, error);
+      return acc;
+    }
+    
     const monthYear = format(date, 'MMMM yyyy', { locale: ptBR });
     
     if (!acc[monthYear]) {
@@ -37,8 +50,16 @@ export function EventList() {
   
   // Sort months chronologically
   const sortedMonths = Object.keys(eventsByMonth).sort((a, b) => {
-    const dateA = new Date(a);
-    const dateB = new Date(b);
+    // Extract the month and year and create comparable dates
+    const monthA = a.split(' ')[0];
+    const yearA = a.split(' ')[1];
+    const monthB = b.split(' ')[0];
+    const yearB = b.split(' ')[1];
+    
+    // Create dates for comparison
+    const dateA = new Date(`${monthA} 1, ${yearA}`);
+    const dateB = new Date(`${monthB} 1, ${yearB}`);
+    
     return dateA.getTime() - dateB.getTime();
   });
   
@@ -75,7 +96,18 @@ export function EventList() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {eventsByMonth[month].map((event, index) => {
-                const eventDate = new Date(event.date);
+                // Parse and validate date safely
+                let eventDate;
+                try {
+                  eventDate = parseISO(event.date);
+                  if (!isValid(eventDate)) {
+                    console.error(`Invalid date format in card render for event ${event.id}: ${event.date}`);
+                    eventDate = new Date(); // Fallback to current date
+                  }
+                } catch (error) {
+                  console.error(`Error parsing date in card render for event ${event.id}: ${event.date}`, error);
+                  eventDate = new Date(); // Fallback to current date
+                }
                 
                 return (
                   <Card key={`${event.id || index}-${event.title}`} className="overflow-hidden">
