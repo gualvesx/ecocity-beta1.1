@@ -1,4 +1,3 @@
-
 import { firebaseAuth } from './firebaseAuth';
 import { firebaseFirestore } from './firebaseFirestore';
 import { User } from '@/contexts/AuthContext';
@@ -44,7 +43,7 @@ export const environmentApi = {
   }
 };
 
-// API de usuários
+// API de usuários - Fixed implementation
 export const userApi = {
   // Obter todos os usuários
   getAllUsers: async (): Promise<ApiResponse<User[]>> => {
@@ -52,6 +51,7 @@ export const userApi = {
       console.log("API: Buscando todos os usuários");
       
       const users = await firebaseAuth.getAllUsers();
+      console.log("API: Users retrieved:", users);
       
       return {
         success: true,
@@ -72,15 +72,19 @@ export const userApi = {
       console.log(`API: Buscando usuário com ID ${userId}`);
       
       const users = await firebaseAuth.getAllUsers();
+      console.log("API: All users for finding by ID:", users);
+      
       const user = users.find(u => u.id === userId);
       
       if (!user) {
+        console.log(`API: User with ID ${userId} not found`);
         return {
           success: false,
           message: "Usuário não encontrado"
         };
       }
       
+      console.log(`API: User found:`, user);
       return {
         success: true,
         data: user
@@ -102,19 +106,28 @@ export const userApi = {
     isAdmin: boolean
   ): Promise<ApiResponse<User>> => {
     try {
-      console.log(`API: Criando usuário ${email}`);
+      console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
       
       const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
       
       if (isAdmin) {
+        console.log(`API: Setting user ${user.uid} as admin`);
         await firebaseAuth.updateUserAdmin(user.uid, true);
       }
       
+      // Wait for Firestore writes to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const appUser = await firebaseAuth.convertToContextUser(user);
+      console.log("API: Created user:", appUser);
+      
+      if (!appUser) {
+        throw new Error("Failed to convert user data after creation");
+      }
       
       return {
         success: true,
-        data: appUser!
+        data: appUser
       };
     } catch (error) {
       console.error("API error creating user:", error);
@@ -134,6 +147,7 @@ export const userApi = {
       console.log(`API: Atualizando usuário ${userId} para status de admin: ${isAdmin}`);
       
       await firebaseAuth.updateUserAdmin(userId, isAdmin);
+      console.log(`API: User ${userId} admin status updated successfully`);
       
       return {
         success: true

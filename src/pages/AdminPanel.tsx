@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Users, Shield, UserCheck, UserX, UserPlus } from 'lucide-react';
+import { ArrowLeft, Users, Shield, UserCheck, UserX, UserPlus, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -19,6 +19,8 @@ import {
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { userApi } from '@/services/api';
+import { User } from '@/contexts/AuthContext';
 
 // Esquema de validação para o formulário de criação de usuário
 const createUserSchema = z.object({
@@ -33,7 +35,7 @@ type CreateUserFormValues = z.infer<typeof createUserSchema>;
 const AdminPanel = () => {
   const { user, getAllUsers, updateUserAdminStatus, createUserByAdmin } = useAuth();
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserForm, setShowUserForm] = useState(false);
   // Add a state variable to trigger user list refresh
@@ -49,15 +51,44 @@ const AdminPanel = () => {
     }
   });
 
+  // Fetch users directly from API instead of relying on context
+  const fetchUsers = async () => {
+    if (!user?.isAdmin) return;
+    
+    setIsLoading(true);
+    try {
+      console.log("AdminPanel: Fetching users from API");
+      const response = await userApi.getAllUsers();
+      
+      if (response.success && response.data) {
+        console.log("AdminPanel: Users fetched successfully:", response.data);
+        setUsers(response.data);
+      } else {
+        console.error("AdminPanel: Failed to fetch users from API");
+        // Fallback to context method
+        const contextUsers = getAllUsers();
+        console.log("AdminPanel: Fallback users from context:", contextUsers);
+        setUsers(contextUsers);
+      }
+    } catch (error) {
+      console.error("AdminPanel: Error fetching users:", error);
+      // Fallback to context method
+      const contextUsers = getAllUsers();
+      setUsers(contextUsers);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Redirecionar se não for admin ou não estiver logado
+    // Redirect if not admin or not logged in
     if (!user || !user.isAdmin) {
       navigate('/');
     } else {
-      // Carregar a lista de usuários
-      setUsers(getAllUsers());
+      // Load user list
+      fetchUsers();
     }
-  }, [user, navigate, getAllUsers, refreshTrigger]); // Add refreshTrigger to the dependency array
+  }, [user, navigate, refreshTrigger]); // Add refreshTrigger to the dependency array
 
   if (!user || !user.isAdmin) {
     return null;
@@ -66,12 +97,12 @@ const AdminPanel = () => {
   const handleToggleAdmin = async (userId: string, makeAdmin: boolean) => {
     setIsLoading(true);
     try {
-      console.log(`Attempting to update user ${userId} to admin status: ${makeAdmin}`);
+      console.log(`AdminPanel: Attempting to update user ${userId} to admin status: ${makeAdmin}`);
       const success = await updateUserAdminStatus(userId, makeAdmin);
       
       if (success) {
         toast.success(`Usuário ${makeAdmin ? 'promovido a administrador' : 'removido de administrador'} com sucesso!`);
-        // Trigger a refresh by incrementing the refresh counter
+        // Trigger a refresh
         setRefreshTrigger(prev => prev + 1);
       } else {
         toast.error('Falha ao atualizar status do usuário');
@@ -87,13 +118,21 @@ const AdminPanel = () => {
   const onSubmitCreateUser = async (data: CreateUserFormValues) => {
     setIsLoading(true);
     try {
+      console.log("AdminPanel: Creating new user with data:", {
+        ...data,
+        password: "[REDACTED]"
+      });
+      
       const success = await createUserByAdmin(data.name, data.email, data.password, data.isAdmin);
+      
       if (success) {
         toast.success('Usuário criado com sucesso!');
         form.reset();
         setShowUserForm(false);
-        // Trigger a refresh by incrementing the refresh counter
-        setRefreshTrigger(prev => prev + 1);
+        // Trigger a refresh - increase the delay to ensure Firestore has time to update
+        setTimeout(() => {
+          setRefreshTrigger(prev => prev + 1);
+        }, 1000);
       } else {
         toast.error('Falha ao criar usuário');
       }
@@ -103,6 +142,11 @@ const AdminPanel = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Add manual refresh function
+  const handleManualRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   return (
@@ -132,13 +176,25 @@ const AdminPanel = () => {
                 <h2 className="text-xl font-semibold">Usuários Cadastrados</h2>
               </div>
               
-              <Button 
-                onClick={() => setShowUserForm(!showUserForm)} 
-                className="bg-eco-green hover:bg-eco-green-dark"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                {showUserForm ? 'Cancelar' : 'Adicionar Usuário'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  onClick={handleManualRefresh}
+                  variant="outline"
+                  disabled={isLoading}
+                  className="h-9 w-9 p-0"
+                  title="Atualizar lista de usuários"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                </Button>
+                
+                <Button 
+                  onClick={() => setShowUserForm(!showUserForm)} 
+                  className="bg-eco-green hover:bg-eco-green-dark"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  {showUserForm ? 'Cancelar' : 'Adicionar Usuário'}
+                </Button>
+              </div>
             </div>
             
             {showUserForm && (
@@ -261,7 +317,7 @@ const AdminPanel = () => {
                             <Button 
                               size="sm" 
                               variant="destructive"
-                              disabled={isLoading || user.id === user?.id}
+                              disabled={isLoading}
                               onClick={() => handleToggleAdmin(user.id, false)}
                               className="text-xs"
                             >
@@ -289,7 +345,7 @@ const AdminPanel = () => {
               
               {users.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  Nenhum usuário encontrado
+                  {isLoading ? 'Carregando usuários...' : 'Nenhum usuário encontrado'}
                 </div>
               )}
             </div>

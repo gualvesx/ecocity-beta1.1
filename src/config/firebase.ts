@@ -18,6 +18,16 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Only initialize analytics in browser environments where it's supported
+let analytics = null;
+if (typeof window !== 'undefined') {
+  try {
+    analytics = getAnalytics(app);
+    console.log("Firebase Analytics initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize Firebase Analytics:", error);
+  }
+}
 
 export { app, analytics };
