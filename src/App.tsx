@@ -1,6 +1,6 @@
 
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
 import { Toaster } from 'sonner';
 import Layout from '@/components/Layout';
 import { AuthProvider } from '@/contexts/AuthContext';
