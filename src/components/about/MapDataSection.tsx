@@ -5,10 +5,16 @@ import { Link } from 'react-router-dom';
 import { DataCard } from './DataCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+interface DataItem {
+  icon: React.ReactNode;
+  titleKey: string;
+  descKey: string;
+}
+
 const MapDataSection = () => {
   const { t } = useLanguage();
   
-  const dataCards = [
+  const dataCards: DataItem[] = [
     { icon: <MapPin />, titleKey: "recycle-points", descKey: "recycle-points-desc" },
     { icon: <Recycle />, titleKey: "electronic-points", descKey: "electronic-points-desc" },
     { icon: <TreeDeciduous />, titleKey: "seedling-points", descKey: "seedling-points-desc" },
