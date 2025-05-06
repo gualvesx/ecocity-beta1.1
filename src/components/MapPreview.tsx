@@ -28,15 +28,16 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          <div className="relative min-h-[400px] rounded-xl overflow-hidden">
-            {/* Melhorias nos efeitos de sombra e gradiente */}
-            <div className="absolute -inset-1 bg-gradient-to-br from-eco-green/30 via-eco-blue/20 to-eco-green-light/30 blur-md opacity-70 rounded-xl"></div>
+          {/* Contêiner do mapa com borda gradiente e tamanho aumentado */}
+          <div className="relative min-h-[450px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
+            {/* Borda gradiente */}
+            <div className="absolute -inset-2 bg-gradient-to-br from-eco-green/40 via-eco-blue/30 to-eco-green-light/40 rounded-xl blur-md"></div>
             
-            {/* Camada de sombra principal */}
-            <div className="absolute inset-0 shadow-[0_10px_60px_-15px_rgba(0,0,0,0.3)] rounded-xl pointer-events-none z-20"></div>
+            {/* Contêiner principal com sombra */}
+            <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)] rounded-xl pointer-events-none z-20"></div>
             
             {/* Efeito de profundidade com camadas de sombra */}
-            <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.1)] rounded-xl pointer-events-none z-30"></div>
+            <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.15)] rounded-xl pointer-events-none z-30"></div>
             
             {/* Sobreposição de cor para integração temática */}
             <div className="absolute inset-0 bg-gradient-to-br from-eco-green/15 to-eco-blue/10 opacity-70 z-10 pointer-events-none"></div>
