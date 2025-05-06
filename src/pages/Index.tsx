@@ -1,4 +1,5 @@
 
+import React from 'react';
 import DestaquesSustentabilidade from '@/components/SustainabilityHighlights';
 import ChamadaParaAcao from '@/components/CallToAction';
 import SecaoInterativa from '@/components/SecaoInterativa';
