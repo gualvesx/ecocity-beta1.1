@@ -98,71 +98,69 @@ export const userApi = {
     }
   },
   
-// Criar usuário (somente admin)
-createUser: async (
-  name: string,
-  email: string,
-  password: string,
-  isAdmin: boolean
-): Promise<ApiResponse<User>> => {
-  try {
-    console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
+  // Criar usuário (somente admin) - FIXED: No longer stores password in Firestore
+  createUser: async (
+    name: string,
+    email: string,
+    password: string,
+    isAdmin: boolean
+  ): Promise<ApiResponse<User>> => {
+    try {
+      console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
 
-    // 1. Criar o usuário com email e senha (CORRIGIDO)
-    const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
-    const user = userCredential.user; // Obter o objeto User
+      // 1. Criar o usuário com email e senha (CORRIGIDO)
+      const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
+      const user = userCredential.user; // Obter o objeto User
 
-    // No need to update profile here as it's handled in firebaseAuth.createUserWithEmailAndPassword
+      // Set admin status if needed
+      if (isAdmin) { 
+         console.log(`API: Setting user ${user.uid} as admin`);
+         await firebaseAuth.updateUserAdmin(user.uid, true);
+      }
 
-    // Set admin status if needed
-    if (isAdmin) { 
-       console.log(`API: Setting user ${user.uid} as admin`);
-       await firebaseAuth.updateUserAdmin(user.uid, true);
+      // Get the user with updated data
+      const appUser = await firebaseAuth.convertToContextUser(user);
+
+      console.log("API: Created user:", appUser);
+
+      if (!appUser) {
+        throw new Error("Failed to process user data after creation");
+      }
+
+      return {
+        success: true,
+        data: appUser
+      };
+    } catch (error) {
+      console.error("API error creating user:", error);
+      // Tratamento de erros específicos do Auth
+      let userMessage = "Falha ao criar usuário";
+      if (error && typeof error === 'object' && 'code' in error) {
+          switch ((error as any).code) {
+              case 'auth/email-already-in-use':
+                  userMessage = 'Este email já está em uso.';
+                  break;
+              case 'auth/invalid-email':
+                  userMessage = 'O formato do email é inválido.';
+                  break;
+              case 'auth/operation-not-allowed':
+                  userMessage = 'Autenticação por Email/Senha não está ativada. Habilite no Console Firebase.';
+                  break;
+              case 'auth/weak-password':
+                  userMessage = 'A senha é muito fraca.';
+                  break;
+              default:
+                  userMessage = `Falha ao criar usuário: ${(error as any).message}`;
+                  break;
+          }
+      }
+
+      return {
+        success: false,
+        message: userMessage // Use a mensagem de erro tratada ou a original
+      };
     }
-
-    // Get the user with updated data
-    const appUser = await firebaseAuth.convertToContextUser(user);
-
-    console.log("API: Created user:", appUser);
-
-    if (!appUser) {
-      throw new Error("Failed to process user data after creation");
-    }
-
-    return {
-      success: true,
-      data: appUser
-    };
-  } catch (error) {
-    console.error("API error creating user:", error);
-    // Tratamento de erros específicos do Auth
-    let userMessage = "Falha ao criar usuário";
-    if (error && typeof error === 'object' && 'code' in error) {
-        switch ((error as any).code) {
-            case 'auth/email-already-in-use':
-                userMessage = 'Este email já está em uso.';
-                break;
-            case 'auth/invalid-email':
-                userMessage = 'O formato do email é inválido.';
-                break;
-            case 'auth/operation-not-allowed':
-                userMessage = 'Autenticação por Email/Senha não está ativada. Habilite no Console Firebase.';
-                break;
-            case 'auth/weak-password':
-                userMessage = 'A senha é muito fraca.';
-                break;
-            default:
-                userMessage = `Falha ao criar usuário: ${(error as any).message}`;
-                break;
-        }
-    }
-
-    return {
-      success: false,
-      message: userMessage // Use a mensagem de erro tratada ou a original
-    };
-  }
-},
+  },
   
   // Atualizar status de admin do usuário
   updateUserAdmin: async (
@@ -215,7 +213,7 @@ export const authApi = {
     }
   },
   
-  // Registro
+  // Registro - FIXED: No longer stores password in userData
   register: async (name: string, email: string, password: string): Promise<ApiResponse<User>> => {
     try {
       console.log(`API: Tentativa de registro para ${email}`);

@@ -39,12 +39,12 @@ const convertToContextUser = async (firebaseUser: FirebaseUser | null): Promise<
 };
 
 export const firebaseAuth = {
-  // Registrar novo usuário - Ensures exact match to required Firestore structure
+  // Registrar novo usuário - ensures exact match to Firestore structure without storing password
   createUserWithEmailAndPassword: async (email: string, password: string, name: string): Promise<{ user: FirebaseUser }> => {
     try {
       console.log(`Creating user with email: ${email}, name: ${name}`);
       
-      // 1. Create user in Firebase Auth
+      // 1. Create user in Firebase Auth - handles password securely
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("User created in Firebase Auth with UID:", userCredential.user.uid);
       
@@ -54,7 +54,7 @@ export const firebaseAuth = {
       });
       console.log("Profile updated with displayName:", name);
       
-      // 3. Store additional data in Firestore - EXACTLY matching the structure
+      // 3. Store additional data in Firestore - WITHOUT the password
       const userRef = doc(firestore, "users", userCredential.user.uid);
       
       // Create user document with EXACTLY the specified fields
