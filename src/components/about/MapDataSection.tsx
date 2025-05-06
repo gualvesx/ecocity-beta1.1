@@ -2,7 +2,7 @@
 import React from 'react';
 import { MapPin, Recycle, TreeDeciduous, BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import DataCard from './DataCard';
+import { DataCard } from './DataCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const MapDataSection = () => {
@@ -48,4 +48,4 @@ const MapDataSection = () => {
   );
 };
 
-export default MapDataSection;
+export { MapDataSection };

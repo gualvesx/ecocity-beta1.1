@@ -109,49 +109,29 @@ createUser: async (
     console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
 
     // 1. Criar o usuário com email e senha (CORRIGIDO)
-    const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+    const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
     const user = userCredential.user; // Obter o objeto User
 
-    // 2. Atualizar o perfil do usuário com o nome (OPCIONAL, MAS COMUM)
-    if (user) {
-      await user.updateProfile({
-        displayName: name
-        // photoURL: ... // Você pode adicionar uma foto aqui se tiver
-      });
-      console.log(`API: Perfil do usuário ${user.uid} atualizado com nome: ${name}`);
-    }
+    // No need to update profile here as it's handled in firebaseAuth.createUserWithEmailAndPassword
 
-
-    // **Observação:** As funções 'updateUserAdmin' e 'convertToContextUser' não são funções padrão do SDK do Firebase Auth
-    // Se 'firebaseAuth' é um wrapper customizado, a lógica para admin e conversão deve estar implementada dentro dele.
-    // Geralmente, o gerenciamento de funções (como admin) é feito no lado do servidor (por exemplo, com Cloud Functions
-    // e o Admin SDK) definindo Custom Claims, pois é mais seguro do que a lógica no cliente.
-
-    // Exemplo (ASSUMINDO QUE SEU WRAPPER firebaseAuth TEM updateAdminStatus e convertUser):
-    if (isAdmin && firebaseAuth.updateAdminStatus) { // Verifique se a função existe no seu wrapper
+    // Set admin status if needed
+    if (isAdmin) { 
        console.log(`API: Setting user ${user.uid} as admin`);
-       // Esta função customizada provavelmente chama o Admin SDK no backend
-       await firebaseAuth.updateAdminStatus(user.uid, true);
+       await firebaseAuth.updateUserAdmin(user.uid, true);
     }
 
-    // 3. Converter para o seu tipo de usuário customizado (ASSUMINDO QUE SEU WRAPPER TEM convertUser)
-    const appUser = firebaseAuth.convertUser ? firebaseAuth.convertUser(user) : user; // Use seu wrapper se existir
+    // Get the user with updated data
+    const appUser = await firebaseAuth.convertToContextUser(user);
 
     console.log("API: Created user:", appUser);
 
     if (!appUser) {
-      throw new Error("Failed to process user data after creation"); // Mensagem ajustada
+      throw new Error("Failed to process user data after creation");
     }
-
-    // Wait for potential backend writes like admin status (if done in backend)
-    // The setTimeout might be needed depending on your backend logic flow,
-    // but relying on promises from backend calls is generally better.
-    // await new Promise(resolve => setTimeout(resolve, 500));
-
 
     return {
       success: true,
-      data: appUser as User // Ajuste de tipo se necessário
+      data: appUser
     };
   } catch (error) {
     console.error("API error creating user:", error);
@@ -172,11 +152,10 @@ createUser: async (
                 userMessage = 'A senha é muito fraca.';
                 break;
             default:
-                userMessage = `Falha ao criar usuário: ${error.message}`;
+                userMessage = `Falha ao criar usuário: ${(error as any).message}`;
                 break;
         }
     }
-
 
     return {
       success: false,
@@ -184,7 +163,6 @@ createUser: async (
     };
   }
 },
-
   
   // Atualizar status de admin do usuário
   updateUserAdmin: async (
