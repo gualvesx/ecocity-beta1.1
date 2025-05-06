@@ -28,20 +28,36 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          <div className="relative min-h-[400px] rounded-xl overflow-hidden shadow-xl">
-            {/* Enhanced shadow and blending effects */}
-            <div className="absolute inset-0 shadow-lg rounded-xl pointer-events-none z-20"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/10 to-eco-blue/5 opacity-60 z-10 pointer-events-none"></div>
+          <div className="relative min-h-[400px] rounded-xl overflow-hidden shadow-2xl">
+            {/* Enhanced background glow effect */}
+            <div className="absolute -inset-1 bg-gradient-to-br from-eco-green/30 via-eco-blue/20 to-eco-green-light/30 blur-md opacity-70 rounded-xl"></div>
             
-            {/* Map container with blur effect on edges */}
-            <div className="relative">
-              {/* Gradient overlays for blending with the page */}
+            {/* Main shadow container */}
+            <div className="absolute inset-0 shadow-lg rounded-xl pointer-events-none z-20"></div>
+            
+            {/* Depth effect with layered shadows */}
+            <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.1)] rounded-xl pointer-events-none z-30"></div>
+            
+            {/* Color overlay for theme integration */}
+            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/15 to-eco-blue/10 opacity-70 z-10 pointer-events-none"></div>
+            
+            {/* Map container with enhanced blending effects */}
+            <div className="relative h-full z-0 rounded-xl overflow-hidden">
+              {/* Gradient overlays for better blending with the page */}
               <div className="absolute inset-0 z-10 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-50"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white opacity-50"></div>
-                <div className="absolute inset-0 shadow-inner"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-white/50 via-transparent to-white/30 opacity-60"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-transparent to-white/40 opacity-60"></div>
+                <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-white/70 to-transparent"></div>
+                <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/70 to-transparent"></div>
+                <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/70 to-transparent"></div>
+                <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white/70 to-transparent"></div>
+                <div className="absolute inset-0 shadow-[inset_0_0_20px_5px_rgba(255,255,255,0.3)]"></div>
               </div>
-              <EcoMap hideControls={true} />
+              
+              {/* The actual map component */}
+              <div className="relative h-full">
+                <EcoMap hideControls={true} />
+              </div>
             </div>
           </div>
         </div>
