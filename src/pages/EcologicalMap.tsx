@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Info, MapPin, Plus } from 'lucide-react';
 import MapaEco from '@/components/EcoMap';
@@ -32,8 +31,13 @@ const MapaEcologico = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-          <MapaEco />
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden mb-8">
+          {/* Add subtle gradient and shadow effects */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/5 to-eco-blue/5 opacity-40 pointer-events-none rounded-xl"></div>
+            <div className="absolute inset-0 shadow-inner pointer-events-none rounded-xl"></div>
+            <MapaEco />
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">

@@ -1,18 +1,13 @@
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import EcoMap from '@/components/EcoMap';
 import { useEventStore } from '@/hooks/useEventStore';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { format } from 'date-fns';
 
 const EventMap = () => {
   const { events, isLoading } = useEventStore();
   const [searchQuery, setSearchQuery] = useState('');
-
-  // The events will be passed to the map component 
-  // which already has the rendering logic for map points
 
   return (
     <div className="relative">
@@ -29,7 +24,11 @@ const EventMap = () => {
         </div>
       </div>
       
-      <div className="h-[70vh] w-full">
+      <div className="h-[70vh] w-full relative rounded-xl overflow-hidden shadow-2xl">
+        {/* Add soft gradient overlay for better blending */}
+        <div className="absolute inset-0 bg-gradient-to-br from-eco-green/5 to-eco-blue/5 z-0 opacity-70 pointer-events-none"></div>
+        <div className="absolute inset-0 shadow-inner pointer-events-none"></div>
+        
         <EcoMap hideControls={false} eventMode={true} searchQuery={searchQuery} />
       </div>
     </div>

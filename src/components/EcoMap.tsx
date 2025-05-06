@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Recycle, TreeDeciduous, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -316,7 +315,7 @@ const EcoMap = ({ hideControls = false, eventMode = false, searchQuery = '' }: E
             onClick={() => setSelectedEvent(null)}
             className="text-gray-500 hover:text-gray-700"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         
@@ -355,8 +354,18 @@ const EcoMap = ({ hideControls = false, eventMode = false, searchQuery = '' }: E
   };
 
   return (
-    <div className="relative bg-eco-sand/50 rounded-xl overflow-hidden shadow-md">
-      <div ref={mapRef} className="h-[70vh] w-full z-10"></div>
+    <div className="relative bg-eco-sand/50 rounded-xl overflow-hidden shadow-lg">
+      {/* Map wrapper with shadow effect */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-eco-green/5 to-eco-blue/5 z-0 opacity-70"></div>
+        <div ref={mapRef} className="h-[70vh] w-full z-10 relative"></div>
+        
+        {/* Inner shadow effect */}
+        <div className="absolute inset-0 shadow-inner pointer-events-none rounded-xl"></div>
+        
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-eco-sand/10 opacity-40 pointer-events-none rounded-xl"></div>
+      </div>
       
       {!hideControls && !eventMode && (
         <>

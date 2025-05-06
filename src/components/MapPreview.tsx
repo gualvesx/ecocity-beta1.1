@@ -28,13 +28,21 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          <div className="relative min-h-[400px] rounded-xl overflow-hidden">
-            {/* Gradient overlays for blending with the page */}
-            <div className="absolute inset-0 z-10 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-40"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white opacity-40"></div>
+          <div className="relative min-h-[400px] rounded-xl overflow-hidden shadow-xl">
+            {/* Enhanced shadow and blending effects */}
+            <div className="absolute inset-0 shadow-lg rounded-xl pointer-events-none z-20"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/10 to-eco-blue/5 opacity-60 z-10 pointer-events-none"></div>
+            
+            {/* Map container with blur effect on edges */}
+            <div className="relative">
+              {/* Gradient overlays for blending with the page */}
+              <div className="absolute inset-0 z-10 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-50"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white opacity-50"></div>
+                <div className="absolute inset-0 shadow-inner"></div>
+              </div>
+              <EcoMap hideControls={true} />
             </div>
-            <EcoMap hideControls={true} />
           </div>
         </div>
       </div>
