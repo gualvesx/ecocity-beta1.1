@@ -11,7 +11,7 @@ interface DataItem {
   descKey: string;
 }
 
-const MapDataSection = () => {
+export const MapDataSection = () => {
   const { t } = useLanguage();
   
   const dataCards: DataItem[] = [
@@ -53,5 +53,3 @@ const MapDataSection = () => {
     </section>
   );
 };
-
-export { MapDataSection };
