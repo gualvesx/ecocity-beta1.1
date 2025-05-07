@@ -1,4 +1,3 @@
-
 import { X, MapPinned, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -12,13 +11,7 @@ interface AddPointFormProps {
     impact: string;
     address: string;
   };
-  setNewPointForm: Dispatch<SetStateAction<{
-    name: string;
-    type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
-    description: string;
-    impact: string;
-    address: string;
-  }>>;
+  setNewPointForm: (value: any) => void;
   newPointPosition: { lat: number; lng: number } | null;
   setNewPointPosition: (position: { lat: number; lng: number } | null) => void;
   setIsAddingPoint: (isAdding: boolean) => void;

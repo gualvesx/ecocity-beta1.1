@@ -1,13 +1,23 @@
 
-// Declarações de tipo para módulos que não têm tipos
+// Type declarations for modules without types
 declare module 'react/jsx-runtime';
 
-// Adiciona namespace React para componentes que precisam dele
-namespace React {
+// Add React namespace for components that need it
+declare namespace React {
   interface ReactNode {}
+  interface CSSProperties {}
+  interface ElementRef<T> {}
+  interface ComponentPropsWithoutRef<T> {}
+  interface HTMLAttributes<T> {}
+  interface ButtonHTMLAttributes<T> {}
+  interface FC<P = {}> {
+    (props: P): React.ReactElement | null;
+  }
+  interface ReactElement {}
+  interface ComponentProps<T> {}
 }
 
-// Corrige o erro de "key" property no DataCardProps em MapDataSection
+// Fix the DataCardProps type
 interface DataCardProps {
   icon: React.ReactNode;
   titulo: string;
@@ -16,7 +26,7 @@ interface DataCardProps {
   style?: React.CSSProperties;
 }
 
-// Tipos para módulos
+// Types for modules
 declare module 'react';
 declare module 'react-dom';
 declare module 'react-router-dom';
@@ -31,8 +41,18 @@ declare module 'class-variance-authority';
 declare module '@radix-ui/react-aspect-ratio';
 declare module '@radix-ui/react-avatar';
 declare module 'react-hook-form';
+declare module '@radix-ui/react-slot';
+declare module 'react-day-picker';
+declare module '@radix-ui/react-checkbox';
 
-// Tipo para componentes Shadcn
+// For Dispatch and SetStateAction
+declare type Dispatch<A> = (value: A) => void;
+declare type SetStateAction<S> = S | ((prevState: S) => S);
+
+// Type for VariantProps
+declare type VariantProps<T> = any;
+
+// Badge component type
 interface BadgeProps {
   variant?: string;
   className?: string;
