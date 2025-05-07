@@ -32,10 +32,10 @@ export const MapDataSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {dataCards.map((card, index) => (
             <DataCard 
-              key={index} // This key will be handled by React rendering and not passed to DataCard
+              key={index} // Chave para React, não passada para o componente
               icon={card.icon} 
-              title={t(card.titleKey)} 
-              description={t(card.descKey)} 
+              titulo={t(card.titleKey)} 
+              descricao={t(card.descKey)} 
             />
           ))}
         </div>

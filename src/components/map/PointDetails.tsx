@@ -12,7 +12,7 @@ interface PointDetailsProps {
   handleDeletePoint: (id: number) => void;
   centerOnPoint: (lat: number, lng: number) => void;
   typeInfo: Record<string, { label: string; color: string; description: string }>;
-  getMarkerIcon: (type: string) => JSX.Element;
+  getMarkerIcon: (type: string) => React.ReactElement;
 }
 
 export const PointDetails = ({
