@@ -3,11 +3,11 @@ import { Leaf, Recycle, Trees, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface HighlightCardProps {
-  icon: React.ReactNode;
+  icon: any; // Changed from React.ReactNode
   titulo: string;
   descricao: string;
   className?: string;
-  style?: React.CSSProperties;
+  style?: any; // Changed from React.CSSProperties
 }
 
 const HighlightCard = ({ icon, titulo, descricao, className, style }: HighlightCardProps) => (
