@@ -2,6 +2,8 @@ import { firebaseAuth } from './firebaseAuth';
 import { firebaseFirestore } from './firebaseFirestore';
 import { User } from '@/contexts/AuthContext';
 import { Event, EventRequest } from '@/hooks/useEventStore';
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"; // Importe as funções necessárias
+import { doc, setDoc } from "firebase/firestore"; // Importe do Firestore
 
 // Interfaces de resposta da API
 interface ApiResponse<T> {
@@ -103,40 +105,62 @@ export const userApi = {
     name: string,
     email: string,
     password: string,
-    isAdmin: boolean
-  ): Promise<ApiResponse<User>> => {
+    isAdmin: boolean // Lembre-se que definir admin aqui no cliente não é seguro
+  ): Promise<ApiResponse<User>> => { // Supondo que ApiResponse e User são tipos seus
     try {
-      console.log(`API: Criando usuário ${email} com isAdmin=${isAdmin}`);
+      console.log(`API: Tentando criar usuário ${email}`);
 
-      // 1. Criar o usuário com email e senha (CORRIGIDO)
-      const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password, name);
-      const user = userCredential.user; // Obter o objeto User
+      // 1. Criar o usuário com email e senha (Correto)
+      const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password); // Passe a instância auth
+      const user = userCredential.user;
 
-      // Set admin status if needed
-      if (isAdmin) { 
-         console.log(`API: Setting user ${user.uid} as admin`);
-         await firebaseAuth.updateUserAdmin(user.uid, true);
+      if (!user) {
+           throw new Error("Erro na criação do usuário.");
       }
 
-      // Get the user with updated data
-      const appUser = await firebaseAuth.convertToContextUser(user);
+      // 2. Opcional: Atualizar o perfil do usuário no Auth (apenas nome de exibição)
+      await updateProfile(user, { displayName: name });
+      console.log(`API: Perfil do usuário ${user.uid} atualizado com nome.`);
 
-      console.log("API: Created user:", appUser);
 
-      if (!appUser) {
-        throw new Error("Failed to process user data after creation");
-      }
+      // 3. Escrever as informações adicionais (incluindo name) no Firestore
+      // Use o UID do usuário como ID do documento no Firestore para fácil consulta
+      const userDocRef = doc(firestoreDb, "users", user.uid); // Substitua firestoreDb pela sua instância do Firestore
+      await setDoc(userDocRef, {
+          name: name,
+          email: email, // Armazenar email no banco de dados também pode ser útil
+          // NUNCA armazene a senha!
+          createdAt: new Date(),
+          // isAdmin: isAdmin, // Definir 'isAdmin' diretamente aqui no cliente TAMBÉM não é seguro!
+          // Em vez disso, defina 'isAdmin' no servidor (Cloud Function)
+      });
+      console.log(`API: Documento do usuário ${user.uid} criado na coleção 'users'.`);
 
+      // 4. Processar o usuário para o formato do seu app (se convertToContextUser existir)
+      // const appUser = await convertToContextUser(user); // Adapte conforme sua função
+      // Ou construa seu objeto User diretamente com os dados disponíveis
+
+      // Para o status de admin:
+      // Você precisaria de uma Cloud Function separada, protegida por regras de segurança,
+      // que um admin existente chamaria para definir outro usuário como admin no servidor.
+
+      // Retorne os dados do usuário criado
       return {
         success: true,
-        data: appUser
+        data: { // Adapte para o formato do seu tipo User
+            uid: user.uid,
+            email: user.email,
+            name: name, // Use o nome passado ou o displayName do user.profile
+            // isAdmin: ??? // O status de admin real precisa ser verificado no banco de dados ou custom claims
+        } as User // Faça um cast para o seu tipo User
       };
-    } catch (error) {
+
+    } catch (error: any) { // Pegue o erro como 'any' para acessar a propriedade 'code'
       console.error("API error creating user:", error);
-      // Tratamento de erros específicos do Auth
+      // Tratamento de erros específicos do Auth (igual ao seu, que está bom!)
       let userMessage = "Falha ao criar usuário";
-      if (error && typeof error === 'object' && 'code' in error) {
-          switch ((error as any).code) {
+      if (error.code) { // Verifique se 'code' existe
+          switch (error.code) {
               case 'auth/email-already-in-use':
                   userMessage = 'Este email já está em uso.';
                   break;
@@ -150,14 +174,17 @@ export const userApi = {
                   userMessage = 'A senha é muito fraca.';
                   break;
               default:
-                  userMessage = `Falha ao criar usuário: ${(error as any).message}`;
+                  userMessage = `Falha ao criar usuário: ${error.message}`;
                   break;
           }
+      } else {
+           userMessage = `Falha desconhecida ao criar usuário: ${error.message || error}`;
       }
+
 
       return {
         success: false,
-        message: userMessage // Use a mensagem de erro tratada ou a original
+        message: userMessage
       };
     }
   },
