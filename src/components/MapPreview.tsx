@@ -29,9 +29,9 @@ export const MapPreview = () => {
           </div>
           
           {/* Contêiner do mapa com borda gradiente e tamanho aumentado */}
-          <div className="relative min-h-[450px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
-            {/* Borda gradiente */}
-            <div className="absolute -inset-2 bg-gradient-to-br from-eco-green/40 via-eco-blue/30 to-eco-green-light/40 rounded-xl blur-md"></div>
+          <div className="relative min-h-[500px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
+            {/* Borda gradiente - apenas na borda */}
+            <div className="absolute -inset-2 bg-gradient-to-br from-eco-green/50 via-eco-blue/40 to-eco-green-light/50 rounded-xl blur-md"></div>
             
             {/* Contêiner principal com sombra */}
             <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)] rounded-xl pointer-events-none z-20"></div>
@@ -39,20 +39,18 @@ export const MapPreview = () => {
             {/* Efeito de profundidade com camadas de sombra */}
             <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.15)] rounded-xl pointer-events-none z-30"></div>
             
-            {/* Sobreposição de cor para integração temática */}
-            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/15 to-eco-blue/10 opacity-70 z-10 pointer-events-none"></div>
-            
-            {/* Contêiner do mapa com efeitos de mesclagem aprimorados */}
+            {/* Contêiner do mapa com efeitos de mesclagem apenas nas bordas */}
             <div className="relative h-full z-0 rounded-xl overflow-hidden">
-              {/* Gradientes sobrepostos para melhor mesclagem com a página */}
+              {/* Gradientes apenas nas bordas para misturar com o fundo da página */}
               <div className="absolute inset-0 z-10 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-t from-white/50 via-transparent to-white/30 opacity-60"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-transparent to-white/40 opacity-60"></div>
-                <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-white/70 to-transparent"></div>
-                <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/70 to-transparent"></div>
-                <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/70 to-transparent"></div>
-                <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white/70 to-transparent"></div>
-                <div className="absolute inset-0 shadow-[inset_0_0_20px_5px_rgba(255,255,255,0.3)]"></div>
+                <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/80 to-transparent"></div>
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/80 to-transparent"></div>
+                <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white/80 to-transparent"></div>
+                <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white/80 to-transparent"></div>
+                <div className="absolute top-0 left-0 w-12 h-12 bg-gradient-to-br from-white/80 to-transparent rounded-tl-xl"></div>
+                <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-white/80 to-transparent rounded-tr-xl"></div>
+                <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-tr from-white/80 to-transparent rounded-bl-xl"></div>
+                <div className="absolute bottom-0 right-0 w-12 h-12 bg-gradient-to-tl from-white/80 to-transparent rounded-br-xl"></div>
               </div>
               
               {/* O componente de mapa em si */}
