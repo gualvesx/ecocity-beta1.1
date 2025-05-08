@@ -6,7 +6,7 @@ import { DataCard } from './DataCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DataItem {
-  icon: React.ReactNode;
+  icon: any; // Changed from React.ReactNode
   titleKey: string;
   descKey: string;
 }
@@ -32,10 +32,10 @@ export const MapDataSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {dataCards.map((card, index) => (
             <DataCard 
-              key={`data-card-${index}`} // This key doesn't get passed to the component
+              key={index} // Use index as the key
               icon={card.icon} 
-              titulo={t(card.titleKey)} 
-              descricao={t(card.descKey)} 
+              title={t(card.titleKey)} 
+              description={t(card.descKey)} 
             />
           ))}
         </div>

@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DataCardProps {
-  icon: React.ReactNode;
+  icon: any;
   title: string;
   description: string;
 }

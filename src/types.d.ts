@@ -8,8 +8,12 @@ declare namespace React {
   interface CSSProperties {}
   interface ElementRef<T> {}
   interface ComponentPropsWithoutRef<T> {}
-  interface HTMLAttributes<T> {}
-  interface ButtonHTMLAttributes<T> {}
+  interface HTMLAttributes<T> {
+    className?: string;
+  }
+  interface ButtonHTMLAttributes<T> {
+    className?: string;
+  }
   interface FC<P = {}> {
     (props: P): React.ReactElement | null;
   }
