@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { TreeDeciduous, Recycle, Leaf } from 'lucide-react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
-export const EcoCityHelpBox = () => {
+const EcoCityHelpBox = () => {
   return (
     <div className="mb-16 overflow-hidden bg-eco-sand rounded-xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
