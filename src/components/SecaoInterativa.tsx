@@ -126,26 +126,7 @@ const SecaoInterativa = () => {
             </Card>
           ))}
         </div>
-        
-        {/* New Eco Action Section */}
-        <div className="mb-12">
-          <h3 className="text-xl font-semibold text-eco-green-dark dark:text-eco-green-light mb-6 text-center">
-            Ações Ecológicas Interativas
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {ecoActions.map((action, index) => (
-              <div key={index} className={`${action.color} rounded-xl p-6 hover:shadow-lg transition-all duration-300`}>
-                <h4 className="text-lg font-semibold text-eco-green-dark mb-2">{action.title}</h4>
-                <p className="text-muted-foreground mb-4">{action.description}</p>
-                <Button className="bg-eco-green hover:bg-eco-green-dark text-white w-full">
-                  {action.action}
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-        
+
         {/* Eco Community Feature */}
         <div className="bg-eco-sand/30 rounded-xl p-8">
           <div className="flex flex-col md:flex-row gap-8 items-center">
@@ -189,8 +170,28 @@ const SecaoInterativa = () => {
             </div>
           </div>
         </div>
+        
+        {/* New Eco Action Section */}
+        <div className="mb-12">
+          <h3 className="text-xl font-semibold text-eco-green-dark dark:text-eco-green-light mb-6 text-center">
+            Ações Ecológicas Interativas
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {ecoActions.map((action, index) => (
+              <div key={index} className={`${action.color} rounded-xl p-6 hover:shadow-lg transition-all duration-300`}>
+                <h4 className="text-lg font-semibold text-eco-green-dark mb-2">{action.title}</h4>
+                <p className="text-muted-foreground mb-4">{action.description}</p>
+                <Button className="bg-eco-green hover:bg-eco-green-dark text-white w-full">
+                  {action.action}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+        
 
-                {/* New EcoCity Help Box */}
+        {/* New EcoCity Help Box */}
         <div className="mb-16 overflow-hidden bg-eco-sand/30 rounded-xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             <div className="p-8 md:p-10 flex flex-col justify-center">
