@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -19,10 +20,13 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Remove the tsconfigRaw that was referencing the node configuration
+  // Use esbuildOptions directly without referencing tsconfig.node.json
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020',
     },
   },
+  build: {
+    target: 'es2020',
+  }
 }));
