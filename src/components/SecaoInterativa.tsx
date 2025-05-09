@@ -126,50 +126,6 @@ const SecaoInterativa = () => {
             </Card>
           ))}
         </div>
-
-        {/* Eco Community Feature */}
-        <div className="bg-eco-sand/30 rounded-xl p-8">
-          <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="md:w-1/2">
-              <h3 className="text-2xl font-semibold text-eco-green-dark mb-4">Comunidade EcoCity</h3>
-              <p className="text-muted-foreground mb-4">
-                Conecte-se com pessoas comprometidas com a sustentabilidade, compartilhe experiências 
-                e participe de projetos colaborativos para um planeta mais saudável.
-              </p>
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-white rounded p-3 text-center shadow-sm">
-                  <div className="text-2xl font-bold text-eco-green">2.5K+</div>
-                  <div className="text-sm text-muted-foreground">Membros Ativos</div>
-                </div>
-                <div className="bg-white rounded p-3 text-center shadow-sm">
-                  <div className="text-2xl font-bold text-eco-green">186</div>
-                  <div className="text-sm text-muted-foreground">Projetos Locais</div>
-                </div>
-              </div>
-              <Button className="bg-eco-green hover:bg-eco-green-dark text-white">
-                Junte-se à Comunidade
-              </Button>
-            </div>
-            <div className="md:w-1/2 flex flex-wrap gap-2 justify-center">
-              <div className="bg-eco-green-light/30 rounded-lg p-4 text-center flex flex-col items-center w-32">
-                <Leaf className="h-6 w-6 text-eco-green mb-1" />
-                <span className="text-sm font-medium">Compartilhe Ideias</span>
-              </div>
-              <div className="bg-eco-blue-light/30 rounded-lg p-4 text-center flex flex-col items-center w-32">
-                <Globe className="h-6 w-6 text-eco-blue mb-1" />
-                <span className="text-sm font-medium">Projetos Globais</span>
-              </div>
-              <div className="bg-eco-brown-light/30 rounded-lg p-4 text-center flex flex-col items-center w-32">
-                <Recycle className="h-6 w-6 text-eco-brown mb-1" />
-                <span className="text-sm font-medium">Dicas Práticas</span>
-              </div>
-              <div className="bg-green-100 rounded-lg p-4 text-center flex flex-col items-center w-32">
-                <TreeDeciduous className="h-6 w-6 text-green-600 mb-1" />
-                <span className="text-sm font-medium">Eventos Locais</span>
-              </div>
-            </div>
-          </div>
-        </div>
         
         {/* New Eco Action Section */}
         <div className="mb-12">
