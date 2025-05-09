@@ -71,7 +71,7 @@ const SecaoInterativa = () => {
       title: "Desafio Ecológico Semanal",
       description: "Participe de desafios semanais para adotar hábitos mais sustentáveis",
       action: "Participar",
-      color: "bg-eco-brown-light/20"
+      color: "bg-eco-green-light/20"
     }
   ];
   
