@@ -1,10 +1,9 @@
-
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 interface LayoutProps {
-  children: any; // Changed from React.ReactNode
+  children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
