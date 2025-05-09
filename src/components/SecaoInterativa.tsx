@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Tree, Recycle, Globe, Leaf } from 'lucide-react';
+import { TreeDeciduous, Recycle, Globe, Leaf } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 
 const SecaoInterativa = () => {
@@ -31,7 +31,7 @@ const SecaoInterativa = () => {
       id: 'planting',
       title: 'Plantio Urbano',
       description: 'Dicas para cultivar plantas em ambientes urbanos',
-      icon: <Tree className="h-10 w-10" />,
+      icon: <TreeDeciduous className="h-10 w-10" />,
       color: 'from-eco-green to-eco-green-light',
       details: 'Conheça técnicas de jardinagem urbana, cultivo em pequenos espaços e a importância das áreas verdes para o equilíbrio ambiental nas cidades.'
     },
