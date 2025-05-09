@@ -14,19 +14,19 @@ const SecaoInterativa = () => {
   const ecoBoxes = [
     {
       id: 'recycling',
-      title: 'Poluição dos Solos',
-      description: 'Metais pesados que envenenam a terra por décadas.',
+      title: 'Reciclagem Consciente',
+      description: 'Aprenda como separar e reciclar corretamente diferentes materiais',
       icon: <Recycle className="h-10 w-10" />,
       color: 'from-eco-green to-eco-green-light',
-      details: 'Resíduos eletrônicos descartados incorretamente liberam chumbo, mercúrio e cádmio que se infiltram no solo. Uma bateria de celular abandonada pode contaminar até 60 mil litros de água com seus componentes tóxicos.'
+      details: 'Descubra os impactos positivos da reciclagem no meio ambiente e como pequenas ações diárias podem contribuir significativamente para a redução de resíduos.'
     },
     {
       id: 'planting',
-      title: 'Contaminação do Lençol Freático',
-      description: 'Produtos químicos que atingem reservas subterrâneas',
+      title: 'Plantio Urbano',
+      description: 'Dicas para cultivar plantas em ambientes urbanos',
       icon: <TreeDeciduous className="h-10 w-10" />,
       color: 'from-eco-green to-eco-green-light',
-      details: 'Quando chove sobre lixões eletrônicos, a água arrasta substâncias perigosas que penetram no subsolo, poluindo aquíferos que abastecem a cidade. Estudos mostram que 40% dos poços próximos a depósitos irregulares apresentam níveis perigosos de cromo hexavalente.'
+      details: 'Conheça técnicas de jardinagem urbana, cultivo em pequenos espaços e a importância das áreas verdes para o equilíbrio ambiental nas cidades.'
     },
     {
       id: 'footprint',
