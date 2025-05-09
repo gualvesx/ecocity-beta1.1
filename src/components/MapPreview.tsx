@@ -26,16 +26,20 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-            <div className="relative min-h-[550px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/50 via-eco-blue/40 to-eco-green-light/50 rounded-xl"></div>
-            
-            <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)]  pointer-events-none z-20"></div>
-            
-            <div className="absolute inset-[1px] bg-white rounded-xl overflow-hidden z-10">
+          <div className="relative min-h-[550px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
+          {/* Gradiente de fundo (agora cobrindo tudo) */}
+            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/50 via-eco-blue/40 to-eco-green-light/50 rounded-xl z-0"></div>
+  
+            {/* Sombra externa (mantida para profundidade) */}
+            <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)] rounded-xl pointer-events-none z-20"></div>
+  
+            {/* Container do mapa SEM inset e SEM bg-white (agora transparente) */}
+            <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
               <div className="relative h-full">
                 <EcoMap hideControls={true} />
               </div>
-            </div>
+          </div>
+        </div>
             
             <div className="absolute inset-[1px] z-30 pointer-events-none overflow-hidden rounded-xl">
               <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/80 to-transparent"></div>
