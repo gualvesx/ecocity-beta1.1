@@ -10,6 +10,7 @@ import { MapPreview } from '@/components/MapPreview';
 const Index = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
+  <script src="https://kit.fontawesome.com/3a47ab78fd.js" crossorigin="anonymous"></script>
   
   return (
     <div className="min-h-screen flex flex-col">
