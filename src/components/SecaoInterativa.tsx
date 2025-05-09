@@ -66,10 +66,10 @@ const SecaoInterativa = () => {
       <div className="container px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-eco-green-dark dark:text-eco-green-light mb-4">
-            {t('interactive-section-title') || 'Explore Práticas Ecológicas'}
+            {t('Apoie a Causa!') || 'Explore Práticas Ecológicas'}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            {t('interactive-section-description') || 'Descubra formas de contribuir para um futuro mais sustentável com nossas ferramentas interativas'}
+            {t('EcoCity') || 'Descubra formas de contribuir para um futuro mais sustentável com nossas ferramentas interativas'}
           </p>
         </div>
         
