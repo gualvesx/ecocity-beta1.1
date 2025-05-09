@@ -1,4 +1,3 @@
-
 // Placeholder API service until the real API is available
 export const environmentApi = {
   getMonitoringStats: async () => {
@@ -137,6 +136,84 @@ export const eventApi = {
         id: newId,
         ...requestData,
         createdAt: new Date().toISOString()
+      }
+    };
+  }
+};
+
+// User API service for managing users
+export const userApi = {
+  getAllUsers: async () => {
+    // Simulating API response delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    // Return mock data for users
+    return {
+      success: true,
+      data: [
+        {
+          id: '1',
+          name: 'Admin',
+          email: 'admin@terraverde.com',
+          isAdmin: true,
+        },
+        {
+          id: '2',
+          name: 'Usuário',
+          email: 'usuario@terraverde.com',
+          isAdmin: false,
+        },
+        {
+          id: '3',
+          name: 'Maria Silva',
+          email: 'maria@terraverde.com',
+          isAdmin: false,
+        },
+        {
+          id: '4',
+          name: 'João Santos',
+          email: 'joao@terraverde.com',
+          isAdmin: false,
+        }
+      ]
+    };
+  },
+  
+  getUserById: async (userId) => {
+    // Simulating API response delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Mock data for specific user
+    const users = {
+      '1': { id: '1', name: 'Admin', email: 'admin@terraverde.com', isAdmin: true },
+      '2': { id: '2', name: 'Usuário', email: 'usuario@terraverde.com', isAdmin: false },
+      '3': { id: '3', name: 'Maria Silva', email: 'maria@terraverde.com', isAdmin: false },
+      '4': { id: '4', name: 'João Santos', email: 'joao@terraverde.com', isAdmin: false }
+    };
+    
+    if (users[userId]) {
+      return {
+        success: true,
+        data: users[userId]
+      };
+    } else {
+      return {
+        success: false,
+        error: 'User not found'
+      };
+    }
+  },
+  
+  updateUserAdmin: async (userId, isAdmin) => {
+    // Simulating API response delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Simulate successful update
+    return {
+      success: true,
+      data: {
+        id: userId,
+        isAdmin
       }
     };
   }
