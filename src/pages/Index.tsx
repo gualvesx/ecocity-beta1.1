@@ -1,8 +1,7 @@
-
 import React from 'react';
 import DestaquesSustentabilidade from '@/components/SustainabilityHighlights';
 import ChamadaParaAcao from '@/components/CallToAction';
-import { EcoCityHelpBox } from './components/EcoCityHelpBox';
+import EcoCityHelpBox from '@/components/EcoCityHelpBox'; // Removido as chaves {}
 import SecaoInterativa from '@/components/SecaoInterativa';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -16,7 +15,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <MapPreview />
       <SecaoInterativa />
-      <EcoCityHelpBox />
+      <EcoCityHelpBox /> {/* Agora com a importação correta */}
       <ChamadaParaAcao />
     </div>
   );
