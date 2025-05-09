@@ -14,7 +14,7 @@ const SecaoInterativa = () => {
   const ecoBoxes = [
     {
       id: 'recycling',
-      title: 'Reciclagem Consciente',
+      title: '',
       description: 'Aprenda como separar e reciclar corretamente diferentes materiais',
       icon: <Recycle className="h-10 w-10" />,
       color: 'from-eco-green to-eco-green-light',
