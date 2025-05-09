@@ -26,7 +26,7 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          <div className="relative min-h-[550px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
+          <div className="relative min-h-[550px]  rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-eco-green/50 via-eco-blue/40 to-eco-green-light/50 rounded-xl"></div>
             
             <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)] rounded-xl pointer-events-none z-20"></div>
