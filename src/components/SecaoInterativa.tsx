@@ -16,7 +16,7 @@ const SecaoInterativa = () => {
       id: 'recycling',
       title: 'Poluição dos Solos',
       description: 'Metais pesados que envenenam a terra por décadas.',
-      icon: '<img src="https://cdn-icons-png.flaticon.com/128/8369/8369148.png" alt"arvore"/>',
+      icon: <Recycle className= "h-10 w-10" />,
       color: 'from-eco-green to-eco-green-light',
       details: 'Resíduos eletrônicos descartados incorretamente liberam chumbo, mercúrio e cádmio que se infiltram no solo. Uma bateria de celular abandonada pode contaminar até 60 mil litros de água com seus componentes tóxicos.'
     },
