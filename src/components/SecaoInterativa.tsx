@@ -205,7 +205,7 @@ const SecaoInterativa = () => {
                     <div key={item} className="bg-white p-4 rounded-lg shadow-sm">
                       <div className="text-sm text-eco-green font-medium mb-1">12 de Junho, 2023</div>
                       <h4 className="font-medium mb-2">Plantio Comunitário</h4>
-                      <p className="text-sm text-muted-foreground">Junte-se a nós para plantar 100 árvores no Parque Municipal.</p>
+                      <p className="text-sm text-muted-foreground">Junte-see a nós para plantar 100 árvores no Parque Municipal.</p>
                     </div>
                   ))}
                 </div>
