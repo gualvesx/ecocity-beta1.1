@@ -9,15 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 const SecaoInterativa = () => {
   const { t } = useLanguage();
   
-  const [activeTab, setActiveTab] = useState<'map' | 'events' | 'community'>('map');
   const [selectedBox, setSelectedBox] = useState<string | null>(null);
 
-  const tabs = [
-    { id: 'map', label: 'Mapa Ecológico', description: 'Explore pontos de reciclagem e iniciativas ambientais em sua região' },
-    { id: 'events', label: 'Eventos', description: 'Participe de eventos ecológicos e ações comunitárias' },
-    { id: 'community', label: 'Comunidade', description: 'Conecte-se com pessoas comprometidas com a sustentabilidade' },
-  ];
-  
   const ecoBoxes = [
     {
       id: 'recycling',
@@ -61,6 +54,27 @@ const SecaoInterativa = () => {
     }
   };
   
+  const ecoActions = [
+    {
+      title: "Calcule sua Pegada de Carbono",
+      description: "Descubra quanto CO2 você emite diariamente e aprenda maneiras de reduzir seu impacto",
+      action: "Calcular Agora",
+      color: "bg-eco-green-light/20"
+    },
+    {
+      title: "Mapa de Reciclagem Local",
+      description: "Encontre pontos de coleta e reciclagem próximos à sua localização",
+      action: "Ver no Mapa",
+      color: "bg-eco-blue-light/20"
+    },
+    {
+      title: "Desafio Ecológico Semanal",
+      description: "Participe de desafios semanais para adotar hábitos mais sustentáveis",
+      action: "Participar",
+      color: "bg-eco-brown-light/20"
+    }
+  ];
+  
   return (
     <section className="py-16 bg-white dark:bg-gray-900">
       <div className="container px-4 md:px-6">
@@ -72,6 +86,7 @@ const SecaoInterativa = () => {
             {t('EcoCity') || 'Descubra formas de contribuir para um futuro mais sustentável com nossas ferramentas interativas'}
           </p>
         </div>
+        
         {/* Interactive Eco Boxes */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {ecoBoxes.map((box) => (
@@ -110,6 +125,72 @@ const SecaoInterativa = () => {
           ))}
         </div>
         
+        {/* New Eco Action Section */}
+        <div className="mb-12">
+          <h3 className="text-xl font-semibold text-eco-green-dark dark:text-eco-green-light mb-6 text-center">
+            Ações Ecológicas Interativas
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {ecoActions.map((action, index) => (
+              <div key={index} className={`${action.color} rounded-xl p-6 hover:shadow-lg transition-all duration-300`}>
+                <h4 className="text-lg font-semibold text-eco-green-dark mb-2">{action.title}</h4>
+                <p className="text-muted-foreground mb-4">{action.description}</p>
+                <Button className="bg-eco-green hover:bg-eco-green-dark text-white w-full">
+                  {action.action}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Eco Community Feature */}
+        <div className="bg-eco-sand/30 rounded-xl p-8">
+          <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div className="md:w-1/2">
+              <h3 className="text-2xl font-semibold text-eco-green-dark mb-4">Comunidade EcoCity</h3>
+              <p className="text-muted-foreground mb-4">
+                Conecte-se com pessoas comprometidas com a sustentabilidade, compartilhe experiências 
+                e participe de projetos colaborativos para um planeta mais saudável.
+              </p>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-white rounded p-3 text-center shadow-sm">
+                  <div className="text-2xl font-bold text-eco-green">2.5K+</div>
+                  <div className="text-sm text-muted-foreground">Membros Ativos</div>
+                </div>
+                <div className="bg-white rounded p-3 text-center shadow-sm">
+                  <div className="text-2xl font-bold text-eco-green">186</div>
+                  <div className="text-sm text-muted-foreground">Projetos Locais</div>
+                </div>
+              </div>
+              <Button className="bg-eco-green hover:bg-eco-green-dark text-white">
+                Junte-se à Comunidade
+              </Button>
+            </div>
+            <div className="md:w-1/2 flex flex-wrap gap-2 justify-center">
+              <div className="bg-eco-green-light/30 rounded-lg p-4 text-center flex flex-col items-center w-32">
+                <Leaf className="h-6 w-6 text-eco-green mb-1" />
+                <span className="text-sm font-medium">Compartilhe Ideias</span>
+              </div>
+              <div className="bg-eco-blue-light/30 rounded-lg p-4 text-center flex flex-col items-center w-32">
+                <Globe className="h-6 w-6 text-eco-blue mb-1" />
+                <span className="text-sm font-medium">Projetos Globais</span>
+              </div>
+              <div className="bg-eco-brown-light/30 rounded-lg p-4 text-center flex flex-col items-center w-32">
+                <Recycle className="h-6 w-6 text-eco-brown mb-1" />
+                <span className="text-sm font-medium">Dicas Práticas</span>
+              </div>
+              <div className="bg-green-100 rounded-lg p-4 text-center flex flex-col items-center w-32">
+                <TreeDeciduous className="h-6 w-6 text-green-600 mb-1" />
+                <span className="text-sm font-medium">Eventos Locais</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Firebase Integration Note - Hidden in production */}
+        {/* 
+        // Antiga versão com tabs:
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="md:w-1/3">
             <h3 className="text-2xl font-semibold text-eco-green-dark dark:text-eco-green-light mb-4">
@@ -187,6 +268,7 @@ const SecaoInterativa = () => {
             )}
           </div>
         </div>
+        */}
       </div>
     </section>
   );
