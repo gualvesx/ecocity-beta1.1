@@ -149,9 +149,9 @@ const SecaoInterativa = () => {
 
         {/* New EcoCity Help Box */}
         
-        <section className="bg-eco-green py-16">
-          <div className="container px-4 md:px-6">
-            <div className="mb-16 overflow-hidden bg-eco-sand/30 rounded-xl">
+        <section className="bg-eco-green py-16 w-full">
+          <div className="w-full px-0"> {/* Removido container e padding lateral */}
+            <div className="mb-16 overflow-hidden bg-eco-sand rounded-xl"> {/* Removida transparência */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                 <div className="p-8 md:p-10 flex flex-col justify-center">
                   <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-eco-green/20 text-eco-green-dark mb-4">
