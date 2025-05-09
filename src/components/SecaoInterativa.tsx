@@ -194,7 +194,7 @@ const SecaoInterativa = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-eco-green-light/30 to-eco-blue-light/30 z-10"></div>
                 <div className="absolute inset-0 flex items-center justify-center z-20">
                   <img 
-                    src="https://images.unsplash.com/photo-1523712999610-f77fbcfc3843" 
+                    src="https://www.al.sp.gov.br/repositorio/noticia/07-2011/presidenteprudente.jpg" 
                     alt="Cidade sustentável com áreas verdes" 
                     className="w-full h-full object-cover"
                   />
