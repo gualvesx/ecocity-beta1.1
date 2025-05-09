@@ -148,8 +148,8 @@ const SecaoInterativa = () => {
         
 
         {/* New EcoCity Help Box */}
-        <div className="relative overflow-hidden rounded-2xl bg-eco-green p-8 md:p-12">
-        <div className="mb-16 overflow-hidden bg-eco-sand/30 rounded-xl">
+        
+        <div className="mb-16 overflow-hidden bg-eco-green/30 rounded-xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             <div className="p-8 md:p-10 flex flex-col justify-center">
               <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-eco-green/20 text-eco-green-dark mb-4">
@@ -204,7 +204,7 @@ const SecaoInterativa = () => {
             </div>
           </div>
         </div>
-        </div>
+        
         
         
         {/* Firebase Integration Note - Hidden in production */}
