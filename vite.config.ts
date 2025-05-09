@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020',
+      // Provide explicit TypeScript configuration to avoid reading from tsconfig.json
       tsconfigRaw: {
         compilerOptions: {
           target: "es2020",
@@ -40,6 +41,7 @@ export default defineConfig(({ mode }) => ({
           strict: true,
           noUnusedLocals: true,
           noUnusedParameters: true,
+          noFallthroughCasesInSwitch: true, // Using the correct option name
           noImplicitReturns: true,
         }
       }
@@ -51,5 +53,9 @@ export default defineConfig(({ mode }) => ({
     commonjsOptions: {
       transformMixedEsModules: true
     },
+    // Override TypeScript settings directly in Vite
+    rollupOptions: {
+      external: []
+    }
   }
 }));
