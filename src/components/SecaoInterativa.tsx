@@ -17,7 +17,7 @@ const SecaoInterativa = () => {
       title: 'Reciclagem Consciente',
       description: 'Aprenda como separar e reciclar corretamente diferentes materiais',
       icon: <Recycle className="h-10 w-10" />,
-      color: 'from-eco-blue to-eco-blue-light',
+      color: 'from-eco-green to-eco-green-light',
       details: 'Descubra os impactos positivos da reciclagem no meio ambiente e como pequenas ações diárias podem contribuir significativamente para a redução de resíduos.'
     },
     {
@@ -33,7 +33,7 @@ const SecaoInterativa = () => {
       title: 'Pegada Ecológica',
       description: 'Calcule e reduza seu impacto no meio ambiente',
       icon: <Globe className="h-10 w-10" />,
-      color: 'from-eco-brown to-eco-brown-light',
+      color: 'from-eco-green to-eco-green-light',
       details: 'Entenda como suas escolhas diárias afetam o planeta e descubra maneiras de reduzir sua pegada ecológica através de consumo consciente e hábitos sustentáveis.'
     },
     {
@@ -41,7 +41,7 @@ const SecaoInterativa = () => {
       title: 'Práticas Sustentáveis',
       description: 'Adote hábitos mais sustentáveis no dia a dia',
       icon: <Leaf className="h-10 w-10" />,
-      color: 'from-green-500 to-emerald-300',
+      color: 'from-eco-green to-eco-green-light',
       details: 'Explore alternativas sustentáveis para produtos de uso diário, aprenda sobre consumo consciente e descubra como pequenas mudanças podem ter grandes impactos positivos.'
     }
   ];
