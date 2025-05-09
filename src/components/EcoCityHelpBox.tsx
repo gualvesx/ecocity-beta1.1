@@ -4,7 +4,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const EcoCityHelpBox = () => {
   return (
-    <div className="w-full py-16 bg-eco-green-light/20"> {/* Fundo verde claro */}
+    <div className="w-full py-16 bg-eco-green/30"> {/* Fundo verde claro */}
       <div className="container mx-auto px-4"> {/* Container para centralizar */}
         <div className="overflow-hidden bg-eco-green/15 rounded-xl shadow-lg"> {/* Box principal */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
