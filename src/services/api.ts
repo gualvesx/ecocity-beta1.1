@@ -1,3 +1,4 @@
+
 // Placeholder API service until the real API is available
 export const environmentApi = {
   getMonitoringStats: async () => {
