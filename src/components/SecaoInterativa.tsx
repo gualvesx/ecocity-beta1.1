@@ -11,6 +11,12 @@ const SecaoInterativa = () => {
   
   const [activeTab, setActiveTab] = useState<'map' | 'events' | 'community'>('map');
   const [selectedBox, setSelectedBox] = useState<string | null>(null);
+
+  const tabs = [
+    { id: 'map', label: 'Mapa Ecológico', description: 'Explore pontos de reciclagem e iniciativas ambientais em sua região' },
+    { id: 'events', label: 'Eventos', description: 'Participe de eventos ecológicos e ações comunitárias' },
+    { id: 'community', label: 'Comunidade', description: 'Conecte-se com pessoas comprometidas com a sustentabilidade' },
+  ];
   
   const ecoBoxes = [
     {
