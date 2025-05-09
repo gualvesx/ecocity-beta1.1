@@ -16,6 +16,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <MapPreview />
       <SecaoInterativa />
+      <EcoCityHelpBox />
       <ChamadaParaAcao />
     </div>
   );
