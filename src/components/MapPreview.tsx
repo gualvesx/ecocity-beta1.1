@@ -31,7 +31,7 @@ export const MapPreview = () => {
             
             <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)] rounded-xl pointer-events-none z-20"></div>
             
-            <div className="absolute  bg-white rounded-xl overflow-hidden z-10">
+            <div className="absolute inset-[1px] bg-white rounded-xl overflow-hidden z-10">
               <div className="relative h-full">
                 <EcoMap hideControls={true} />
               </div>
