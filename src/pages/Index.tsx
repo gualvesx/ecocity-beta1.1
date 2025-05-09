@@ -16,6 +16,7 @@ const Index = () => {
       <MapPreview />
       <SecaoInterativa />
       <ChamadaParaAcao />
+      <EcoCityHelpBox />
     </div>
   );
 };
