@@ -1,35 +1,46 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useEventStore } from '@/hooks/useEventStore';
 import { useAuth } from '@/contexts/AuthContext';
-import { Event, EventStatus } from '@/types/events';
 import { Check, X, Calendar, Clock, MapPin, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
+interface EventRequest {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  address: string;
+  organizer: string;
+  status: string;
+}
+
 export const EventRequests = () => {
   const { user } = useAuth();
   const { events, updateEvent } = useEventStore();
-  const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
+  const [pendingEvents, setPendingEvents] = useState<EventRequest[]>([]);
 
   useEffect(() => {
     if (events) {
       setPendingEvents(
-        events.filter((event) => event.status === EventStatus.PENDING)
+        events.filter((event: Event) => event.status === "pending")
       );
     }
   }, [events]);
 
   const handleApproveEvent = (eventId: string) => {
-    updateEvent(eventId, { status: EventStatus.APPROVED });
+    updateEvent(eventId, { status: "APPROVED" });
     toast.success('Evento aprovado com sucesso!');
   };
 
   const handleRejectEvent = (eventId: string) => {
-    updateEvent(eventId, { status: EventStatus.REJECTED });
+    updateEvent(eventId, { status: "REJECTED" });
     toast.error('Evento rejeitado.');
   };
 
@@ -57,7 +68,7 @@ export const EventRequests = () => {
     <div className="space-y-4">
       <h3 className="font-semibold text-lg">Solicitações Pendentes</h3>
       
-      {pendingEvents.map((event) => (
+      {pendingEvents.map((event: EventRequest) => (
         <Card key={event.id} className="p-4">
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <div>

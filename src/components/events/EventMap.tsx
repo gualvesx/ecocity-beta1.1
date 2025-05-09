@@ -1,12 +1,10 @@
 
 import { useState } from 'react';
 import EcoMap from '@/components/EcoMap';
-import { useEventStore } from '@/hooks/useEventStore';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
 const EventMap = () => {
-  const { events, isLoading } = useEventStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
@@ -19,7 +17,7 @@ const EventMap = () => {
             placeholder="Buscar eventos no mapa..."
             className="pl-9 bg-white/90 backdrop-blur-sm"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>

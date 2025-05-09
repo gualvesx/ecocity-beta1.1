@@ -48,6 +48,14 @@ declare module 'react-hook-form';
 declare module '@radix-ui/react-slot';
 declare module 'react-day-picker';
 declare module '@radix-ui/react-checkbox';
+declare module 'recharts';
+declare module '@radix-ui/react-popover';
+declare module '@radix-ui/react-progress';
+declare module '@radix-ui/react-radio-group';
+declare module '@radix-ui/react-scroll-area';
+declare module '@radix-ui/react-separator';
+declare module 'react-resizable-panels';
+declare module '@/lib/utils';
 
 // For Dispatch and SetStateAction
 declare type Dispatch<A> = (value: A) => void;
@@ -60,4 +68,33 @@ declare type VariantProps<T> = any;
 interface BadgeProps {
   variant?: string;
   className?: string;
+}
+
+// Map types
+interface MapPoint {
+  id: number;
+  name: string;
+  type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
+  lat: number;
+  lng: number;
+  description: string;
+  impact: string;
+  address?: string;
+}
+
+// Event types
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  address: string;
+  location?: string;
+  lat: number;
+  lng: number;
+  organizer: string;
+  status: string;
+  createdBy?: string;
+  createdAt: string;
 }

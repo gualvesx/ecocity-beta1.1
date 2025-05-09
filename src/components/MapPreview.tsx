@@ -1,5 +1,3 @@
-
-import React from 'react';
 import EcoMap from '@/components/EcoMap';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -28,22 +26,17 @@ export const MapPreview = () => {
             </Button>
           </div>
           
-          {/* Contêiner do mapa com borda gradiente - min-height aumentada para melhor visualização */}
           <div className="relative min-h-[550px] -mx-4 md:mx-0 rounded-xl overflow-hidden">
-            {/* Borda gradiente - apenas nas bordas */}
-            <div className="absolute -inset-1 bg-gradient-to-br from-eco-green/50 via-eco-blue/40 to-eco-green-light/50 rounded-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-eco-green/50 via-eco-blue/40 to-eco-green-light/50 rounded-xl"></div>
             
-            {/* Contêiner principal com sombra */}
             <div className="absolute inset-0 shadow-[0_15px_70px_-15px_rgba(0,0,0,0.35)] rounded-xl pointer-events-none z-20"></div>
             
-            {/* Contêiner do mapa */}
             <div className="absolute inset-[1px] bg-white rounded-xl overflow-hidden z-10">
               <div className="relative h-full">
                 <EcoMap hideControls={true} />
               </div>
             </div>
             
-            {/* Gradientes apenas nas bordas para misturar com o fundo da página */}
             <div className="absolute inset-[1px] z-30 pointer-events-none overflow-hidden rounded-xl">
               <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/80 to-transparent"></div>
               <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/80 to-transparent"></div>

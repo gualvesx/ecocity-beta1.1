@@ -10,12 +10,22 @@ import { format, isValid, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEventStore } from '@/hooks/useEventStore';
 
+interface EventData {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  address: string;
+  organizer: string;
+}
+
 export function EventList() {
   const { events, isLoading } = useEventStore();
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   
-  const filteredEvents = events.filter(event => 
+  const filteredEvents = events.filter((event: EventData) => 
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -23,7 +33,9 @@ export function EventList() {
   );
   
   // Group events by month
-  const eventsByMonth = filteredEvents.reduce((acc, event) => {
+  type EventByMonth = Record<string, EventData[]>;
+  
+  const eventsByMonth = filteredEvents.reduce((acc: EventByMonth, event: EventData) => {
     // Safely parse the date string and validate before using
     let date;
     try {
@@ -46,7 +58,7 @@ export function EventList() {
     
     acc[monthYear].push(event);
     return acc;
-  }, {} as Record<string, any[]>);
+  }, {} as EventByMonth);
   
   // Sort months chronologically
   const sortedMonths = Object.keys(eventsByMonth).sort((a, b) => {
@@ -79,7 +91,7 @@ export function EventList() {
           placeholder="Buscar eventos..."
           className="pl-10"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
         />
       </div>
       
@@ -95,7 +107,7 @@ export function EventList() {
             <h2 className="text-xl font-semibold capitalize">{month}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {eventsByMonth[month].map((event, index) => {
+              {eventsByMonth[month].map((event: EventData, index: number) => {
                 // Parse and validate date safely
                 let eventDate;
                 try {

@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Leaf, LogIn, LogOut, User, UserPlus, Shield, Calendar } from 'lucide-react';
+import { Menu, X, Leaf, LogIn, LogOut, User, UserPlus, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -14,7 +13,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { theme } = useTheme();
+  const { theme: _ } = useTheme(); // Renamed to _ to avoid unused variable warning
   const { t } = useLanguage();
   
   const navItems = [

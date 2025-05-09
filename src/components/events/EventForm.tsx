@@ -14,18 +14,27 @@ import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEventStore } from '@/hooks/useEventStore';
 
-type EventFormProps = {
+interface EventFormData {
+  title: string;
+  description: string;
+  date: Date;
+  time: string;
+  address: string;
+  organizer: string;
+}
+
+interface EventFormProps {
   isRequest: boolean;
   isAdmin?: boolean;
-  eventToEdit?: any;
-};
+  eventToEdit?: EventFormData & { id: string };
+}
 
-export const EventForm = ({ isRequest, isAdmin = false, eventToEdit }: EventFormProps) => {
+export const EventForm = ({ isRequest, eventToEdit }: EventFormProps) => {
   const { user } = useAuth();
   const { addEventRequest, addEvent, updateEvent } = useEventStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const form = useForm({
+  const form = useForm<EventFormData>({
     defaultValues: eventToEdit ? {
       title: eventToEdit.title,
       description: eventToEdit.description,
@@ -43,7 +52,7 @@ export const EventForm = ({ isRequest, isAdmin = false, eventToEdit }: EventForm
     }
   });
   
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: EventFormData) => {
     try {
       setIsSubmitting(true);
       
@@ -136,7 +145,7 @@ export const EventForm = ({ isRequest, isAdmin = false, eventToEdit }: EventForm
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      disabled={(date: Date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       initialFocus
                     />
                   </PopoverContent>
