@@ -8,7 +8,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const SecaoInterativa = () => {
   const { t } = useLanguage();
-
+  
   const [selectedBox, setSelectedBox] = useState<string | null>(null);
 
   const ecoBoxes = [
@@ -45,7 +45,7 @@ const SecaoInterativa = () => {
       details: 'Explore alternativas sustentáveis para produtos de uso diário, aprenda sobre consumo consciente e descubra como pequenas mudanças podem ter grandes impactos positivos.'
     }
   ];
-
+  
   const handleBoxClick = (id: string) => {
     if (selectedBox === id) {
       setSelectedBox(null);
@@ -53,7 +53,7 @@ const SecaoInterativa = () => {
       setSelectedBox(id);
     }
   };
-
+  
   const ecoActions = [
     {
       title: "Calcule sua Pegada de Carbono",
@@ -74,7 +74,7 @@ const SecaoInterativa = () => {
       color: "bg-eco-green-light/20"
     }
   ];
-
+  
   return (
     <section className="py-16 bg-white dark:bg-gray-900">
       <div className="container px-4 md:px-6">
@@ -86,9 +86,9 @@ const SecaoInterativa = () => {
             {t('EcoCity') || 'Descubra formas de contribuir para um futuro mais sustentável com nossas ferramentas interativas'}
           </p>
         </div>
+        
 
-
-
+        
         {/* Interactive Eco Boxes */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {ecoBoxes.map((box) => (
@@ -109,7 +109,7 @@ const SecaoInterativa = () => {
                   {box.description}
                 </CardDescription>
               </CardContent>
-
+              
               {selectedBox === box.id && (
                 <div className="px-6 pb-6 animate-fade-in">
                   <p className="text-sm text-gray-600 dark:text-gray-300">{box.details}</p>
@@ -126,13 +126,13 @@ const SecaoInterativa = () => {
             </Card>
           ))}
         </div>
-
+        
         {/* New Eco Action Section */}
         <div className="mb-12">
           <h3 className="text-xl font-semibold text-eco-green-dark dark:text-eco-green-light mb-6 text-center">
             Ações Ecológicas Interativas
           </h3>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {ecoActions.map((action, index) => (
               <div key={index} className={`${action.color} rounded-xl p-6 hover:shadow-lg transition-all duration-300`}>
