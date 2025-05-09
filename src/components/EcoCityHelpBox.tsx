@@ -63,3 +63,5 @@ export const EcoCityHelpBox = () => {
     </div>
   );
 };
+
+export default EcoCityHelpBox;
