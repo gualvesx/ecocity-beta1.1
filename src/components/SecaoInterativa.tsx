@@ -194,7 +194,7 @@ const SecaoInterativa = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-eco-green-light/30 to-eco-blue-light/30 z-10"></div>
                 <div className="absolute inset-0 flex items-center justify-center z-20">
                   <img 
-                    src="https://www.al.sp.gov.br/repositorio/noticia/07-2011/presidenteprudente.jpg" 
+                    src="https://s2-redeglobo.glbimg.com/VFnfZlNqO1w9SVS0XJ1BJTZOcos=/0x0:5448x3632/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_e84042ef78cb4708aeebdf1c68c6cbd6/internal_photos/bs/2022/X/n/0ntL3DR4uswEWAyYLQjw/parque-do-povo-3.jpg" 
                     alt="Cidade sustentável com áreas verdes" 
                     className="w-full h-full object-cover"
                   />
