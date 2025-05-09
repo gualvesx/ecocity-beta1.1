@@ -20,13 +20,36 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Use esbuildOptions directly without referencing tsconfig.node.json
+  // Use esbuild options directly without relying on tsconfig files that may have issues
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020',
+      tsconfigRaw: {
+        compilerOptions: {
+          target: "es2020",
+          useDefineForClassFields: true,
+          lib: ["ES2020", "DOM", "DOM.Iterable"],
+          module: "ESNext",
+          skipLibCheck: true,
+          moduleResolution: "bundler",
+          allowImportingTsExtensions: true,
+          resolveJsonModule: true,
+          isolatedModules: true,
+          noEmit: true,
+          jsx: "react-jsx",
+          strict: true,
+          noUnusedLocals: true,
+          noUnusedParameters: true,
+          noImplicitReturns: true,
+        }
+      }
     },
   },
   build: {
     target: 'es2020',
+    // Provide a clean esbuild configuration that doesn't rely on problematic tsconfig
+    commonjsOptions: {
+      transformMixedEsModules: true
+    },
   }
 }));
