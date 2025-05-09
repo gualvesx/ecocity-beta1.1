@@ -146,10 +146,10 @@ const SecaoInterativa = () => {
           </div>
         </div>
         
-
+        </section>
         {/* New EcoCity Help Box */}
         
-        <section className="bg-eco-green py-16 w-full">
+        <section className="bg-eco-green py-16 w-full ">
           <div className="w-full"> {/* Removido container e padding lateral */}
             <div className="mb-16 overflow-hidden bg-eco-sand rounded-xl"> {/* Removida transparência */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
