@@ -1,12 +1,10 @@
-
-import React from 'react';
 import { MapPin, Recycle, TreeDeciduous, BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DataCard } from './DataCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DataItem {
-  icon: any; // Changed from React.ReactNode
+  icon: any;
   titleKey: string;
   descKey: string;
 }

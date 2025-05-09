@@ -1,7 +1,6 @@
 import { X, MapPinned, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Dispatch, SetStateAction } from 'react';
 
 interface AddPointFormProps {
   newPointForm: {
@@ -12,8 +11,8 @@ interface AddPointFormProps {
     address: string;
   };
   setNewPointForm: (value: any) => void;
-  newPointPosition: { lat: number; lng: number } | null;
-  setNewPointPosition: (position: { lat: number; lng: number } | null) => void;
+  newPointPosition?: { lat: number; lng: number } | null;
+  setNewPointPosition?: (position: { lat: number; lng: number } | null) => void;
   setIsAddingPoint: (isAdding: boolean) => void;
   handleAddNewPoint: () => void;
 }
@@ -21,8 +20,6 @@ interface AddPointFormProps {
 export const AddPointForm = ({
   newPointForm,
   setNewPointForm,
-  newPointPosition,
-  setNewPointPosition,
   setIsAddingPoint,
   handleAddNewPoint
 }: AddPointFormProps) => {

@@ -1,6 +1,4 @@
 
-import React from 'react';
-
 interface DataCardProps {
   icon: any;
   title: string;

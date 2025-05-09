@@ -7,6 +7,10 @@ import { Search } from 'lucide-react';
 const EventMap = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="relative">
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
@@ -17,7 +21,7 @@ const EventMap = () => {
             placeholder="Buscar eventos no mapa..."
             className="pl-9 bg-white/90 backdrop-blur-sm"
             value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
