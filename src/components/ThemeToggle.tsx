@@ -1,8 +1,6 @@
-
 import * as React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
-// Changed from React.FC to regular function
 export const ThemeToggle = () => {
   const { theme } = useTheme();
   
