@@ -2,6 +2,7 @@
 import React from 'react';
 import DestaquesSustentabilidade from '@/components/SustainabilityHighlights';
 import ChamadaParaAcao from '@/components/CallToAction';
+import { EcoCityHelpBox } from './components/EcoCityHelpBox';
 import SecaoInterativa from '@/components/SecaoInterativa';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -16,7 +17,6 @@ const Index = () => {
       <MapPreview />
       <SecaoInterativa />
       <ChamadaParaAcao />
-      <EcoCityHelpBox />
     </div>
   );
 };
