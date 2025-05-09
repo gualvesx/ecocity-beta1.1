@@ -150,7 +150,7 @@ const SecaoInterativa = () => {
         {/* New EcoCity Help Box */}
         
         <section className="bg-eco-green py-16 w-full">
-          <div className="w-full px-0"> {/* Removido container e padding lateral */}
+          <div className="w-full"> {/* Removido container e padding lateral */}
             <div className="mb-16 overflow-hidden bg-eco-sand rounded-xl"> {/* Removida transparência */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                 <div className="p-8 md:p-10 flex flex-col justify-center">
