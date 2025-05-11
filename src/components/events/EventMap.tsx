@@ -17,8 +17,8 @@ const EventMap = () => {
   return (
     <div className="relative">
       <div className={cn(
-        "absolute z-10",
-        isMobile ? "top-4 left-4 right-4" : "top-4 left-4 right-4"
+        "absolute z-10 px-4",
+        isMobile ? "top-4 left-0 right-0" : "top-4 left-4 right-4"
       )}>
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
