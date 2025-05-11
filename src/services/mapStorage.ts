@@ -1,6 +1,6 @@
 
 import { MapPoint } from '@/types/map';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { firestore } from './firebaseConfig';
 
 // Collection reference for map points
@@ -21,14 +21,19 @@ export const getStoredPoints = async (): Promise<MapPoint[]> => {
     
     const points = snapshot.docs.map(doc => {
       const data = doc.data();
+      
+      // Ensure we have valid position data
+      const latitude = typeof data.position?.latitude === 'number' ? data.position.latitude : 0;
+      const longitude = typeof data.position?.longitude === 'number' ? data.position.longitude : 0;
+      
       const point: MapPoint = {
         id: doc.id,
         name: data.name || "",
         description: data.description || "",
         category: data.category || "other",
         position: {
-          latitude: data.position?.latitude || 0,
-          longitude: data.position?.longitude || 0
+          latitude,
+          longitude
         },
         createdAt: data.createdAt ? new Date(data.createdAt.toDate()) : new Date(),
         addedBy: data.addedBy || ""
@@ -44,9 +49,14 @@ export const getStoredPoints = async (): Promise<MapPoint[]> => {
 };
 
 // Save a new point to Firestore
-export const savePoint = async (point: Omit<MapPoint, 'id'>): Promise<MapPoint> => {
+export const savePoint = async (point: Omit<MapPoint, 'id' | 'createdAt'>): Promise<MapPoint> => {
   try {
     console.log("Saving map point to Firestore:", point);
+    
+    // Validate position data
+    if (!point.position || typeof point.position.latitude !== 'number' || typeof point.position.longitude !== 'number') {
+      throw new Error('Invalid position data');
+    }
     
     // Convert to Firestore format
     const pointData = {
@@ -58,7 +68,7 @@ export const savePoint = async (point: Omit<MapPoint, 'id'>): Promise<MapPoint> 
         longitude: point.position.longitude
       },
       addedBy: point.addedBy || "",
-      createdAt: new Date()
+      createdAt: Timestamp.now()
     };
     
     const docRef = await addDoc(mapPointsCollection, pointData);
@@ -67,7 +77,8 @@ export const savePoint = async (point: Omit<MapPoint, 'id'>): Promise<MapPoint> 
     // Return the created point with its ID
     return {
       ...point,
-      id: docRef.id
+      id: docRef.id,
+      createdAt: new Date()
     };
   } catch (error) {
     console.error('Error saving point:', error);

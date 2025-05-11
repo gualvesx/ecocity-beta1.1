@@ -1,15 +1,20 @@
 
 export interface MapPoint {
-  id: number;
+  id: string;
   name: string;
-  type: 'recycling-point' | 'recycling-center' | 'seedling-distribution';
-  lat: number;
-  lng: number;
   description: string;
-  impact: string;
-  address?: string;
+  category: string;
+  position: {
+    latitude: number;
+    longitude: number;
+  };
+  createdAt: Date;
+  addedBy: string;
 }
 
-export interface NewPoint extends Omit<MapPoint, 'id' | 'lat' | 'lng'> {
-  address: string;
+export interface NewPoint extends Omit<MapPoint, 'id' | 'createdAt'> {
+  position: {
+    latitude: number;
+    longitude: number;
+  };
 }

@@ -6,18 +6,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LogIn, Leaf, Mail, Lock } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/map');
+    
+    try {
+      const success = await login(email, password);
+      if (success) {
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo de volta!",
+        });
+        navigate('/map');
+      } else {
+        toast({
+          title: "Falha no login",
+          description: "Verifique suas credenciais e tente novamente.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Erro ao fazer login",
+        description: "Ocorreu um erro ao processar seu login. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
