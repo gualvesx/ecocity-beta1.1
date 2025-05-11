@@ -6,9 +6,11 @@ import {
   deleteEventRequest, 
   getMyEventRequests,
   approveEventRequest,
+  rejectEventRequest,
   EventRequest
 } from '@/services/firebaseEventRequests';
 import { useAuth } from '@/contexts/AuthContext';
+import { CreateEventRequestData } from '@/types/events';
 
 export const useEventRequests = () => {
   const [eventRequests, setEventRequests] = useState<EventRequest[]>([]);
@@ -52,7 +54,7 @@ export const useEventRequests = () => {
   }, [user]);
 
   // Create new event request
-  const addEventRequest = async (newRequest: Omit<EventRequest, "id" | "createdAt" | "createdBy">) => {
+  const addEventRequest = async (newRequest: CreateEventRequestData) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -103,13 +105,40 @@ export const useEventRequests = () => {
       
       // Update local state
       if (result) {
-        setEventRequests(prev => prev.filter(request => request.id !== id));
+        // We don't remove it from the list, just update its status
+        setEventRequests(prev => prev.map(req => 
+          req.id === id ? { ...req, status: 'approved' as const } : req
+        ));
       }
       
       return !!result;
     } catch (err) {
       console.error('Error approving event request:', err);
       setError(err instanceof Error ? err : new Error('Unknown error approving event request'));
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Reject event request
+  const rejectRequest = async (id: string) => {
+    if (!user?.isAdmin) return false;
+    
+    try {
+      setIsLoading(true);
+      setError(null);
+      await rejectEventRequest(id);
+      
+      // Update local state
+      setEventRequests(prev => prev.map(req => 
+        req.id === id ? { ...req, status: 'rejected' as const } : req
+      ));
+      
+      return true;
+    } catch (err) {
+      console.error('Error rejecting event request:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error rejecting event request'));
       return false;
     } finally {
       setIsLoading(false);
@@ -134,6 +163,7 @@ export const useEventRequests = () => {
     addEventRequest,
     removeEventRequest,
     approveRequest,
+    rejectRequest,
     refreshRequests: fetchAllEventRequests,
     refreshMyRequests: fetchMyEventRequests
   };

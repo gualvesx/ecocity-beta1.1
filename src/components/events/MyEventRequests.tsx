@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Calendar, Clock, MapPin, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { EventStatus } from '@/types/events';
 
 export const MyEventRequests: React.FC = () => {
   const { 
@@ -62,6 +64,18 @@ export const MyEventRequests: React.FC = () => {
     );
   }
   
+  const getStatusBadge = (status?: EventStatus) => {
+    switch (status) {
+      case EventStatus.APPROVED:
+        return <Badge className="bg-green-600">Aprovado</Badge>;
+      case EventStatus.REJECTED:
+        return <Badge className="bg-red-600">Rejeitado</Badge>;
+      case EventStatus.PENDING:
+      default:
+        return <Badge className="bg-yellow-600">Pendente</Badge>;
+    }
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -77,7 +91,10 @@ export const MyEventRequests: React.FC = () => {
         {myEventRequests.map(request => (
           <Card key={request.id}>
             <CardHeader className="pb-2">
-              <CardTitle>{request.title}</CardTitle>
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-lg">{request.title}</CardTitle>
+                {getStatusBadge(request.status)}
+              </div>
               <div className="flex gap-4">
                 <CardDescription className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
@@ -99,15 +116,29 @@ export const MyEventRequests: React.FC = () => {
             </CardContent>
             
             <CardFooter className="pt-2 flex justify-end">
-              <Button
-                onClick={() => removeEventRequest(request.id)}
-                variant="outline"
-                size="sm"
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Cancelar Solicitação
-              </Button>
+              {request.status === EventStatus.PENDING && (
+                <Button
+                  onClick={() => removeEventRequest(request.id)}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Cancelar Solicitação
+                </Button>
+              )}
+              
+              {request.status === EventStatus.REJECTED && (
+                <div className="text-sm text-muted-foreground">
+                  Esta solicitação foi rejeitada
+                </div>
+              )}
+              
+              {request.status === EventStatus.APPROVED && (
+                <div className="text-sm text-green-600 font-medium">
+                  Solicitação aprovada!
+                </div>
+              )}
             </CardFooter>
           </Card>
         ))}

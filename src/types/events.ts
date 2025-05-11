@@ -1,3 +1,4 @@
+
 export enum EventStatus {
   PENDING = "pending",
   APPROVED = "approved",
@@ -16,6 +17,7 @@ export interface Event {
   organizer: string;
   contactEmail?: string;
   status: EventStatus;
+  createdBy?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,5 +31,15 @@ export interface EventRequest {
   address: string;
   organizer: string;
   createdBy?: string;
+  status?: EventStatus;
   createdAt?: Date | string;
+}
+
+export interface CreateEventRequestData {
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  address: string;
+  organizer: string;
 }

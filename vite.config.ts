@@ -1,60 +1,25 @@
 
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
-  // Use esbuild options directly without relying on tsconfig files
-  optimizeDeps: {
-    esbuildOptions: {
-      target: 'es2020',
-      // Provide explicit TypeScript configuration to avoid reading from tsconfig.json
-      tsconfigRaw: {
-        compilerOptions: {
-          target: "es2020",
-          useDefineForClassFields: true,
-          lib: ["ES2020", "DOM", "DOM.Iterable"],
-          module: "ESNext",
-          skipLibCheck: true,
-          moduleResolution: "bundler",
-          allowImportingTsExtensions: true,
-          resolveJsonModule: true,
-          isolatedModules: true,
-          noEmit: true,
-          jsx: "react-jsx",
-          strict: true,
-          noUnusedLocals: true,
-          noUnusedParameters: true,
-          noFallthroughCasesInSwitch: true, // Using the correct option name
-          noImplicitReturns: true,
-        }
-      }
-    },
-  },
+  // Override tsconfig settings to avoid the TS6310 error
   build: {
-    target: 'es2020',
-    // Provide a clean esbuild configuration that doesn't rely on problematic tsconfig
-    commonjsOptions: {
-      transformMixedEsModules: true
-    },
-    // Override TypeScript settings directly in Vite
-    rollupOptions: {
-      external: []
-    }
+    target: 'es2015',
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true,
+  },
+  server: {
+    port: 3000,
+    open: true,
   }
-}));
+})

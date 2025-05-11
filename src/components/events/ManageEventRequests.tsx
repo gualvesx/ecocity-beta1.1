@@ -4,7 +4,9 @@ import { useEventRequests } from '@/hooks/useEventRequests';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, CheckCircle, Trash2, Calendar, Clock, MapPin } from 'lucide-react';
+import { Loader2, CheckCircle, X, Calendar, Clock, MapPin } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { EventStatus } from '@/types/events';
 
 export const ManageEventRequests: React.FC = () => {
   const { 
@@ -12,7 +14,8 @@ export const ManageEventRequests: React.FC = () => {
     isLoading, 
     error, 
     removeEventRequest, 
-    approveRequest, 
+    approveRequest,
+    rejectRequest,
     refreshRequests 
   } = useEventRequests();
   const { user } = useAuth();
@@ -63,6 +66,18 @@ export const ManageEventRequests: React.FC = () => {
     );
   }
   
+  const getStatusBadge = (status?: EventStatus) => {
+    switch (status) {
+      case EventStatus.APPROVED:
+        return <Badge className="bg-green-600">Aprovado</Badge>;
+      case EventStatus.REJECTED:
+        return <Badge className="bg-red-600">Rejeitado</Badge>;
+      case EventStatus.PENDING:
+      default:
+        return <Badge className="bg-yellow-600">Pendente</Badge>;
+    }
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -78,7 +93,10 @@ export const ManageEventRequests: React.FC = () => {
         {eventRequests.map(request => (
           <Card key={request.id} className="overflow-hidden">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">{request.title}</CardTitle>
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-lg">{request.title}</CardTitle>
+                {getStatusBadge(request.status)}
+              </div>
               <CardDescription className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 {request.date}
@@ -101,24 +119,40 @@ export const ManageEventRequests: React.FC = () => {
             </CardContent>
             
             <CardFooter className="pt-2 flex justify-end gap-2">
-              <Button
-                onClick={() => removeEventRequest(request.id)}
-                variant="outline"
-                size="sm"
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Recusar
-              </Button>
+              {request.status === EventStatus.PENDING && (
+                <>
+                  <Button
+                    onClick={() => rejectRequest(request.id)}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Recusar
+                  </Button>
+                  
+                  <Button
+                    onClick={() => approveRequest(request.id)}
+                    size="sm"
+                    className="bg-eco-green hover:bg-eco-green-dark"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Aprovar
+                  </Button>
+                </>
+              )}
               
-              <Button
-                onClick={() => approveRequest(request.id)}
-                size="sm"
-                className="bg-eco-green hover:bg-eco-green-dark"
-              >
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Aprovar
-              </Button>
+              {request.status !== EventStatus.PENDING && (
+                <Button
+                  onClick={() => removeEventRequest(request.id)}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Remover
+                </Button>
+              )}
             </CardFooter>
           </Card>
         ))}
