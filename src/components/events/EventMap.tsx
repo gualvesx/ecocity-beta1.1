@@ -3,9 +3,12 @@ import { useState } from 'react';
 import EcoMap from '@/components/EcoMap';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const EventMap = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const isMobile = useIsMobile();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -13,13 +16,16 @@ const EventMap = () => {
 
   return (
     <div className="relative">
-      <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
+      <div className={cn(
+        "absolute z-10",
+        isMobile ? "top-4 left-4 right-4" : "top-4 left-4 right-4"
+      )}>
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Buscar eventos no mapa..."
-            className="pl-9 bg-white/90 backdrop-blur-sm"
+            className="pl-9 bg-white/90 backdrop-blur-sm w-full"
             value={searchQuery}
             onChange={handleSearchChange}
           />

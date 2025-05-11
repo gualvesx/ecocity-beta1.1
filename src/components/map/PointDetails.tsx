@@ -1,17 +1,23 @@
 
-import { X, MapPin, Navigation, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { MapPoint } from '@/types/map';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 interface PointDetailsProps {
   selectedPoint: MapPoint;
   setSelectedPoint: (point: MapPoint | null) => void;
-  handleDeletePoint: (id: number) => void;
+  handleDeletePoint: (pointId: number) => void;
   centerOnPoint: (lat: number, lng: number) => void;
-  typeInfo: Record<string, { label: string; color: string; description: string }>;
-  getMarkerIcon: (type: string) => React.ReactNode;
+  typeInfo: {
+    [key: string]: { 
+      label: string;
+      color: string; 
+      description: string;
+    }
+  };
+  getMarkerIcon: (type: string) => JSX.Element;
 }
 
 export const PointDetails = ({
@@ -23,65 +29,70 @@ export const PointDetails = ({
   getMarkerIcon
 }: PointDetailsProps) => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  
+  const pointType = selectedPoint.type as keyof typeof typeInfo;
   
   return (
-    <div className="absolute bottom-4 right-4 w-full max-w-md bg-white/95 backdrop-blur-md p-4 rounded-lg shadow-lg border border-eco-green-light/30 z-20">
+    <div className={cn(
+      "absolute right-4 bg-white/95 backdrop-blur-md p-4 rounded-lg shadow-lg border border-eco-green-light/30 z-20",
+      isMobile ? "bottom-16 left-4" : "bottom-4 max-w-md"
+    )}>
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
-          <div className={cn("w-6 h-6 rounded-full flex items-center justify-center", typeInfo[selectedPoint.type].color)}>
-            {getMarkerIcon(selectedPoint.type)}
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center ${typeInfo[pointType]?.color || 'bg-eco-green'}`}>
+            <div className="text-white">
+              {getMarkerIcon(pointType)}
+            </div>
           </div>
-          <h3 className="font-medium">{selectedPoint.name}</h3>
+          <h3 className="font-medium truncate max-w-[180px] md:max-w-xs">{selectedPoint.name}</h3>
         </div>
-        <div className="flex items-center gap-2">
-          {user?.isAdmin && (
-            <Button
-              variant="destructive"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => handleDeletePoint(selectedPoint.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
-          <button 
-            onClick={() => setSelectedPoint(null)}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+        <button 
+          onClick={() => setSelectedPoint(null)}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
       
-      <div className="mt-3 space-y-2">
-        <div className="flex items-center text-sm text-muted-foreground">
-          <span>Tipo: {typeInfo[selectedPoint.type].label}</span>
-        </div>
+      <div className="mt-3 space-y-2 text-sm">
+        <p>{selectedPoint.description}</p>
         
         {selectedPoint.address && (
-          <div className="flex items-start gap-2 text-sm">
-            <MapPin className="h-4 w-4 text-eco-green-dark mt-0.5 shrink-0" />
+          <div className="flex items-start gap-2 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-eco-green-dark mt-0.5 shrink-0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             <span>{selectedPoint.address}</span>
           </div>
         )}
         
-        <p className="text-sm">{selectedPoint.description}</p>
+        {selectedPoint.impact && (
+          <div className="mt-2 p-2 bg-eco-green-light/10 rounded">
+            <div className="font-medium text-eco-green-dark">Impacto Ambiental:</div>
+            <p>{selectedPoint.impact}</p>
+          </div>
+        )}
+      </div>
+      
+      <div className="flex justify-end gap-2 mt-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => centerOnPoint(selectedPoint.lat, selectedPoint.lng)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          Centralizar
+        </Button>
         
-        <div className="bg-eco-green-light/10 p-2 rounded text-sm">
-          <span className="font-medium">Impacto Ambiental:</span> {selectedPoint.impact}
-        </div>
-        
-        <div className="flex justify-end">
-          <Button
+        {user?.isAdmin && (
+          <Button 
+            variant="destructive"
             size="sm"
-            variant="outline"
-            className="text-xs"
-            onClick={() => centerOnPoint(selectedPoint.lat, selectedPoint.lng)}
+            onClick={() => handleDeletePoint(selectedPoint.id)}
           >
-            <Navigation className="h-3 w-3 mr-1" />
-            Centralizar no mapa
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+            Remover
           </Button>
-        </div>
+        )}
       </div>
     </div>
   );

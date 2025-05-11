@@ -6,18 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { EventForm } from '@/components/events/EventForm';
 import { EventList } from '@/components/events/EventList';
 import { EventRequests } from '@/components/events/EventRequests';
 import EventMap from '@/components/events/EventMap';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Events = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("eventos");
+  const isMobile = useIsMobile();
   
   return (
     <div className="min-h-screen flex flex-col pt-20">
@@ -37,7 +38,7 @@ const Events = () => {
           {user?.isAdmin && (
             <Button
               onClick={() => setActiveTab("adicionar")}
-              className="bg-eco-green hover:bg-eco-green-dark"
+              className="bg-eco-green hover:bg-eco-green-dark self-start md:self-auto"
             >
               <CalendarPlus className="mr-2 h-5 w-5" />
               Adicionar Evento
@@ -46,26 +47,31 @@ const Events = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-            <TabsTrigger value="eventos">
-              <CalendarPlus className="mr-2 h-4 w-4" />
-              Eventos
-            </TabsTrigger>
-            <TabsTrigger value="mapa">
-              <MapPin className="mr-2 h-4 w-4" />
-              Mapa de Eventos
-            </TabsTrigger>
-            <TabsTrigger value="solicitar">
-              <Send className="mr-2 h-4 w-4" />
-              Solicitar Evento
-            </TabsTrigger>
-            {user?.isAdmin && (
-              <TabsTrigger value="adicionar">
-                <Shield className="mr-2 h-4 w-4" />
-                Admin
+          <div className="overflow-x-auto -mx-4 px-4">
+            <TabsList className={cn(
+              "grid w-full",
+              isMobile ? "grid-cols-3 min-w-[500px]" : "grid-cols-4"
+            )}>
+              <TabsTrigger value="eventos">
+                <CalendarPlus className="mr-2 h-4 w-4" />
+                Eventos
               </TabsTrigger>
-            )}
-          </TabsList>
+              <TabsTrigger value="mapa">
+                <MapPin className="mr-2 h-4 w-4" />
+                Mapa
+              </TabsTrigger>
+              <TabsTrigger value="solicitar">
+                <Send className="mr-2 h-4 w-4" />
+                Solicitar
+              </TabsTrigger>
+              {user?.isAdmin && (
+                <TabsTrigger value="adicionar">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </div>
           
           <TabsContent value="eventos" className="space-y-4">
             <EventList />
@@ -116,3 +122,6 @@ const Events = () => {
 };
 
 export default Events;
+
+// Need to add cn import
+import { cn } from '@/lib/utils';
