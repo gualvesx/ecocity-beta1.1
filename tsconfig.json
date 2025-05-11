@@ -18,14 +18,16 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthrough": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "baseUrl": ".",
+    "noImplicitReturns": true,
+
+    /* Pathing */
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    /* Enable experimental features */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
