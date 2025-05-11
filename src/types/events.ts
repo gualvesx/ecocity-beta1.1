@@ -1,4 +1,3 @@
-
 export enum EventStatus {
   PENDING = "pending",
   APPROVED = "approved",
@@ -19,4 +18,16 @@ export interface Event {
   status: EventStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EventRequest {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  address: string;
+  organizer: string;
+  createdBy?: string;
+  createdAt?: Date | string;
 }
