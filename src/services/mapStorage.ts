@@ -19,27 +19,35 @@ export const getStoredPoints = async (): Promise<MapPoint[]> => {
     
     console.log(`Found ${snapshot.size} map points in Firestore`);
     
-    const points = snapshot.docs.map(doc => {
-      const data = doc.data();
-      
-      // Ensure we have valid position data
-      const latitude = typeof data.position?.latitude === 'number' ? data.position.latitude : 0;
-      const longitude = typeof data.position?.longitude === 'number' ? data.position.longitude : 0;
-      
-      const point: MapPoint = {
-        id: doc.id,
-        name: data.name || "",
-        description: data.description || "",
-        category: data.category || "other",
-        position: {
-          latitude,
-          longitude
-        },
-        createdAt: data.createdAt ? new Date(data.createdAt.toDate()) : new Date(),
-        addedBy: data.addedBy || ""
-      };
-      return point;
-    });
+    const points = snapshot.docs
+      .map(doc => {
+        const data = doc.data();
+        
+        // Validate position data before creating the point
+        if (!data.position || 
+            typeof data.position.latitude !== 'number' || 
+            typeof data.position.longitude !== 'number' ||
+            isNaN(data.position.latitude) || 
+            isNaN(data.position.longitude)) {
+          console.warn(`Invalid position data for point ${doc.id}, skipping`);
+          return null;
+        }
+        
+        const point: MapPoint = {
+          id: doc.id,
+          name: data.name || "",
+          description: data.description || "",
+          category: data.category || "other",
+          position: {
+            latitude: data.position.latitude,
+            longitude: data.position.longitude
+          },
+          createdAt: data.createdAt ? new Date(data.createdAt.toDate()) : new Date(),
+          addedBy: data.addedBy || ""
+        };
+        return point;
+      })
+      .filter((point): point is MapPoint => point !== null); // Type guard to filter out null values
     
     return points;
   } catch (error) {
@@ -54,7 +62,11 @@ export const savePoint = async (point: Omit<MapPoint, 'id' | 'createdAt'>): Prom
     console.log("Saving map point to Firestore:", point);
     
     // Validate position data
-    if (!point.position || typeof point.position.latitude !== 'number' || typeof point.position.longitude !== 'number') {
+    if (!point.position || 
+        typeof point.position.latitude !== 'number' || 
+        typeof point.position.longitude !== 'number' ||
+        isNaN(point.position.latitude) || 
+        isNaN(point.position.longitude)) {
       throw new Error('Invalid position data');
     }
     

@@ -12,15 +12,14 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Use esbuild options directly without relying on tsconfig files that may have issues
+  // Use esbuild options directly without relying on tsconfig files
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020',
