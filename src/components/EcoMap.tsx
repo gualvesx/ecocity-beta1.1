@@ -138,6 +138,16 @@ const EcoMap = ({ hideControls = false, eventMode = false, searchQuery = '' }: E
     // Add filtered points
     const filteredPoints = getFilteredPoints();
     filteredPoints.forEach(point => {
+      // Skip invalid coordinates
+      if (!point.lat || !point.lng || 
+          typeof point.lat !== 'number' || 
+          typeof point.lng !== 'number' ||
+          isNaN(point.lat) || 
+          isNaN(point.lng)) {
+        console.warn("Invalid coordinates for point:", point);
+        return;
+      }
+      
       const iconHtml = getMarkerIconHtml(point.type);
       
       const icon = L.divIcon({
@@ -147,17 +157,31 @@ const EcoMap = ({ hideControls = false, eventMode = false, searchQuery = '' }: E
         iconAnchor: [16, 16]
       });
       
-      const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
-      
-      marker.on('click', () => {
-        setSelectedPoint(point);
-        setSelectedEvent(null);
-      });
+      try {
+        const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
+        
+        marker.on('click', () => {
+          setSelectedPoint(point);
+          setSelectedEvent(null);
+        });
+      } catch (err) {
+        console.error("Error adding marker for point:", point, err);
+      }
     });
     
     // Add event markers if in event mode
     const filteredEvents = getFilteredEvents();
     filteredEvents.forEach(event => {
+      // Skip invalid coordinates
+      if (!event.lat || !event.lng || 
+          typeof event.lat !== 'number' || 
+          typeof event.lng !== 'number' ||
+          isNaN(event.lat) || 
+          isNaN(event.lng)) {
+        console.warn("Invalid coordinates for event:", event);
+        return;
+      }
+      
       const iconHtml = getEventMarkerIconHtml();
       
       const icon = L.divIcon({
@@ -167,12 +191,16 @@ const EcoMap = ({ hideControls = false, eventMode = false, searchQuery = '' }: E
         iconAnchor: [16, 16]
       });
       
-      const marker = L.marker([event.lat, event.lng], { icon }).addTo(map);
-      
-      marker.on('click', () => {
-        setSelectedEvent(event);
-        setSelectedPoint(null);
-      });
+      try {
+        const marker = L.marker([event.lat, event.lng], { icon }).addTo(map);
+        
+        marker.on('click', () => {
+          setSelectedEvent(event);
+          setSelectedPoint(null);
+        });
+      } catch (err) {
+        console.error("Error adding marker for event:", event, err);
+      }
     });
     
   }, [map, filter, effectiveSearchQuery, mapPoints, events, eventMode]);

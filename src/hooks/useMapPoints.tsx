@@ -18,7 +18,16 @@ export const useMapPoints = () => {
       setIsLoading(true);
       console.log('Using Firebase for map points');
       const points = await getStoredPoints(); // This now uses Firebase
-      setMapPoints(points);
+      
+      // Ensure all points have lat/lng properties
+      const processedPoints = points.map(point => ({
+        ...point,
+        lat: point.position?.latitude || 0,
+        lng: point.position?.longitude || 0
+      }));
+      
+      setMapPoints(processedPoints);
+      console.log('Processed map points:', processedPoints);
     } catch (err) {
       console.error('Error fetching points:', err);
       setError(err instanceof Error ? err : new Error('Unknown error fetching points'));
@@ -55,12 +64,24 @@ export const useMapPoints = () => {
         lng: geoLocation.lng,
         description: newPoint.description,
         impact: newPoint.impact,
-        address: newPoint.address
+        address: newPoint.address,
+        // Also add position for compatibility
+        position: {
+          latitude: geoLocation.lat,
+          longitude: geoLocation.lng
+        }
       });
       
-      setMapPoints([...mapPoints, createdPoint]);
+      // Ensure the created point has lat/lng properties
+      const pointWithLatLng = {
+        ...createdPoint,
+        lat: createdPoint.position?.latitude || geoLocation.lat,
+        lng: createdPoint.position?.longitude || geoLocation.lng
+      };
+      
+      setMapPoints([...mapPoints, pointWithLatLng]);
       toast.success("Ponto ecológico salvo com sucesso!");
-      return createdPoint;
+      return pointWithLatLng;
     } catch (err) {
       console.error('Error adding point:', err);
       toast.error("Erro ao salvar o ponto no banco de dados.");

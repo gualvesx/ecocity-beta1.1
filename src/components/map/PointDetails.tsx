@@ -31,7 +31,12 @@ export const PointDetails = ({
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
-  const pointType = selectedPoint.type as keyof typeof typeInfo;
+  // Use type or category, whichever is available
+  const pointType = (selectedPoint.type || selectedPoint.category) as keyof typeof typeInfo;
+  
+  // Use the lat/lng properties that we added, or fall back to position
+  const lat = selectedPoint.lat || selectedPoint.position?.latitude || 0;
+  const lng = selectedPoint.lng || selectedPoint.position?.longitude || 0;
   
   return (
     <div className={cn(
@@ -77,7 +82,7 @@ export const PointDetails = ({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => centerOnPoint(selectedPoint.lat, selectedPoint.lng)}
+          onClick={() => centerOnPoint(lat, lng)}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
           Centralizar
@@ -87,7 +92,7 @@ export const PointDetails = ({
           <Button 
             variant="destructive"
             size="sm"
-            onClick={() => handleDeletePoint(selectedPoint.id)}
+            onClick={() => handleDeletePoint(Number(selectedPoint.id))}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
             Remover
