@@ -5,8 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LogIn, User, Leaf, Mail, Lock } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { LogIn, Leaf, Mail, Lock } from 'lucide-react';
 
 const Login = () => {
   const { login, isLoading } = useAuth();
@@ -100,48 +99,34 @@ const Login = () => {
                 </Link>
               </p>
             </div>
+            
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-center font-semibold text-sm text-eco-green-dark mb-4">
+                Credenciais Disponíveis
+              </h3>
+              
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={setAdminCredentials} 
+                  variant="outline" 
+                  size="sm"
+                  className="w-full border-eco-green text-eco-green hover:bg-eco-green hover:text-white"
+                >
+                  Usar credenciais de Administrador
+                </Button>
+                
+                <Button 
+                  onClick={setUserCredentials} 
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-eco-green text-eco-green hover:bg-eco-green hover:text-white"
+                >
+                  Usar credenciais de Usuário Padrão
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-
-        <Card className="mt-8 p-6 max-w-md w-full border-eco-green">
-          <h3 className="text-center font-semibold text-lg text-eco-green-dark mb-4">Credenciais de Acesso</h3>
-          
-          <div className="space-y-4">
-            <div className="bg-eco-green/10 p-4 rounded-lg">
-              <h4 className="font-medium mb-2 flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Administrador
-              </h4>
-              <p><strong>Email:</strong> admin@terraverde.com</p>
-              <p><strong>Senha:</strong> admin@123</p>
-              <Button 
-                onClick={setAdminCredentials} 
-                variant="outline" 
-                size="sm"
-                className="mt-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white"
-              >
-                Usar estas credenciais
-              </Button>
-            </div>
-            
-            <div className="bg-eco-sand/20 p-4 rounded-lg">
-              <h4 className="font-medium mb-2 flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Usuário Padrão
-              </h4>
-              <p><strong>Email:</strong> usuario@terraverde.com</p>
-              <p><strong>Senha:</strong> usuario@123</p>
-              <Button 
-                onClick={setUserCredentials} 
-                variant="outline"
-                size="sm"
-                className="mt-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white"
-              >
-                Usar estas credenciais
-              </Button>
-            </div>
-          </div>
-        </Card>
       </div>
     </div>
   );

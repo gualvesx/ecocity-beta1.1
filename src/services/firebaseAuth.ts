@@ -4,10 +4,11 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   updateProfile,
-  User as FirebaseUser
+  User as FirebaseUser,
+  fetchSignInMethodsForEmail
 } from "firebase/auth";
-import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
-import { auth, firestore, USE_FIREBASE } from './firebaseConfig';
+import { doc, setDoc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { auth, firestore } from './firebaseConfig';
 import { User } from '@/contexts/AuthContext';
 
 // Convert FirebaseUser to application User
@@ -38,7 +39,8 @@ const convertToContextUser = async (firebaseUser: FirebaseUser | null): Promise<
   }
 };
 
-// Local storage implementations for offline development
+// Local storage implementations for offline development - commented out
+/*
 const localStorageAuth = {
   users: JSON.parse(localStorage.getItem('localUsers') || '[]'),
   
@@ -72,16 +74,86 @@ const localStorageAuth = {
     return user;
   }
 };
+*/
+
+// Function to check if a user exists in Firebase Auth
+export const checkIfUserExists = async (email: string): Promise<boolean> => {
+  try {
+    const methods = await fetchSignInMethodsForEmail(auth, email);
+    return methods.length > 0;
+  } catch (error) {
+    console.error("Error checking if user exists:", error);
+    return false;
+  }
+};
+
+// Function to seed initial users - admin and regular user
+export const seedInitialUsers = async () => {
+  const adminEmail = "admin@terraverde.com";
+  const userEmail = "usuario@terraverde.com";
+  
+  console.log("Checking if initial users need to be seeded...");
+  
+  try {
+    // Check if admin user exists
+    const adminExists = await checkIfUserExists(adminEmail);
+    
+    if (!adminExists) {
+      console.log("Creating admin user...");
+      try {
+        // Create admin user
+        const adminCredential = await createUserWithEmailAndPassword(auth, adminEmail, "admin@123");
+        await updateProfile(adminCredential.user, { displayName: "Admin" });
+        
+        // Add to Firestore with admin role
+        await setDoc(doc(firestore, "users", adminCredential.user.uid), {
+          name: "Admin",
+          email: adminEmail,
+          role: "admin",
+          createdAt: new Date()
+        });
+        console.log("Admin user created successfully!");
+      } catch (error) {
+        console.error("Error creating admin user:", error);
+      }
+    } else {
+      console.log("Admin user already exists.");
+    }
+    
+    // Check if regular user exists
+    const userExists = await checkIfUserExists(userEmail);
+    
+    if (!userExists) {
+      console.log("Creating regular user...");
+      try {
+        // Create regular user
+        const userCredential = await createUserWithEmailAndPassword(auth, userEmail, "usuario@123");
+        await updateProfile(userCredential.user, { displayName: "Usuário Padrão" });
+        
+        // Add to Firestore with regular role
+        await setDoc(doc(firestore, "users", userCredential.user.uid), {
+          name: "Usuário Padrão",
+          email: userEmail,
+          role: "user",
+          createdAt: new Date()
+        });
+        console.log("Regular user created successfully!");
+      } catch (error) {
+        console.error("Error creating regular user:", error);
+      }
+    } else {
+      console.log("Regular user already exists.");
+    }
+    
+  } catch (error) {
+    console.error("Error in seedInitialUsers:", error);
+  }
+};
 
 export const firebaseAuth = {
   // Register new user - ensures exact match to Firestore structure
   createUserWithEmailAndPassword: async (email: string, password: string, name: string): Promise<{ user: FirebaseUser }> => {
-    if (!USE_FIREBASE) {
-      // Local implementation
-      const user = localStorageAuth.createUser(email, password, name);
-      return { user: user as unknown as FirebaseUser };
-    }
-    
+    // Only Firebase implementation, local storage removed
     try {
       console.log(`Creating user with email: ${email}, name: ${name}`);
       
@@ -122,13 +194,7 @@ export const firebaseAuth = {
   
   // User login
   signInWithEmailAndPassword: async (email: string, password: string): Promise<{ user: FirebaseUser }> => {
-    if (!USE_FIREBASE) {
-      // Local implementation
-      const user = localStorageAuth.findUser(email, password);
-      if (!user) throw new Error("Invalid email or password");
-      return { user: user as unknown as FirebaseUser };
-    }
-    
+    // Only Firebase implementation, local storage removed
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return { user: userCredential.user };
@@ -140,12 +206,7 @@ export const firebaseAuth = {
   
   // Sign out
   signOut: async (): Promise<void> => {
-    if (!USE_FIREBASE) {
-      // Local implementation - just clear local session
-      localStorage.removeItem('currentUser');
-      return;
-    }
-    
+    // Only Firebase implementation, local storage removed
     try {
       await signOut(auth);
     } catch (error) {
@@ -156,12 +217,7 @@ export const firebaseAuth = {
   
   // Update admin status
   updateUserAdmin: async (uid: string, isAdmin: boolean): Promise<void> => {
-    if (!USE_FIREBASE) {
-      // Local implementation
-      localStorageAuth.updateUserAdmin(uid, isAdmin);
-      return;
-    }
-    
+    // Only Firebase implementation, local storage removed
     try {
       const userRef = doc(firestore, "users", uid);
       await setDoc(userRef, { role: isAdmin ? "admin" : "user" }, { merge: true });
@@ -174,16 +230,7 @@ export const firebaseAuth = {
   
   // Get all users
   getAllUsers: async (): Promise<User[]> => {
-    if (!USE_FIREBASE) {
-      // Local implementation
-      return localStorageAuth.users.map(u => ({
-        id: u.uid,
-        name: u.displayName || "Usuário",
-        email: u.email,
-        isAdmin: u.isAdmin || false
-      }));
-    }
-    
+    // Only Firebase implementation, local storage removed
     try {
       console.log("Fetching all users from Firestore");
       const usersRef = collection(firestore, "users");

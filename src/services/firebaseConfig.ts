@@ -10,5 +10,12 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 
-// Flag to determine if we're using local storage fallback or real Firebase
-export const USE_FIREBASE = true; // Set to true to use Firebase, false to use local storage fallback
+// Always use Firebase, local storage fallback is now disabled
+export const USE_FIREBASE = true;
+
+// Function to seed initial users if they don't exist yet
+// This should only be run once during setup or development
+export const seedInitialUsers = async () => {
+  // This function will be implemented in firebaseAuth.ts
+  // to avoid circular dependencies
+};

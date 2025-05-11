@@ -1,9 +1,11 @@
 
-import { firebaseFirestore } from './firebaseFirestore';
-import { firebaseAuth } from './firebaseAuth';
 import { Event, EventRequest } from '@/hooks/useEventStore';
 import { MapPoint } from '@/types/map';
 import { User } from '@/contexts/AuthContext';
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { firestore, auth } from './firebaseConfig';
+import { firebaseAuth } from './firebaseAuth';
 
 // API response type
 interface ApiResponse<T> {
@@ -12,11 +14,36 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+// Collection references
+const eventsCollection = collection(firestore, 'events');
+const eventRequestsCollection = collection(firestore, 'eventRequests');
+const locationsCollection = collection(firestore, 'locations');
+
 // Event APIs
 export const eventApi = {
   getAllEvents: async (): Promise<ApiResponse<Event[]>> => {
     try {
-      const events = await firebaseFirestore.events.getAll();
+      const snapshot = await getDocs(eventsCollection);
+      
+      if (snapshot.empty) {
+        return { success: true, data: [] };
+      }
+      
+      const events = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || "",
+          description: data.description || "",
+          date: data.date ? new Date(data.date.toDate()) : new Date(),
+          location: data.location || "",
+          organizer: data.organizer || "",
+          category: data.category || "other",
+          imageUrl: data.imageUrl || "",
+          position: data.position || { latitude: 0, longitude: 0 }
+        } as Event;
+      });
+      
       return { success: true, data: events };
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -26,10 +53,26 @@ export const eventApi = {
   
   getEventById: async (id: string): Promise<ApiResponse<Event>> => {
     try {
-      const event = await firebaseFirestore.events.getById(id);
-      if (!event) {
+      const docRef = doc(eventsCollection, id);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
         return { success: false, error: 'Event not found' };
       }
+      
+      const data = docSnap.data();
+      const event = {
+        id: docSnap.id,
+        title: data.title || "",
+        description: data.description || "",
+        date: data.date ? new Date(data.date.toDate()) : new Date(),
+        location: data.location || "",
+        organizer: data.organizer || "",
+        category: data.category || "other",
+        imageUrl: data.imageUrl || "",
+        position: data.position || { latitude: 0, longitude: 0 }
+      } as Event;
+      
       return { success: true, data: event };
     } catch (error) {
       console.error(`Error fetching event ${id}:`, error);
@@ -39,8 +82,17 @@ export const eventApi = {
   
   addEvent: async (eventData: Omit<Event, 'id'>): Promise<ApiResponse<Event>> => {
     try {
-      const event = await firebaseFirestore.events.add(eventData);
-      return { success: true, data: event };
+      const docRef = await addDoc(eventsCollection, {
+        ...eventData,
+        date: new Date(eventData.date)
+      });
+      
+      const newEvent = {
+        ...eventData,
+        id: docRef.id
+      };
+      
+      return { success: true, data: newEvent };
     } catch (error) {
       console.error('Error adding event:', error);
       return { success: false, error: 'Failed to add event' };
@@ -49,7 +101,15 @@ export const eventApi = {
   
   updateEvent: async (id: string, eventData: Partial<Event>): Promise<ApiResponse<void>> => {
     try {
-      await firebaseFirestore.events.update(id, eventData);
+      const docRef = doc(eventsCollection, id);
+      
+      // If date is included, convert it to Firestore timestamp
+      const dataToUpdate = { ...eventData };
+      if (eventData.date) {
+        dataToUpdate.date = new Date(eventData.date);
+      }
+      
+      await updateDoc(docRef, dataToUpdate);
       return { success: true };
     } catch (error) {
       console.error(`Error updating event ${id}:`, error);
@@ -59,7 +119,7 @@ export const eventApi = {
   
   deleteEvent: async (id: string): Promise<ApiResponse<void>> => {
     try {
-      await firebaseFirestore.events.delete(id);
+      await deleteDoc(doc(eventsCollection, id));
       return { success: true };
     } catch (error) {
       console.error(`Error deleting event ${id}:`, error);
@@ -70,7 +130,27 @@ export const eventApi = {
   // Event requests
   getEventRequests: async (): Promise<ApiResponse<EventRequest[]>> => {
     try {
-      const requests = await firebaseFirestore.eventRequests.getAll();
+      const snapshot = await getDocs(eventRequestsCollection);
+      
+      if (snapshot.empty) {
+        return { success: true, data: [] };
+      }
+      
+      const requests = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || "",
+          description: data.description || "",
+          proposedDate: data.proposedDate ? new Date(data.proposedDate.toDate()) : new Date(),
+          location: data.location || "",
+          requesterName: data.requesterName || "",
+          requesterEmail: data.requesterEmail || "",
+          status: data.status || "pending",
+          category: data.category || "other",
+        } as EventRequest;
+      });
+      
       return { success: true, data: requests };
     } catch (error) {
       console.error('Error fetching event requests:', error);
@@ -80,8 +160,18 @@ export const eventApi = {
   
   addEventRequest: async (requestData: Omit<EventRequest, 'id'>): Promise<ApiResponse<EventRequest>> => {
     try {
-      const request = await firebaseFirestore.eventRequests.add(requestData);
-      return { success: true, data: request };
+      const docRef = await addDoc(eventRequestsCollection, {
+        ...requestData,
+        proposedDate: new Date(requestData.proposedDate),
+        status: "pending" // Always start with pending status
+      });
+      
+      const newRequest = {
+        ...requestData,
+        id: docRef.id
+      };
+      
+      return { success: true, data: newRequest };
     } catch (error) {
       console.error('Error adding event request:', error);
       return { success: false, error: 'Failed to add event request' };
@@ -90,7 +180,7 @@ export const eventApi = {
   
   deleteEventRequest: async (id: string): Promise<ApiResponse<void>> => {
     try {
-      await firebaseFirestore.eventRequests.delete(id);
+      await deleteDoc(doc(eventRequestsCollection, id));
       return { success: true };
     } catch (error) {
       console.error(`Error deleting event request ${id}:`, error);
@@ -103,7 +193,28 @@ export const eventApi = {
 export const mapApi = {
   getAllPoints: async (): Promise<ApiResponse<MapPoint[]>> => {
     try {
-      const points = await firebaseFirestore.mapPoints.getAll();
+      const snapshot = await getDocs(locationsCollection);
+      
+      if (snapshot.empty) {
+        return { success: true, data: [] };
+      }
+      
+      const points = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || "",
+          description: data.description || "",
+          category: data.category || "other",
+          position: {
+            latitude: data.position?.latitude || 0,
+            longitude: data.position?.longitude || 0
+          },
+          createdAt: data.createdAt ? new Date(data.createdAt.toDate()) : new Date(),
+          addedBy: data.addedBy || ""
+        } as MapPoint;
+      });
+      
       return { success: true, data: points };
     } catch (error) {
       console.error('Error fetching map points:', error);
@@ -113,8 +224,24 @@ export const mapApi = {
   
   addPoint: async (pointData: Omit<MapPoint, 'id'>): Promise<ApiResponse<MapPoint>> => {
     try {
-      const point = await firebaseFirestore.mapPoints.add(pointData);
-      return { success: true, data: point };
+      const docRef = await addDoc(locationsCollection, {
+        name: pointData.name,
+        description: pointData.description,
+        category: pointData.category,
+        position: {
+          latitude: pointData.position.latitude,
+          longitude: pointData.position.longitude
+        },
+        addedBy: pointData.addedBy || "",
+        createdAt: new Date()
+      });
+      
+      const newPoint = {
+        ...pointData,
+        id: docRef.id
+      };
+      
+      return { success: true, data: newPoint };
     } catch (error) {
       console.error('Error adding map point:', error);
       return { success: false, error: 'Failed to add map point' };
@@ -123,7 +250,7 @@ export const mapApi = {
   
   deletePoint: async (id: string): Promise<ApiResponse<void>> => {
     try {
-      await firebaseFirestore.mapPoints.delete(id);
+      await deleteDoc(doc(locationsCollection, id));
       return { success: true };
     } catch (error) {
       console.error(`Error deleting map point ${id}:`, error);
@@ -190,14 +317,25 @@ export const userApi = {
 // Create a service for map storage
 export const mapStorage = {
   getStoredPoints: async (): Promise<MapPoint[]> => {
-    return await firebaseFirestore.mapPoints.getAll();
+    const response = await mapApi.getAllPoints();
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return [];
   },
   
   savePoint: async (pointData: Omit<MapPoint, 'id'>): Promise<MapPoint> => {
-    return await firebaseFirestore.mapPoints.add(pointData);
+    const response = await mapApi.addPoint(pointData);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error('Failed to save map point');
   },
   
   deletePoint: async (pointId: string): Promise<void> => {
-    return await firebaseFirestore.mapPoints.delete(pointId);
+    const response = await mapApi.deletePoint(pointId);
+    if (!response.success) {
+      throw new Error('Failed to delete map point');
+    }
   }
 };
