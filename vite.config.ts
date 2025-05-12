@@ -27,8 +27,8 @@ export default defineConfig({
       jsx: 'automatic',
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
-      // Skip tsconfig parsing
-      tsconfig: false
+      // Skip tsconfig parsing by not providing a value
+      tsconfig: undefined
     }
   },
   // Skip esbuild typechecking entirely
