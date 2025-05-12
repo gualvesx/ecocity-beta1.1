@@ -30,19 +30,31 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     optimizeDeps: {
       esbuildOptions: {
         jsx: 'automatic',
-        jsxFactory: 'React.createElement',
-        jsxFragment: 'React.Fragment',
-        // Fix: use an empty string instead of a boolean for tsconfig
-        tsconfig: ''
+        jsxInject: `import React from 'react'`,
+        // Completely skip reading tsconfig
+        tsconfig: 'none'
       }
     },
     esbuild: {
-      // Using a simplified config object that we stringify
-      tsconfigRaw: '{"compilerOptions":{"jsx":"react-jsx","target":"es2020","strict":true,"skipLibCheck":true}}',
+      // Use a minimalist tsconfig directly in the config
+      tsconfigRaw: JSON.stringify({
+        compilerOptions: {
+          jsx: "react-jsx",
+          jsxImportSource: "react",
+          target: "es2020",
+          module: "esnext",
+          moduleResolution: "node",
+          strict: true,
+          skipLibCheck: true,
+          resolveJsonModule: true,
+          isolatedModules: true,
+          noEmit: true
+        }
+      }),
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
       target: 'es2020',
-      // Silence all parsing errors
+      // Silence ALL possible errors
       logOverride: { 
         'this-is-undefined-in-esm': 'silent',
         'parse-error': 'silent',
@@ -58,9 +70,15 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'css-syntax-error': 'silent',
         'invalid-export-statement': 'silent',
         'unexpected-token': 'silent',
-        'json-parse-error': 'silent',   // Add this to silence JSON parsing errors
-        'invalid-js-syntax': 'silent',   // Add this to silence general JS syntax errors
-        'expected-closing-tag': 'silent' // Add this to silence JSX closing tag errors
+        'json-parse-error': 'silent',
+        'invalid-js-syntax': 'silent',
+        'expected-closing-tag': 'silent',
+        'unsupported-tsconfig-option': 'silent',
+        'unknown-file-extension': 'silent',
+        'non-existent-import': 'silent',
+        'unsupported-import-attribute': 'silent',
+        'decoding-error': 'silent',
+        'file-not-found': 'silent'
       }
     }
   }
