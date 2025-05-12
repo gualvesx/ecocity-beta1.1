@@ -11,7 +11,6 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // Override tsconfig settings to avoid the TS6310 error
   build: {
     target: 'es2015',
     outDir: 'dist',
@@ -19,7 +18,7 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    port: 3000,
+    port: 8080,
     open: true,
   }
 })
