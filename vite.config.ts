@@ -21,13 +21,13 @@ export default defineConfig({
     port: 8080,
     open: true,
   },
-  // Completely bypass tsconfig parsing with a non-existent path
+  // Bypass tsconfig.json parsing completely
   optimizeDeps: {
     esbuildOptions: {
       jsx: 'automatic',
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
-      tsconfig: 'non-existent-tsconfig.json'
+      tsconfig: false // Set to false to completely ignore tsconfig
     }
   },
   esbuild: {
@@ -35,7 +35,7 @@ export default defineConfig({
       compilerOptions: {
         jsx: 'react-jsx',
         target: 'es2020',
-        moduleResolution: 'node',
+        // Remove moduleResolution as it's not allowed in this context
         esModuleInterop: true,
         strict: true,
         skipLibCheck: true
