@@ -31,7 +31,6 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       esbuildOptions: {
         jsx: 'automatic',
         inject: ['./src/react-shim.js'],
-        tsconfig: false, // Disable TypeScript config reading completely
         loader: {
           '.tsx': 'jsx',
           '.ts': 'jsx'
@@ -42,7 +41,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
       target: 'es2020',
-      tsconfigRaw: { compilerOptions: { jsx: 'react-jsx' } }, // Use object format instead of string
+      tsconfigRaw: { compilerOptions: { jsx: 'react-jsx' } },
       logOverride: { 
         'this-is-undefined-in-esm': 'silent',
         'parse-error': 'silent',
