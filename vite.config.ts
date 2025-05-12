@@ -28,8 +28,7 @@ export default defineConfig({
       // Ignore any parsing errors
       'parse-error': 'silent'
     },
-    // Provide inline TypeScript configuration instead of reading from tsconfig.json
-    jsx: 'react-jsx',
+    // Use valid esbuild options
     jsxFactory: 'React.createElement',
     jsxFragment: 'React.Fragment',
     target: 'es2020'
