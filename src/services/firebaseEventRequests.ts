@@ -1,7 +1,7 @@
 
 import { 
   collection, addDoc, getDocs, deleteDoc, doc, 
-  query, orderBy, Timestamp, where, getDoc
+  query, orderBy, Timestamp, where, getDoc, updateDoc
 } from "firebase/firestore";
 import { firestore, auth } from "./firebaseConfig";
 import { EventRequest, EventStatus } from "@/types/events";
