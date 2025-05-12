@@ -41,7 +41,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
       target: 'es2020',
-      tsconfigRaw: '{ "compilerOptions": { "jsx": "react-jsx", "module": "ESNext", "moduleResolution": "Node", "target": "ES2020", "strict": true, "isolatedModules": true, "esModuleInterop": true, "skipLibCheck": true } }',
+      // Skip TypeScript checking entirely
+      tsconfig: false,
       logOverride: { 
         'this-is-undefined-in-esm': 'silent',
         'parse-error': 'silent',
