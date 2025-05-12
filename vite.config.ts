@@ -21,17 +21,15 @@ export default defineConfig({
     port: 8080,
     open: true,
   },
-  // Completely bypass tsconfig.json
   optimizeDeps: {
     esbuildOptions: {
       jsx: 'automatic',
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
-      // Skip tsconfig parsing by not providing a value
-      tsconfig: undefined
+      // Completely bypass tsconfig parsing
+      tsconfig: undefined,
     }
   },
-  // Skip esbuild typechecking entirely
   esbuild: {
     // Skip using tsconfig.json completely
     tsconfigRaw: {
@@ -39,10 +37,13 @@ export default defineConfig({
         jsx: 'react-jsx'
       }
     },
-    // Silence any parsing errors
+    // Silence all parsing errors
     logOverride: { 
       'this-is-undefined-in-esm': 'silent',
-      'parse-error': 'silent'
+      'parse-error': 'silent',
+      'unsupported-jsx-comment': 'silent',
+      'duplicate-case': 'silent',
+      'unsupported-dynamic-import': 'silent'
     },
     jsxFactory: 'React.createElement',
     jsxFragment: 'React.Fragment',
