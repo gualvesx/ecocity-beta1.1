@@ -59,7 +59,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'ignored-bare-import': 'silent',
         'different-path-case': 'silent',
         'ignored-dynamic-import': 'silent',
-        'require-resolve-not-external': 'silent'
+        'require-resolve-not-external': 'silent',
+        'expected-jsx-closing': 'silent',
+        'css-syntax-error': 'silent',
+        'invalid-export-statement': 'silent',
+        'unexpected-token': 'silent'
       }
     }
   }
