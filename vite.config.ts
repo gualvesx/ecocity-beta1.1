@@ -35,7 +35,6 @@ export default defineConfig({
       compilerOptions: {
         jsx: 'react-jsx',
         target: 'es2020',
-        module: 'esnext',
         moduleResolution: 'node',
         esModuleInterop: true,
         strict: true,
