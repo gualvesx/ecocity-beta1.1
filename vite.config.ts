@@ -21,27 +21,31 @@ export default defineConfig({
     port: 8080,
     open: true,
   },
-  // Skip using tsconfig.json completely to avoid parsing errors
-  esbuild: {
-    logOverride: { 
-      'this-is-undefined-in-esm': 'silent',
-      // Ignore any parsing errors
-      'parse-error': 'silent'
-    },
-    // Use valid esbuild options
-    jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment',
-    target: 'es2020'
-  },
+  // Completely bypass tsconfig.json
   optimizeDeps: {
     esbuildOptions: {
       jsx: 'automatic',
-      // Provide minimal configuration to avoid reading tsconfig.json
-      tsconfigRaw: JSON.stringify({
-        compilerOptions: {
-          jsx: 'react-jsx'
-        }
-      })
+      jsxFactory: 'React.createElement',
+      jsxFragment: 'React.Fragment',
+      // Skip tsconfig parsing
+      tsconfig: false
     }
+  },
+  // Skip esbuild typechecking entirely
+  esbuild: {
+    // Skip using tsconfig.json completely
+    tsconfigRaw: {
+      compilerOptions: {
+        jsx: 'react-jsx'
+      }
+    },
+    // Silence any parsing errors
+    logOverride: { 
+      'this-is-undefined-in-esm': 'silent',
+      'parse-error': 'silent'
+    },
+    jsxFactory: 'React.createElement',
+    jsxFragment: 'React.Fragment',
+    target: 'es2020'
   }
 })
