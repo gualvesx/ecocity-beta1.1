@@ -31,7 +31,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       esbuildOptions: {
         jsx: 'automatic',
         inject: ['./src/react-shim.js'], // Using inject instead of jsxInject
-        tsconfig: '' // Empty string instead of false
+        tsconfig: 'none' // Use 'none' to completely skip tsconfig
       }
     },
     esbuild: {
