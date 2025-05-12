@@ -1,11 +1,11 @@
 
-import { defineConfig } from 'vite'
+import { defineConfig, ConfigEnv, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { componentTagger } from "lovable-tagger"
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   return {
     plugins: [
       react(),
@@ -27,24 +27,24 @@ export default defineConfig(({ mode }) => {
       port: 8080,
       open: true,
     },
-    // Bypass tsconfig.json parsing completely
     optimizeDeps: {
       esbuildOptions: {
         jsx: 'automatic',
         jsxFactory: 'React.createElement',
         jsxFragment: 'React.Fragment',
-        tsconfig: false // Set to false to completely ignore tsconfig
+        // Fix: use an empty string instead of false for tsconfig
+        tsconfig: ''
       }
     },
     esbuild: {
-      tsconfigRaw: {
+      tsconfigRaw: JSON.stringify({
         compilerOptions: {
           jsx: 'react-jsx',
           target: 'es2020',
           strict: true,
           skipLibCheck: true
         }
-      },
+      }),
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
       target: 'es2020',
