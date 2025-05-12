@@ -1,3 +1,4 @@
+
 import { defineConfig, ConfigEnv, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -30,7 +31,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       esbuildOptions: {
         jsx: 'automatic',
         inject: ['./src/react-shim.js'], // Using inject instead of jsxInject
-        tsconfig: false // Skip tsconfig completely
+        tsconfig: '' // Empty string instead of false
       }
     },
     esbuild: {
