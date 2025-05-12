@@ -1,4 +1,3 @@
-
 import { defineConfig, ConfigEnv, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -30,31 +29,15 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     optimizeDeps: {
       esbuildOptions: {
         jsx: 'automatic',
-        jsxInject: `import React from 'react'`,
-        // Completely skip reading tsconfig
-        tsconfig: 'none'
+        inject: ['./src/react-shim.js'], // Using inject instead of jsxInject
+        tsconfig: false // Skip tsconfig completely
       }
     },
     esbuild: {
-      // Use a minimalist tsconfig directly in the config
-      tsconfigRaw: JSON.stringify({
-        compilerOptions: {
-          jsx: "react-jsx",
-          jsxImportSource: "react",
-          target: "es2020",
-          module: "esnext",
-          moduleResolution: "node",
-          strict: true,
-          skipLibCheck: true,
-          resolveJsonModule: true,
-          isolatedModules: true,
-          noEmit: true
-        }
-      }),
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
       target: 'es2020',
-      // Silence ALL possible errors
+      tsconfigRaw: '{"compilerOptions":{"jsx":"react-jsx","target":"es2020"}}', // Simplified config as string
       logOverride: { 
         'this-is-undefined-in-esm': 'silent',
         'parse-error': 'silent',
