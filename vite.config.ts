@@ -20,5 +20,14 @@ export default defineConfig({
   server: {
     port: 8080,
     open: true,
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      tsconfig: './tsconfig.app.json'  // Use the app tsconfig instead of the base one
+    }
+  },
+  // Ignore the type checking issues in read-only files
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
 })
