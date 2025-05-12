@@ -38,7 +38,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       jsxFactory: 'React.createElement',
       jsxFragment: 'React.Fragment',
       target: 'es2020',
-      tsconfigRaw: '{"compilerOptions":{"jsx":"react-jsx"}}', // Simplified tsconfigRaw
+      tsconfigRaw: '{"compilerOptions":{"jsx":"react-jsx"}}', // Minimal tsconfig
       logOverride: { 
         'this-is-undefined-in-esm': 'silent',
         'parse-error': 'silent',
